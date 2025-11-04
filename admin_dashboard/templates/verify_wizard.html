@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的真命盘 - LynkerAI</title>
+    <link rel="stylesheet" href="/static/css/verify.css">
+    <style>
+        /* Mode B Embedded Styles */
+        .mode-b-section {
+            background: #222;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 30px 20px;
+            border: 2px solid #00ff9d;
+        }
+
+        .mode-b-header h2 {
+            color: #00ff9d;
+            margin-bottom: 8px;
+        }
+
+        .mode-b-subtitle {
+            color: #aaa;
+            margin-bottom: 24px;
+        }
+
+        .sop-selector {
+            margin: 20px 0;
+        }
+
+        .sop-selector label {
+            display: block;
+            margin-bottom: 8px;
+            color: #e0e0e0;
+        }
+
+        .sop-selector select {
+            width: 100%;
+            padding: 12px;
+            background: #1a1a1a;
+            border: 1px solid #444;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .ai-message-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            color: white;
+        }
+
+        .ai-message-box .icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .start-analysis-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #00ff9d 0%, #00d4aa 100%);
+            border: none;
+            border-radius: 8px;
+            color: #000;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .start-analysis-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 255, 157, 0.3);
+        }
+
+        .start-analysis-btn:disabled {
+            background: #444;
+            color: #888;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .analysis-results {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .analysis-results.visible {
+            display: block;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .ai-column {
+            background: #2a2a2a;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .ai-column h3 {
+            color: #00ff9d;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #444;
+        }
+
+        .module-result {
+            background: #1a1a1a;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        .module-result h4 {
+            color: #00d4aa;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .module-result .summary {
+            color: #e0e0e0;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .confidence-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .confidence-high {
+            background: rgba(0, 255, 157, 0.2);
+            color: #00ff9d;
+        }
+
+        .confidence-medium {
+            background: rgba(255, 165, 0, 0.2);
+            color: #ffa500;
+        }
+
+        .confidence-low {
+            background: rgba(255, 68, 68, 0.2);
+            color: #ff4444;
+        }
+
+        .evidence-list {
+            font-size: 13px;
+            color: #aaa;
+            margin-top: 8px;
+            padding-left: 20px;
+        }
+
+        .evidence-list li {
+            margin-bottom: 4px;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #444;
+            border-top-color: #00ff9d;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .ai-summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 24px;
+            border-radius: 12px;
+            margin-top: 30px;
+            color: white;
+        }
+
+        .ai-summary h3 {
+            margin-bottom: 16px;
+            font-size: 20px;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: #2a2a2a;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid #444;
+        }
+
+        .comparison-table th {
+            background: #1a1a1a;
+            color: #00ff9d;
+            font-weight: bold;
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .btn-secondary {
+            padding: 8px 16px;
+            background: #444;
+            border: 1px solid #666;
+            border-radius: 6px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: #555;
+            border-color: #00ff9d;
+        }
+    </style>
+</head>
+<body data-user-id="{{ user_id }}">
+<div class="app-container">
+    <!-- 左侧导航栏 -->
+    <aside class="sidebar">
+        <div class="logo">
+            <h2>LynkerAI</h2>
+        </div>
+        <nav class="nav-menu">
+            <a href="/dashboard" class="nav-item">
+                <span class="icon">📊</span> Dashboard
+            </a>
+            <a href="#" class="nav-item">
+                <span class="icon">🔍</span> Search
+            </a>
+            
+            <!-- 我的命盘（可展开） -->
+            <div class="nav-item expandable active" data-menu="charts">
+                <span class="icon">🔐</span> 我的命盘
+                <span class="arrow">▼</span>
+            </div>
+            <div class="nav-submenu" data-parent="charts">
+                <a href="/verify?user_id={{ user_id }}" class="nav-sub-item">我的真命盘分析</a>
+                <a href="#" class="nav-sub-item group-switch active" data-group-index="0">可能出生的时辰1</a>
+                <a href="#" class="nav-sub-item group-switch" data-group-index="1">可能出生的时辰2</a>
+                <a href="#" class="nav-sub-item group-switch" data-group-index="2">可能出生的时辰3</a>
+            </div>
+            
+            <!-- NewChat（可展开） -->
+            <div class="nav-item expandable" data-menu="chat">
+                <span class="icon">💬</span> NewChat
+                <span class="arrow">▼</span>
+            </div>
+            <div class="nav-submenu hidden" data-parent="chat">
+                <a href="#" class="nav-sub-item">我的真命盘合盘分析</a>
+                <a href="#" class="nav-sub-item">可能出生时刻1</a>
+                <a href="#" class="nav-sub-item">可能出生时刻2</a>
+                <a href="#" class="nav-sub-item">可能出生时刻3</a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- 中间主区域 -->
+    <main class="main-content">
+        <!-- 页面标题 -->
+        <header class="page-header">
+            <h1 class="page-title-center">我的真命盘</h1>
+            <p class="subtitle-center">在这里还原真实的出生时辰。输入3组经验的出生时辰后，让我们组合3组可能的人生轨迹，再由你亲自对比、选择最适合的那一个。本平台不提供算盘服务，请从其他平台拿到算盘的图片或文本后再验证。</p>
+        </header>
+
+        <!-- 时辰标题 -->
+        <div class="shichen-title">
+            <h2>可能出生的时辰1</h2>
+        </div>
+
+        <!-- 两个并排上传框 -->
+        <section class="upload-section">
+            <!-- 出生地环境信息选择器 -->
+            <div class="env-select-container" style="margin-bottom: 24px; padding: 20px; background: #2a2a2a; border-radius: 12px; border: 1px solid #444;">
+                <label style="display: block; color: #00ff9d; font-size: 16px; font-weight: bold; margin-bottom: 12px;">🌍 出生地信息</label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                    <select id="countrySelect" style="width: 100%; padding: 10px; background: #1a1a1a; border: 1px solid #555; border-radius: 6px; color: #fff; font-size: 14px;">
+                        <option value="">选择国家</option>
+                    </select>
+                    <select id="citySelect" style="width: 100%; padding: 10px; background: #1a1a1a; border: 1px solid #555; border-radius: 6px; color: #fff; font-size: 14px;">
+                        <option value="">选择城市</option>
+                    </select>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
+                    <input type="text" id="latitude" placeholder="纬度" readonly style="padding: 10px; background: #1a1a1a; border: 1px solid #555; border-radius: 6px; color: #aaa; font-size: 13px;">
+                    <input type="text" id="climate_zone" placeholder="气候带" readonly style="padding: 10px; background: #1a1a1a; border: 1px solid #555; border-radius: 6px; color: #aaa; font-size: 13px;">
+                    <input type="text" id="humidity_type" placeholder="湿度" readonly style="padding: 10px; background: #1a1a1a; border: 1px solid #555; border-radius: 6px; color: #aaa; font-size: 13px;">
+                    <input type="text" id="terrain_type" placeholder="地形" readonly style="padding: 10px; background: #1a1a1a; border: 1px solid #555; border-radius: 6px; color: #aaa; font-size: 13px;">
+                </div>
+            </div>
+
+            <div class="upload-grid">
+                <!-- 八字命盘上传框 -->
+                <div class="upload-card" id="baziCard">
+                    <h3>八字命盘</h3>
+                    <div class="dropzone" id="baziDropzone">
+                        <div class="dropzone-icon">☁️</div>
+                        <p class="dropzone-text">拖拽图片到这里 或</p>
+                        <button class="btn-upload" onclick="document.getElementById('baziFile').click()">选择文件</button>
+                        <input type="file" id="baziFile" accept="image/*,.txt" style="display:none;">
+                        <p class="dropzone-hint">也可以直接粘贴命盘文本</p>
+                    </div>
+                    <textarea 
+                        id="baziText" 
+                        class="chart-input" 
+                        placeholder="或者直接粘贴八字命盘文本..."
+                        rows="6"
+                    ></textarea>
+                </div>
+
+                <!-- 紫微斗数命盘上传框 -->
+                <div class="upload-card" id="ziweiCard">
+                    <h3>紫微斗数命盘</h3>
+                    <div class="dropzone" id="ziweiDropzone">
+                        <div class="dropzone-icon">☁️</div>
+                        <p class="dropzone-text">拖拽图片到这里 或</p>
+                        <button class="btn-upload" onclick="document.getElementById('ziweiFile').click()">选择文件</button>
+                        <input type="file" id="ziweiFile" accept="image/*,.txt" style="display:none;">
+                        <p class="dropzone-hint">也可以直接粘贴命盘文本</p>
+                    </div>
+                    <textarea 
+                        id="ziweiText" 
+                        class="chart-input" 
+                        placeholder="或者直接粘贴紫微斗数命盘文本..."
+                        rows="6"
+                    ></textarea>
+                </div>
+            </div>
+        </section>
+
+        <!-- 两个只读结果展示区 -->
+        <section class="results-section">
+            <!-- 八字验证结果展示区 -->
+            <div class="result-box" id="baziResult">
+                <div class="result-header">
+                    <h4>📄 八字命盘验证结果</h4>
+                    <span class="result-status" id="baziStatus">等待上传...</span>
+                    <div class="result-actions">
+                        <button class="btn-select" id="selectBaziBtn" onclick="selectResult('bazi')" style="display:none;">选择此结果</button>
+                    </div>
+                </div>
+                <div class="result-content" id="baziResultContent">
+                    <p class="empty-state">上传八字命盘后，验证结果将显示在这里</p>
+                </div>
+            </div>
+
+            <!-- 紫微斗数验证结果展示区 -->
+            <div class="result-box" id="ziweiResult">
+                <div class="result-header">
+                    <h4>📄 紫微斗数命盘验证结果</h4>
+                    <span class="result-status" id="ziweiStatus">等待上传...</span>
+                    <div class="result-actions">
+                        <button class="btn-select" id="selectZiweiBtn" onclick="selectResult('ziwei')" style="display:none;">选择此结果</button>
+                    </div>
+                </div>
+                <div class="result-content" id="ziweiResultContent">
+                    <p class="empty-state">上传紫微命盘后，验证结果将显示在这里</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== Mode B: 灵伴主导式全盘验证 ========== -->
+        <!-- This section appears only after both charts are uploaded -->
+        <section class="mode-b-section" id="modeBSection" style="display:none;">
+            <div class="mode-b-header">
+                <h2>🔍 全盘验证分析</h2>
+                <p class="mode-b-subtitle">两份命盘已上传完成，现在可以进行全面的AI验证分析</p>
+            </div>
+
+            <!-- SOP 模板选择 -->
+            <div class="sop-selector">
+                <label for="sopTemplate">
+                    <strong>选择 SOP 分析模板：</strong>
+                </label>
+                <select id="sopTemplate">
+                    <option value="">-- 请选择分析模板 --</option>
+                    <option value="standard_v1">标准全盘分析 v1.0</option>
+                    <option value="career_focused_v1">事业重点分析 v1.0</option>
+                    <option value="relationship_focused_v1">感情重点分析 v1.0</option>
+                </select>
+                <button onclick="uploadCustomSOP()" class="btn-secondary" style="margin-top: 12px;">
+                    上传自定义 SOP 模板
+                </button>
+                <input type="file" id="sopFileInput" accept=".json" style="display:none;">
+            </div>
+
+            <!-- 灵伴提示区 -->
+            <div class="ai-message-box" id="aiMessageBox">
+                <div class="icon">👋</div>
+                <div class="message">
+                    <strong>命盘导入完成。</strong><br>
+                    接下来我会依据此出生时辰，依次分析六亲、童年、事件、感情、事业与健康。<br>
+                    点击下方【开始分析】按钮即可启动全盘验证。
+                </div>
+            </div>
+
+            <!-- 开始分析按钮 -->
+            <button id="startAnalysisBtn" class="start-analysis-btn" disabled onclick="startFullChartAnalysis()">
+                请先选择分析模板
+            </button>
+
+            <!-- 分析结果区 -->
+            <div class="analysis-results" id="analysisResults">
+                <h2>分析结果</h2>
+
+                <!-- 并排显示八字与紫微分析 -->
+                <div class="results-grid">
+                    <div class="ai-column" id="baziAnalysisResults">
+                        <h3>八字 AI 分析</h3>
+                        <div class="loading" style="text-align: center; padding: 40px; color: #888;">
+                            <div class="loading-spinner"></div>
+                            分析中...
+                        </div>
+                    </div>
+                    <div class="ai-column" id="ziweiAnalysisResults">
+                        <h3>紫微 AI 分析</h3>
+                        <div class="loading" style="text-align: center; padding: 40px; color: #888;">
+                            <div class="loading-spinner"></div>
+                            分析中...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 对比表格 -->
+                <h3 style="margin-top: 40px; color: #00ff9d;">分析对比</h3>
+                <table class="comparison-table" id="comparisonTable">
+                    <thead>
+                        <tr>
+                            <th>模块</th>
+                            <th>八字结论</th>
+                            <th>紫微结论</th>
+                            <th>一致度</th>
+                        </tr>
+                    </thead>
+                    <tbody id="comparisonBody">
+                        <!-- 动态填充 -->
+                    </tbody>
+                </table>
+
+                <!-- 灵伴总结 -->
+                <div class="ai-summary" id="aiSummarySection" style="display:none;">
+                    <h3>🪶 灵伴总结</h3>
+                    <div id="summaryContent"></div>
+                </div>
+            </div>
+        </section>
+        <!-- ========== End Mode B Section ========== -->
+    </main>
+
+    <!-- 右侧：Primary Chatbox（唯一可对话的 AI） -->
+    <aside class="chatbox-panel">
+        <div class="chatbox-header">
+            <h3>💬 Child AI 助手</h3>
+            <p class="chatbox-subtitle">我会引导你完成命盘验证</p>
+        </div>
+        
+        <!-- 结果选择区域 -->
+        <div class="result-selection" id="resultSelection" style="display:none;">
+            <h4>🎯 验证结果选择</h4>
+            <p>请选择你认为最准确的验证结果：</p>
+            <div class="selection-options">
+                <div class="selection-option">
+                    <input type="radio" id="preferBazi" name="preferredResult" value="bazi">
+                    <label for="preferBazi">八字命盘验证结果</label>
+                </div>
+                <div class="selection-option">
+                    <input type="radio" id="preferZiwei" name="preferredResult" value="ziwei">
+                    <label for="preferZiwei">紫微斗数命盘验证结果</label>
+                </div>
+                <div class="selection-option">
+                    <input type="radio" id="preferBoth" name="preferredResult" value="both">
+                    <label for="preferBoth">显示两个结果</label>
+                </div>
+            </div>
+            <button class="btn-confirm" onclick="confirmResultSelection()">确认选择</button>
+        </div>
+        
+        <div class="chatbox-messages" id="chatMessages">
+            <!-- 初始欢迎消息 -->
+            <div class="message ai-message">
+                <div class="message-avatar">🤖</div>
+                <div class="message-content">
+                    <p>你好！我是 Child AI 助手。</p>
+                    <p>请先上传你的<strong>八字命盘</strong>（可以拖拽图片或粘贴文本到左侧上传框）。</p>
+                    <p>上传后，我会帮你分析验证结果。</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chatbox-input-area">
+            <textarea 
+                id="chatInput" 
+                class="chatbox-input" 
+                placeholder="输入你的问题或回复..."
+                rows="2"
+            ></textarea>
+            <button id="chatSendBtn" class="chatbox-send-btn">发送</button>
+        </div>
+    </aside>
+</div>
+
+<script src="/static/js/auto_env_fill.js"></script>
+<script src="/static/js/verify_wizard.js"></script>
+</body>
+</html>
