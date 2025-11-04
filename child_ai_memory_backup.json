@@ -1,0 +1,214 @@
+{
+  "last_sync": "2025-10-23T07:31:39.129315",
+  "total_synced": 1,
+  "memories": [
+    {
+      "user_id": "web_upload",
+      "partner_id": "doc_memory_test_v2.md",
+      "summary": "# AI 记忆系统测试 V2\n\n验证记忆桥接功能是否正常工作。\n\n## 测试内容\n1. 文件上传\n2. 日志记录\n3. 数据库同步",
+      "tags": [
+        "project_docs",
+        "document",
+        "vault"
+      ],
+      "similarity": 0.95,
+      "interaction_count": 1,
+      "last_interaction": "2025-10-21T12:09:10.047776"
+    },
+    {
+      "user_id": "web_upload",
+      "partner_id": "doc_test_upload_log.md",
+      "summary": "# 测试文档 - AI 自学习记忆系统\n\n这是一个测试文档，用于验证 Lynker Master Vault 的自动日志记录功能。\n\n## 功能特性\n- 自动记录上传时间\n- 自动提取文件摘要\n- 自...",
+      "tags": [
+        "project_docs",
+        "document",
+        "vault"
+      ],
+      "similarity": 0.95,
+      "interaction_count": 1,
+      "last_interaction": "2025-10-21T11:54:12.390613"
+    },
+    {
+      "user_id": "web_upload",
+      "partner_id": "doc_memory_bridge_test.md",
+      "summary": "# Master AI 记忆桥测试文档\n\n这是一个测试文档，用于验证 Master AI Memory Bridge 功能。\n\n## 功能验证\n- 自动同步上传日志到 child_ai_memory ...",
+      "tags": [
+        "project_docs",
+        "document",
+        "vault"
+      ],
+      "similarity": 0.95,
+      "interaction_count": 1,
+      "last_interaction": "2025-10-21T12:08:07.074515"
+    },
+    {
+      "user_id": "web_upload",
+      "partner_id": "doc_memory_test_v2.md",
+      "summary": "# AI 记忆系统测试 V2\n\n验证记忆桥接功能是否正常工作。\n\n## 测试内容\n1. 文件上传\n2. 日志记录\n3. 数据库同步",
+      "tags": [
+        "project_docs",
+        "document",
+        "vault"
+      ],
+      "similarity": 0.95,
+      "interaction_count": 1,
+      "last_interaction": "2025-10-21T12:09:10.047776"
+    },
+    {
+      "user_id": "web_upload",
+      "partner_id": "doc_test_upload_log.md",
+      "summary": "# 测试文档 - AI 自学习记忆系统\n\n这是一个测试文档，用于验证 Lynker Master Vault 的自动日志记录功能。\n\n## 功能特性\n- 自动记录上传时间\n- 自动提取文件摘要\n- 自...",
+      "tags": [
+        "project_docs",
+        "document",
+        "vault"
+      ],
+      "similarity": 0.95,
+      "interaction_count": 1,
+      "last_interaction": "2025-10-21T11:54:12.390613"
+    },
+    {
+      "user_id": "web_upload",
+      "partner_id": "doc_memory_bridge_test.md",
+      "summary": "# Master AI 记忆桥测试文档\n\n这是一个测试文档，用于验证 Master AI Memory Bridge 功能。\n\n## 功能验证\n- 自动同步上传日志到 child_ai_memory ...",
+      "tags": [
+        "project_docs",
+        "document",
+        "vault"
+      ],
+      "similarity": 0.95,
+      "interaction_count": 1,
+      "last_interaction": "2025-10-21T12:08:07.074515"
+    },
+    {
+      "user_id": "web_upload",
+      "partner_id": "doc_memory_test_v2.md",
+      "summary": "# AI 记忆系统测试 V2\n\n验证记忆桥接功能是否正常工作。\n\n## 测试内容\n1. 文件上传\n2. 日志记录\n3. 数据库同步",
+      "tags": [
+        "project_docs",
+        "document",
+        "vault"
+      ],
+      "similarity": 0.95,
+      "interaction_count": 1,
+      "last_interaction": "2025-10-21T12:09:10.047776"
+    },
+    {
+      "user_id": "web_upload",
+      "partner_id": "doc_idempotency_test.md",
+      "summary": "# 幂等性验证文档\n\n这是第4次上传，用于测试幂等性功能。\n\n## 预期结果\n- 只同步这个新文件\n- 不会重复同步之前的3个文件",
+      "tags": [
+        "project_docs",
+        "document",
+        "vault"
+      ],
+      "similarity": 0.95,
+      "interaction_count": 1,
+      "last_interaction": "2025-10-21T12:14:21.342720"
+    },
+    {
+      "user_id": "web_upload",
+      "partner_id": "doc_rotation_test.md",
+      "summary": "# 轮换测试文档\n\n这个文档用于测试日志轮换后的幂等性。",
+      "tags": [
+        "project_docs",
+        "document",
+        "vault"
+      ],
+      "similarity": 0.95,
+      "interaction_count": 1,
+      "last_interaction": "2025-10-21T12:18:22.383379"
+    },
+    {
+      "user_id": "web_upload",
+      "partner_id": "doc_after_rotation.md",
+      "summary": "# 轮换后测试\n\n这是日志清空后的第一次上传，用于验证基于唯一标识符的幂等性。",
+      "tags": [
+        "project_docs",
+        "document",
+        "vault"
+      ],
+      "similarity": 0.95,
+      "interaction_count": 1,
+      "last_interaction": "2025-10-21T12:19:04.423634"
+    },
+    {
+      "user_id": "web_upload",
+      "partner_id": "doc_lynker_ai_core_index_v2.docx",
+      "summary": "[二进制文件，无法生成摘要]",
+      "tags": [
+        "dev_brainstorm",
+        "document",
+        "vault"
+      ],
+      "similarity": 0.95,
+      "interaction_count": 1,
+      "last_interaction": "2025-10-23T07:24:12.881512"
+    },
+    {
+      "user_id": "web_upload",
+      "partner_id": "doc_lynker_ai_core_index_v2.docx",
+      "summary": "[二进制文件，无法生成摘要]",
+      "tags": [
+        "dev_brainstorm",
+        "document",
+        "vault"
+      ],
+      "similarity": 0.95,
+      "interaction_count": 1,
+      "last_interaction": "2025-10-23T07:31:21.995509"
+    },
+    {
+      "user_id": "web_upload",
+      "partner_id": "doc_README_TMS_v1.md",
+      "summary": "# LynkerAI TMS v1.0 - Trusted Metaphysics System\n\n**假名制 × 真命盘验证 × 签章验证 × 区域适配 × 置信投票 × 分层验证架构**\n\n---...",
+      "tags": [
+        "project_docs",
+        "document",
+        "vault"
+      ],
+      "similarity": 0.95,
+      "interaction_count": 1,
+      "last_interaction": "2025-10-23T07:31:23.116903"
+    },
+    {
+      "user_id": "web_upload",
+      "partner_id": "doc_README_PROVIDER_MANAGER.md",
+      "summary": "# 🧠 LynkerAI Multi-Provider 调度系统 v1.0\n\n## 📋 概述\n\n**LynkerAI Provider Manager** 是一个智能的 AI 提供商调度系统，能够在 ...",
+      "tags": [
+        "project_docs",
+        "document",
+        "vault"
+      ],
+      "similarity": 0.95,
+      "interaction_count": 1,
+      "last_interaction": "2025-10-23T07:31:28.694921"
+    },
+    {
+      "user_id": "web_upload",
+      "partner_id": "doc_QUICK_START.md",
+      "summary": "# 🚀 LynkerAI Multi-Provider 调度系统 - 快速开始\n\n## 5分钟快速上手\n\n### ✅ 系统已就绪\n\n所有文件已创建并集成到 LynkerAI 系统中！\n\n---\n\n##...",
+      "tags": [
+        "project_docs",
+        "document",
+        "vault"
+      ],
+      "similarity": 0.95,
+      "interaction_count": 1,
+      "last_interaction": "2025-10-23T07:31:36.202183"
+    },
+    {
+      "user_id": "web_upload",
+      "partner_id": "doc_replit.md",
+      "summary": "# Overview\nLynkerAI is an AI-powered task execution system designed to generate and execute code fro...",
+      "tags": [
+        "project_docs",
+        "document",
+        "vault"
+      ],
+      "similarity": 0.95,
+      "interaction_count": 1,
+      "last_interaction": "2025-10-23T07:31:38.910489"
+    }
+  ]
+}

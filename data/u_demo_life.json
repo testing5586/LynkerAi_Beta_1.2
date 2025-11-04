@@ -1,0 +1,23 @@
+{
+  "career_type": "设计行业",
+  "marriage_status": "晚婚",
+  "children": 1,
+  "events": [
+    {
+      "desc": "2003年母亲去世",
+      "weight": 2.0
+    },
+    {
+      "desc": "2006年海外留学",
+      "weight": 1.0
+    },
+    {
+      "desc": "2010年获设计奖项",
+      "weight": 1.5
+    },
+    {
+      "desc": "婚姻晚成，妻子年长八岁",
+      "weight": 1.2
+    }
+  ]
+}
