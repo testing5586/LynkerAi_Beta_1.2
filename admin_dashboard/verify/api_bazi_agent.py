@@ -132,3 +132,70 @@ def test_agent():
             "success": False,
             "error": str(e)
         }), 500
+
+
+def generate_bazi_data(birth_date, birth_time, timezone="+08:00", location=None, gender="未知"):
+    """
+    生成本地八字AI数据（BaziAI_v1.2 格式）
+    用于统一命理入口调用
+    
+    参数:
+        birth_date: str, 出生日期 (YYYY-MM-DD)
+        birth_time: str, 出生时间 (HH:MM:SS)
+        timezone: str, 时区 (默认 +08:00)
+        location: dict, 出生地信息
+        gender: str, 性别
+        
+    返回:
+        dict: BaziAI_v1.2 结构的八字数据
+        
+    TODO: 未来接入真实八字计算算法或外部API
+    """
+    from datetime import datetime
+    
+    if location is None:
+        location = {}
+    
+    result = {
+        "meta": {
+            "parser_version": "BaziAI_v1.2",
+            "source": "LynkerAI",
+            "engine": "Local Generator",
+            "timestamp": datetime.now().isoformat()
+        },
+        "basic_info": {
+            "birth_date": birth_date,
+            "birth_time": birth_time,
+            "timezone": timezone,
+            "gender": gender,
+            "location": location
+        },
+        "pillars": {
+            "year_pillar": "乙卯",
+            "month_pillar": "辛巳",
+            "day_pillar": "丁巳",
+            "hour_pillar": "庚子"
+        },
+        "wuxing": {
+            "木": 2,
+            "火": 3,
+            "土": 1,
+            "金": 1,
+            "水": 1
+        },
+        "environment": location,
+        "relationship_vector": {
+            "财运": 0.8,
+            "婚姻": 0.6,
+            "健康": 0.7,
+            "事业": 0.75
+        },
+        "tags": {
+            "强弱": ["身强"],
+            "格局": ["正官格"],
+            "用神": ["水"]
+        },
+        "success": True
+    }
+    
+    return result

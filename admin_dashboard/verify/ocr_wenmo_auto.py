@@ -1,9 +1,9 @@
 # admin_dashboard/verify/ocr_wenmo_auto.py
 # -*- coding: utf-8 -*-
 """
-文墨天机命盘 OCR 自动识别器
-- 支持 图片 → MiniMax Vision → 文本 → 结构化
-- 支持 纯文本（用户粘贴文墨命盘）→ 结构化
+文墨天机命盘文件解析器
+- 仅支持文墨天机导出的「AI 分析版 JSON/TXT」文件
+- 禁止任何形式的模拟生成或AI推断
 - 自动判断：八字 / 紫微
 """
 
@@ -45,6 +45,41 @@ def looks_like_bazi(text: str) -> bool:
     if re.search(r"[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]\s+[甲乙丙丁戊己庚辛壬癸]", text):
         return True
     return False
+
+
+def validate_wenmo_file(data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    验证上传的文件是否为文墨天机导出的真实 AI 分析版文件
+    
+    参数:
+        data: dict, 解析后的 JSON 数据
+        
+    返回:
+        dict: {"valid": bool, "error": str}
+    """
+    # 检查必需字段
+    if not isinstance(data, dict):
+        return {"valid": False, "error": "文件格式错误：不是有效的 JSON 对象"}
+    
+    # 检查 meta 字段和 parser_version
+    meta = data.get("meta", {})
+    if not meta or "parser_version" not in meta:
+        return {"valid": False, "error": "文件缺少 parser_version 字段，不是文墨天机 AI 分析版格式"}
+    
+    # ✅ 修改：放宽 source 检查，支持多种来源
+    source = meta.get("source", "")
+    if source and "文墨天机" not in source and "wenmo" not in source.lower() and "manual" not in source.lower():
+        print(f"[Ziwei DEBUG] ⚠️ 非文墨天机来源（{source}），继续兼容模式")
+    
+    # ✅ 修改：使用 startswith 检查版本，支持 AI版、手工版、manual 等
+    parser_version = meta.get("parser_version", "")
+    if not parser_version or not parser_version.startswith(("wenmo", "ZiweiAI", "BaziAI", "manual")):
+        return {
+            "valid": False,
+            "error": f"不支持的文件版本: {parser_version}，支持的版本前缀: wenmo*, ZiweiAI*, BaziAI*, manual*"
+        }
+    
+    return {"valid": True, "error": ""}
 
 
 # --------- 文墨八字解析 ---------

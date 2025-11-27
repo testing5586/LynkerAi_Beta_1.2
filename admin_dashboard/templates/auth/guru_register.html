@@ -3,288 +3,946 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>创建命理师档案 - LynkerAI</title>
+    <title data-i18n="guruRegister.pageTitle">命理师注册 - 灵客AI</title>
+    <link rel="stylesheet" href="/static/css/user-profile-card.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
-            font-family: system-ui, -apple-system, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
             min-height: 100vh;
-            padding: 40px 20px;
+            overflow-x: hidden;
         }
-        .container {
-            max-width: 700px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 16px;
+        
+        .guru-register-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* 左侧紫色星空背景区 */
+        .left-panel {
+            flex: 0 0 40%;
+            background: linear-gradient(135deg, #5b4fa3 0%, #7c3f9e 50%, #4a3f87 100%);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
             padding: 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
-        .header {
+        
+        /* 星空效果 */
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 20% 30%, white, transparent),
+                radial-gradient(2px 2px at 60% 70%, white, transparent),
+                radial-gradient(1px 1px at 50% 50%, white, transparent),
+                radial-gradient(1px 1px at 80% 10%, white, transparent),
+                radial-gradient(2px 2px at 90% 60%, white, transparent),
+                radial-gradient(1px 1px at 33% 80%, white, transparent),
+                radial-gradient(1px 1px at 15% 90%, white, transparent);
+            background-size: 200% 200%;
+            animation: stars 20s linear infinite;
+            opacity: 0.5;
+        }
+        
+        @keyframes stars {
+            from { transform: translateY(0); }
+            to { transform: translateY(-100%); }
+        }
+        
+        /* Logo区域 */
+        .logo-area {
+            position: relative;
+            z-index: 10;
+        }
+        
+        .logo-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: transform 0.3s;
+        }
+        
+        .logo-link:hover {
+            transform: scale(1.05);
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        
+        .logo-text {
+            font-size: 20px;
+            font-weight: 600;
+            color: white;
+        }
+        
+        /* 紫微斗数盘装饰 */
+        .ziwei-chart-decoration {
+            position: relative;
+            z-index: 5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+        }
+        
+        /* 招募文案区 */
+        .recruitment-text {
+            position: relative;
+            z-index: 10;
             text-align: center;
-            margin-bottom: 32px;
+            color: white;
         }
-        .header h1 {
+        
+        .recruitment-text h2 {
             font-size: 28px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 8px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            line-height: 1.4;
         }
-        .header p { color: #666; font-size: 14px; }
+        
+        .recruitment-text p {
+            font-size: 14px;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+        
+        /* 右侧白色表单区 */
+        .right-panel {
+            flex: 0 0 60%;
+            background: white;
+            padding: 60px 80px;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        /* 语言切换器 */
+        .lang-switcher-wrapper {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            z-index: 100;
+        }
+        
+        /* 覆盖语言切换器按钮样式，使其在白色背景上可见 */
+        .lang-switcher-wrapper .lang-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            border: none !important;
+            color: white !important;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+        
+        .lang-switcher-wrapper .lang-btn:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4) !important;
+        }
+        
+        /* 表单头部 */
+        .form-header {
+            margin-bottom: 40px;
+        }
+        
+        .form-header h1 {
+            font-size: 32px;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+        
+        .form-header p {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .form-header p .required-star {
+            color: #f44336;
+        }
+        
+        /* 表单组 */
         .form-group {
             margin-bottom: 24px;
         }
-        label {
+        
+        .form-group label {
             display: block;
-            font-weight: 600;
+            font-size: 14px;
             color: #333;
             margin-bottom: 8px;
-            font-size: 14px;
+            font-weight: 500;
         }
-        label .required { color: #f44336; }
-        input, select, textarea {
+        
+        .form-group label .required {
+            color: #f44336;
+            margin-left: 2px;
+        }
+        
+        .input-wrapper {
+            position: relative;
+        }
+        
+        .input-icon {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 18px;
+            pointer-events: none;
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="password"],
+        select {
             width: 100%;
             padding: 12px 16px;
-            border: 2px solid #e0e0e0;
+            border: 1px solid #e0e0e0;
             border-radius: 8px;
-            font-size: 15px;
-            font-family: inherit;
+            font-size: 14px;
             transition: all 0.3s;
+            background: #fafafa;
         }
-        textarea {
-            min-height: 100px;
-            resize: vertical;
+        
+        /* 有图标的input需要更大的右侧padding */
+        .input-wrapper input {
+            padding-right: 45px;
         }
-        input:focus, select:focus, textarea:focus {
+        
+        input:focus,
+        select:focus {
             outline: none;
             border-color: #667eea;
+            background: white;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
-        .checkbox-group {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 12px;
-            margin-top: 8px;
+        
+        input::placeholder {
+            color: #bbb;
+            font-size: 13px;
         }
-        .checkbox-item {
+        
+        /* 邮箱验证码布局 */
+        .email-verify-group {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .email-verify-group input {
+            flex: 1;
+        }
+        
+        .verify-code-btn {
+            flex: 0 0 auto;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s;
+        }
+        
+        .verify-code-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .verify-code-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* 手机号码布局 */
+        .phone-group {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .phone-group select {
+            flex: 0 0 100px;
+        }
+        
+        .phone-group input {
+            flex: 1;
+        }
+        
+        /* 头像上传 */
+        .avatar-upload-area {
             display: flex;
             align-items: center;
-            padding: 10px;
-            border: 2px solid #e0e0e0;
+            gap: 20px;
+        }
+        
+        .avatar-preview {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .avatar-preview .camera-icon {
+            font-size: 32px;
+            color: #999;
+        }
+        
+        .avatar-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .upload-avatar-btn {
+            padding: 10px 20px;
+            border: 2px solid #d946ef;
+            background: white;
+            color: #d946ef;
             border-radius: 8px;
+            font-size: 14px;
             cursor: pointer;
             transition: all 0.3s;
         }
-        .checkbox-item:hover {
+        
+        .upload-avatar-btn:hover {
+            background: #d946ef;
+            color: white;
+        }
+        
+        #avatarFileInput {
+            display: none;
+        }
+        
+        /* 专业领域复选框 */
+        .specializations-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        
+        .spec-checkbox {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #fafafa;
+        }
+        
+        .spec-checkbox:hover {
             border-color: #667eea;
             background: #f8f9ff;
         }
-        .checkbox-item input[type="checkbox"] {
-            width: auto;
-            margin-right: 8px;
+        
+        .spec-checkbox input[type="checkbox"] {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
         }
-        .checkbox-item.checked {
+        
+        .spec-checkbox.checked {
             border-color: #667eea;
             background: #f0f3ff;
         }
-        .help-text {
-            font-size: 12px;
-            color: #999;
-            margin-top: 4px;
-        }
-        .btn {
+        
+        /* 提交按钮 */
+        .submit-btn {
             width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 16px;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
             color: white;
             border: none;
             border-radius: 8px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s;
-            margin-top: 8px;
+            transition: all 0.3s;
+            margin-top: 32px;
         }
-        .btn:hover { transform: translateY(-2px); }
-        .btn:disabled {
+        
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(79, 70, 229, 0.3);
+        }
+        
+        .submit-btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
-            transform: none;
         }
-        .error, .success {
-            padding: 12px;
-            border-radius: 4px;
-            margin-bottom: 16px;
+        
+        /* 底部协议文字 */
+        .terms-text {
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            margin-top: 16px;
+            line-height: 1.6;
+        }
+        
+        .terms-text a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        .terms-text a:hover {
+            text-decoration: underline;
+        }
+        
+        /* 消息提示 */
+        .message {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
             font-size: 14px;
         }
-        .error {
+        
+        .message.error {
             background: #fee;
             border-left: 4px solid #f44336;
             color: #c62828;
         }
-        .success {
+        
+        .message.success {
             background: #e8f5e9;
             border-left: 4px solid #4caf50;
             color: #2e7d32;
         }
+        
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .left-panel {
+                flex: 0 0 35%;
+            }
+            .right-panel {
+                flex: 0 0 65%;
+                padding: 40px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .guru-register-container {
+                flex-direction: column;
+            }
+            .left-panel {
+                flex: 0 0 auto;
+                min-height: 300px;
+                padding: 30px 20px;
+            }
+            .right-panel {
+                flex: 1;
+                padding: 30px 20px;
+            }
+            .form-header h1 {
+                font-size: 24px;
+            }
+            .specializations-grid {
+                grid-template-columns: 1fr;
+            }
+            .lang-switcher-wrapper {
+                right: 20px;
+                top: 20px;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🔮 创建命理师档案</h1>
-            <p>展示你的专业能力，开启命理服务之旅</p>
+    <div class="guru-register-container">
+        <!-- 左侧紫色星空背景区 -->
+        <div class="left-panel">
+            <!-- Logo区域 -->
+            <div class="logo-area">
+                <a href="/" class="logo-link">
+                    <div class="logo-icon">⭕</div>
+                    <span class="logo-text" data-i18n="common.lynkerAI">灵客AI</span>
+                </a>
+            </div>
+            
+            <!-- 紫微斗数盘装饰 -->
+            <div class="ziwei-chart-decoration">
+                <svg width="300" height="300" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+                    <!-- 外圆 -->
+                    <circle cx="150" cy="150" r="140" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+                    <circle cx="150" cy="150" r="120" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+                    <circle cx="150" cy="150" r="100" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+                    <circle cx="150" cy="150" r="80" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+                    <circle cx="150" cy="150" r="60" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+                    <circle cx="150" cy="150" r="40" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+                    <circle cx="150" cy="150" r="20" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+                    
+                    <!-- 12个方位的星点 -->
+                    <circle cx="150" cy="10" r="6" fill="white" opacity="0.8"/>
+                    <circle cx="225" cy="37.5" r="6" fill="white" opacity="0.8"/>
+                    <circle cx="262.5" cy="112.5" r="6" fill="white" opacity="0.8"/>
+                    <circle cx="290" cy="150" r="6" fill="white" opacity="0.8"/>
+                    <circle cx="262.5" cy="187.5" r="6" fill="white" opacity="0.8"/>
+                    <circle cx="225" cy="262.5" r="6" fill="white" opacity="0.8"/>
+                    <circle cx="150" cy="290" r="6" fill="white" opacity="0.8"/>
+                    <circle cx="75" cy="262.5" r="6" fill="white" opacity="0.8"/>
+                    <circle cx="37.5" cy="187.5" r="6" fill="white" opacity="0.8"/>
+                    <circle cx="10" cy="150" r="6" fill="white" opacity="0.8"/>
+                    <circle cx="37.5" cy="112.5" r="6" fill="white" opacity="0.8"/>
+                    <circle cx="75" cy="37.5" r="6" fill="white" opacity="0.8"/>
+                    
+                    <!-- 中心星 -->
+                    <circle cx="150" cy="150" r="8" fill="white" opacity="0.9"/>
+                </svg>
+            </div>
+            
+            <!-- 招募文案 -->
+            <div class="recruitment-text">
+                <h2 data-i18n="guruRegister.recruitmentTitle">加入我们的命理师团队，分享您的智慧</h2>
+                <p data-i18n="guruRegister.recruitmentSubtitle">成为平台认证命理师，开启您的专业数字之旅</p>
+            </div>
         </div>
-
-        <div id="message"></div>
-
-        <form id="guruForm">
-            <div class="form-group">
-                <label for="pseudonym">灵性假名 <span class="required">*</span></label>
-                <input type="text" id="pseudonym" required minlength="2">
-                <div class="help-text">你的专业名号</div>
-            </div>
-
-            <div class="form-group">
-                <label for="bio">个人简介 <span class="required">*</span></label>
-                <textarea id="bio" required maxlength="500" placeholder="介绍你的专长、经验和服务理念..."></textarea>
-                <div class="help-text">最多 500 字</div>
-            </div>
-
-            <div class="form-group">
-                <label>专长领域 <span class="required">*（至少选择一项）</span></label>
-                <div class="checkbox-group" id="specializationsGroup">
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="specialization" value="bazi">
-                        <span>八字</span>
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="specialization" value="ziwei">
-                        <span>紫微斗数</span>
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="specialization" value="iching">
-                        <span>易经</span>
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="specialization" value="tarot">
-                        <span>塔罗</span>
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="specialization" value="numerology">
-                        <span>数字学</span>
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="specialization" value="feng-shui">
-                        <span>风水</span>
-                    </label>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="region">所在地区</label>
-                <input type="text" id="region" placeholder="例：东南亚">
-            </div>
-
-            <div class="form-group">
-                <label for="nationality">国籍</label>
-                <input type="text" id="nationality" placeholder="例：马来西亚">
-            </div>
-
-            <div class="form-group">
-                <label for="aiProvider">AI 助理提供商</label>
-                <select id="aiProvider">
-                    <option value="LocalMock">LocalMock（免费模拟）</option>
-                    <option value="OpenAI">OpenAI（推荐）</option>
-                    <option value="Gemini">Gemini（有免费额度）</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="aiTone">AI 助理语气</label>
-                <select id="aiTone">
-                    <option value="professional">专业权威</option>
-                    <option value="casual">友好随性</option>
-                    <option value="mystical">神秘诗意</option>
-                </select>
-            </div>
-
-            <button type="submit" class="btn" id="submitBtn">创建命理师档案</button>
-        </form>
-    </div>
-
-    <script>
-        const form = document.getElementById('guruForm');
-        const messageDiv = document.getElementById('message');
-        const submitBtn = document.getElementById('submitBtn');
         
-        // Checkbox 样式切换
-        document.querySelectorAll('.checkbox-item input[type="checkbox"]').forEach(checkbox => {
+        <!-- 右侧白色表单区 -->
+        <div class="right-panel">
+            <!-- 语言切换器 -->
+            <div class="lang-switcher-wrapper" id="lang-switcher-nav"></div>
+            
+            <!-- 表单头部 -->
+            <div class="form-header">
+                <h1 data-i18n="guruRegister.formTitle">命理师注册</h1>
+                <p data-i18n-html="guruRegister.formSubtitle">请填写以下信息完成注册，<span class="required-star">*</span>为必填项</p>
+            </div>
+            
+            <!-- 消息提示区 -->
+            <div id="messageArea"></div>
+            
+            <!-- 注册表单 -->
+            <form id="guruRegisterForm">
+                <!-- 姓名 -->
+                <div class="form-group">
+                    <label for="realName">
+                        <span data-i18n="guruRegister.realNameLabel">姓名</span>
+                        <span class="required">*</span>
+                    </label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="text" 
+                            id="realName" 
+                            name="realName"
+                            data-i18n-placeholder="guruRegister.realNamePlaceholder"
+                            placeholder="请输入您的真实姓名"
+                            required
+                        >
+                        <span class="input-icon">👤</span>
+                    </div>
+                </div>
+                
+                <!-- 电子邮箱 -->
+                <div class="form-group">
+                    <label for="email">
+                        <span data-i18n="guruRegister.emailLabel">电子邮箱</span>
+                        <span class="required">*</span>
+                    </label>
+                    <div class="email-verify-group">
+                        <div class="input-wrapper" style="flex: 1;">
+                            <input 
+                                type="email" 
+                                id="email" 
+                                name="email"
+                                data-i18n-placeholder="guruRegister.emailPlaceholder"
+                                placeholder="请输入您的电子邮箱"
+                                required
+                            >
+                            <span class="input-icon">✉️</span>
+                        </div>
+                        <button 
+                            type="button" 
+                            class="verify-code-btn" 
+                            id="sendVerifyCodeBtn"
+                            data-i18n="guruRegister.sendVerifyCode"
+                        >
+                            发送验证码
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 密码（仅直接注册模式） -->
+                {% if is_direct_register %}
+                <div class="form-group">
+                    <label for="password">
+                        <span data-i18n="guruRegister.passwordLabel">设置密码</span>
+                        <span class="required">*</span>
+                    </label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password"
+                            data-i18n-placeholder="guruRegister.passwordPlaceholder"
+                            placeholder="请设置您的登录密码（至少6位）"
+                            minlength="6"
+                            required
+                        >
+                        <span class="input-icon">🔒</span>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- 手机号码 -->
+                <div class="form-group">
+                    <label for="phone">
+                        <span data-i18n="guruRegister.phoneLabel">手机号码</span>
+                        <span class="required">*</span>
+                    </label>
+                    <div class="phone-group">
+                        <select id="countryCode" name="countryCode">
+                            <option value="+86">+86</option>
+                            <option value="+1">+1</option>
+                            <option value="+44">+44</option>
+                            <option value="+81">+81</option>
+                            <option value="+82">+82</option>
+                            <option value="+65">+65</option>
+                            <option value="+60">+60</option>
+                            <option value="+66">+66</option>
+                            <option value="+84">+84</option>
+                        </select>
+                        <div class="input-wrapper" style="flex: 1;">
+                            <input 
+                                type="tel" 
+                                id="phone" 
+                                name="phone"
+                                data-i18n-placeholder="guruRegister.phonePlaceholder"
+                                placeholder="请输入您的手机号码"
+                                required
+                            >
+                            <span class="input-icon">📱</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 个人头像 -->
+                <div class="form-group">
+                    <label data-i18n="guruRegister.avatarLabel">个人头像</label>
+                    <div class="avatar-upload-area">
+                        <div class="avatar-preview" id="avatarPreview">
+                            <span class="camera-icon">📷</span>
+                        </div>
+                        <button 
+                            type="button" 
+                            class="upload-avatar-btn" 
+                            id="uploadAvatarBtn"
+                            data-i18n="guruRegister.uploadAvatar"
+                        >
+                            上传图片
+                        </button>
+                        <input type="file" id="avatarFileInput" accept="image/*">
+                    </div>
+                </div>
+                
+                <!-- 专业领域 -->
+                <div class="form-group">
+                    <label>
+                        <span data-i18n="guruRegister.specializationsLabel">专业领域</span>
+                        <span class="required">*</span>
+                        <span style="font-weight: normal; color: #999; font-size: 12px;" data-i18n="guruRegister.specializationsHint">（可多选）</span>
+                    </label>
+                    <div class="specializations-grid">
+                        <label class="spec-checkbox">
+                            <input type="checkbox" name="specialization" value="bazi">
+                            <span data-i18n="guruRegister.specBazi">八字</span>
+                        </label>
+                        <label class="spec-checkbox">
+                            <input type="checkbox" name="specialization" value="liuyao">
+                            <span data-i18n="guruRegister.specLiuyao">六爻</span>
+                        </label>
+                        <label class="spec-checkbox">
+                            <input type="checkbox" name="specialization" value="meihua">
+                            <span data-i18n="guruRegister.specMeihua">梅花易数</span>
+                        </label>
+                        <label class="spec-checkbox">
+                            <input type="checkbox" name="specialization" value="astrology">
+                            <span data-i18n="guruRegister.specAstrology">占星</span>
+                        </label>
+                        <label class="spec-checkbox">
+                            <input type="checkbox" name="specialization" value="ziwei">
+                            <span data-i18n="guruRegister.specZiwei">紫微斗数</span>
+                        </label>
+                        <label class="spec-checkbox">
+                            <input type="checkbox" name="specialization" value="qimen">
+                            <span data-i18n="guruRegister.specQimen">奇门</span>
+                        </label>
+                        <label class="spec-checkbox">
+                            <input type="checkbox" name="specialization" value="tarot">
+                            <span data-i18n="guruRegister.specTarot">塔罗</span>
+                        </label>
+                        <label class="spec-checkbox">
+                            <input type="checkbox" name="specialization" value="择吉">
+                            <span data-i18n="guruRegister.specZeji">择吉</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- 提交按钮 -->
+                <button 
+                    type="submit" 
+                    class="submit-btn" 
+                    id="submitBtn"
+                    data-i18n="guruRegister.submitBtn"
+                >
+                    提交注册申请
+                </button>
+                
+                <!-- 底部协议 -->
+                <div class="terms-text">
+                    <span data-i18n-html="guruRegister.termsText">
+                        点击提交即同意服务条款 和《我们政策》和《隐私政策》
+                    </span>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script src="/static/js/i18n.js"></script>
+    <script src="/static/js/lang-switcher.js"></script>
+    <script>
+        // 初始化语言切换器 - 延迟执行确保所有脚本都已加载
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                // 确保函数已加载
+                if (typeof injectLanguageSwitcherStyles === 'function') {
+                    injectLanguageSwitcherStyles();
+                }
+                
+                const langSwitcherContainer = document.getElementById('lang-switcher-nav');
+                if (langSwitcherContainer && typeof createLanguageSwitcher === 'function') {
+                    langSwitcherContainer.innerHTML = createLanguageSwitcher();
+                    
+                    // 手动绑定事件
+                    const langBtn = document.getElementById('langBtn');
+                    const langDropdown = document.getElementById('langDropdown');
+                    
+                    if (langBtn && langDropdown) {
+                        langBtn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            langDropdown.classList.toggle('show');
+                        });
+                        
+                        document.addEventListener('click', () => {
+                            langDropdown.classList.remove('show');
+                        });
+                        
+                        document.querySelectorAll('.lang-option').forEach(option => {
+                            option.addEventListener('click', async () => {
+                                const lang = option.getAttribute('data-lang');
+                                if (typeof i18n !== 'undefined' && typeof i18n.switchLanguage === 'function') {
+                                    await i18n.switchLanguage(lang);
+                                    location.reload(); // 刷新页面应用新语言
+                                }
+                            });
+                        });
+                    } else {
+                        console.error('语言切换器按钮未找到');
+                    }
+                } else {
+                    console.error('createLanguageSwitcher 函数未加载或容器未找到');
+                }
+            }, 300); // 延迟300ms确保脚本加载完成
+        });
+        
+        // 复选框样式切换
+        document.querySelectorAll('.spec-checkbox input[type="checkbox"]').forEach(checkbox => {
             checkbox.addEventListener('change', (e) => {
-                e.target.closest('.checkbox-item').classList.toggle('checked', e.target.checked);
+                e.target.closest('.spec-checkbox').classList.toggle('checked', e.target.checked);
             });
         });
-
+        
+        // 头像上传预览
+        const uploadAvatarBtn = document.getElementById('uploadAvatarBtn');
+        const avatarFileInput = document.getElementById('avatarFileInput');
+        const avatarPreview = document.getElementById('avatarPreview');
+        let uploadedAvatarFile = null;
+        
+        uploadAvatarBtn.addEventListener('click', () => {
+            avatarFileInput.click();
+        });
+        
+        avatarFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                uploadedAvatarFile = file;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    avatarPreview.innerHTML = `<img src="${e.target.result}" alt="Avatar">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // 验证码倒计时
+        const sendVerifyCodeBtn = document.getElementById('sendVerifyCodeBtn');
+        let countdown = 0;
+        
+        sendVerifyCodeBtn.addEventListener('click', async () => {
+            const email = document.getElementById('email').value.trim();
+            
+            if (!email) {
+                showMessage('请先输入邮箱地址', 'error');
+                return;
+            }
+            
+            if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+                showMessage('请输入有效的邮箱地址', 'error');
+                return;
+            }
+            
+            // TODO: 实际发送验证码的API调用
+            showMessage('验证码已发送（功能开发中）', 'success');
+            
+            // 开始倒计时
+            countdown = 60;
+            sendVerifyCodeBtn.disabled = true;
+            const interval = setInterval(() => {
+                countdown--;
+                sendVerifyCodeBtn.textContent = `${countdown}秒后重发`;
+                if (countdown <= 0) {
+                    clearInterval(interval);
+                    sendVerifyCodeBtn.disabled = false;
+                    sendVerifyCodeBtn.setAttribute('data-i18n', 'guruRegister.sendVerifyCode');
+                    sendVerifyCodeBtn.textContent = i18n.t('guruRegister.sendVerifyCode');
+                }
+            }, 1000);
+        });
+        
+        // 表单提交
+        const form = document.getElementById('guruRegisterForm');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        // 检测是否为直接注册模式
+        const isDirectRegister = {{ 'true' if is_direct_register else 'false' }};
+        
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const pseudonym = document.getElementById('pseudonym').value.trim();
-            const bio = document.getElementById('bio').value.trim();
-            const region = document.getElementById('region').value.trim() || null;
-            const nationality = document.getElementById('nationality').value.trim() || null;
-            const aiProvider = document.getElementById('aiProvider').value;
-            const aiTone = document.getElementById('aiTone').value;
+            const realName = document.getElementById('realName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const countryCode = document.getElementById('countryCode').value;
+            const phone = document.getElementById('phone').value.trim();
+            const password = isDirectRegister ? document.getElementById('password')?.value : null;
             
-            // 收集选中的专长
+            // 收集选中的专业领域
             const specializations = Array.from(
                 document.querySelectorAll('input[name="specialization"]:checked')
             ).map(cb => cb.value);
             
-            messageDiv.innerHTML = '';
+            // 验证
+            if (!realName || !email || !phone) {
+                showMessage('请填写所有必填字段', 'error');
+                return;
+            }
             
-            // 验证至少选择一项专长
+            // 直接注册模式需要验证密码
+            if (isDirectRegister && (!password || password.length < 6)) {
+                showMessage('密码至少需要6个字符', 'error');
+                return;
+            }
+            
             if (specializations.length === 0) {
-                messageDiv.innerHTML = '<div class="error">请至少选择一项专长领域</div>';
+                showMessage('请至少选择一项专业领域', 'error');
                 return;
             }
             
             submitBtn.disabled = true;
-            submitBtn.textContent = '创建中...';
+            submitBtn.textContent = '提交中...';
             
             try {
-                const response = await fetch('/api/guru/profile', {
+                let apiUrl, formData;
+                
+                if (isDirectRegister) {
+                    // 直接注册模式：创建账号 + 档案
+                    apiUrl = '/api/guru-register-direct';
+                    formData = {
+                        email: email,
+                        password: password,
+                        displayName: realName,
+                        realName: realName,
+                        phoneNumber: `${countryCode}${phone}`,
+                        bio: `专业命理师，擅长${specializations.join('、')}`,
+                        specializations: specializations,
+                        region: null,
+                        nationality: null,
+                        aiProvider: 'OpenAI',
+                        aiTone: 'professional'
+                    };
+                } else {
+                    // 已登录模式：仅创建档案
+                    apiUrl = '/api/guru/profile';
+                    formData = {
+                        displayName: realName,
+                        realName: realName,
+                        phoneNumber: `${countryCode}${phone}`,
+                        bio: `专业命理师，擅长${specializations.join('、')}`,
+                        specializations: specializations,
+                        region: null,
+                        nationality: null,
+                        aiProvider: 'OpenAI',
+                        aiTone: 'professional'
+                    };
+                }
+                
+                const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        pseudonym,
-                        bio,
-                        specializations,
-                        region,
-                        nationality,
-                        aiProvider,
-                        aiTone
-                    })
+                    body: JSON.stringify(formData)
                 });
                 
                 const data = await response.json();
                 
                 if (response.ok) {
-                    messageDiv.innerHTML = `<div class="success">${data.message}</div>`;
+                    showMessage('注册成功！正在跳转...', 'success');
                     setTimeout(() => {
-                        window.location.href = '/guru/dashboard';
-                    }, 1000);
+                        window.location.href = data.redirectTo || '/guru/dashboard';
+                    }, 1500);
                 } else {
-                    messageDiv.innerHTML = `<div class="error">${data.error}</div>`;
+                    showMessage(data.error || '注册失败，请重试', 'error');
                     submitBtn.disabled = false;
-                    submitBtn.textContent = '创建命理师档案';
+                    submitBtn.setAttribute('data-i18n', 'guruRegister.submitBtn');
+                    submitBtn.textContent = i18n.t('guruRegister.submitBtn');
                 }
             } catch (error) {
-                messageDiv.innerHTML = `<div class="error">网络错误，请稍后重试</div>`;
+                console.error('Submit error:', error);
+                showMessage('网络错误，请稍后重试', 'error');
                 submitBtn.disabled = false;
-                submitBtn.textContent = '创建命理师档案';
+                submitBtn.setAttribute('data-i18n', 'guruRegister.submitBtn');
+                submitBtn.textContent = i18n.t('guruRegister.submitBtn');
             }
         });
+        
+        // 显示消息
+        function showMessage(text, type) {
+            const messageArea = document.getElementById('messageArea');
+            messageArea.innerHTML = `<div class="message ${type}">${text}</div>`;
+            setTimeout(() => {
+                messageArea.innerHTML = '';
+            }, 5000);
+        }
     </script>
 </body>
 </html>

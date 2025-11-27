@@ -237,6 +237,53 @@
             border-color: #00ff9d;
         }
     </style>
+    
+    <!-- ZiweiAI v1.1 黑底摘要卡片样式 -->
+    <link rel="stylesheet" href="/static/css/ziwei_summary.css">
+    
+    <!-- 用户信息组件样式和脚本 -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/user-profile-card.css') }}">
+    <script src="{{ url_for('static', filename='js/user-avatar.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/user-profile-card.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/i18n.js') }}" defer></script>
+    
+    <style>
+        /* 聊天框顶部用户信息条样式 */
+        .chatbox-user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .chatbox-user-info:hover {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
+        }
+        
+        .chatbox-user-info .user-avatar-display {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+            color: white;
+            flex-shrink: 0;
+        }
+        
+        .chatbox-user-info .user-nickname {
+            font-size: 15px;
+            font-weight: 500;
+            color: #e0e0e0;
+        }
+    </style>
 </head>
 <body data-user-id="{{ user_id }}">
 <div class="app-container">
@@ -265,17 +312,10 @@
                 <a href="#" class="nav-sub-item group-switch" data-group-index="2">可能出生的时辰3</a>
             </div>
             
-            <!-- NewChat（可展开） -->
-            <div class="nav-item expandable" data-menu="chat">
+            <!-- NewChat 多话题聊天 -->
+            <a href="/newchat" class="nav-item" target="_blank">
                 <span class="icon">💬</span> NewChat
-                <span class="arrow">▼</span>
-            </div>
-            <div class="nav-submenu hidden" data-parent="chat">
-                <a href="#" class="nav-sub-item">我的真命盘合盘分析</a>
-                <a href="#" class="nav-sub-item">可能出生时刻1</a>
-                <a href="#" class="nav-sub-item">可能出生时刻2</a>
-                <a href="#" class="nav-sub-item">可能出生时刻3</a>
-            </div>
+            </a>
         </nav>
     </aside>
 
@@ -313,6 +353,51 @@
                 </div>
             </div>
 
+            <!-- Lynker 统一命理引擎（已暂时收起） -->
+            <div id="lynker-divider" class="text-center my-4" style="margin-bottom: 24px;">
+                <hr style="border-top: 1px solid #444; margin-bottom: 12px;">
+                <div style="color: #888; font-size: 13px; padding: 8px 0;">
+                    🚧 Lynker 统一命理引擎（未来功能）
+                </div>
+                <hr style="border-top: 1px solid #444; margin-top: 12px;">
+            </div>
+
+            <!-- 保留引擎区但默认隐藏 -->
+            <div id="birth-info" style="display: none; margin-bottom: 24px; padding: 20px; background: linear-gradient(180deg, #0a0a0a 0%, #1c1c1c 100%); border-radius: 16px; border: 1px solid #00ff9d;">
+                <h4 style="color: #00ff9d; font-size: 18px; margin-bottom: 16px;">✨ Lynker 统一命理引擎</h4>
+                <p style="color: #aaa; font-size: 13px; margin-bottom: 16px;">输入出生资料，一键生成八字+紫微命盘（未来将对接文墨天机/问真API）</p>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                    <div>
+                        <label style="display: block; color: #fff; font-size: 13px; margin-bottom: 6px;">阳历生日</label>
+                        <input type="date" id="unifiedBirthDate" style="width: 100%; padding: 10px; background: #1a1a1a; border: 1px solid #555; border-radius: 6px; color: #fff; font-size: 14px;">
+                    </div>
+                    <div>
+                        <label style="display: block; color: #fff; font-size: 13px; margin-bottom: 6px;">出生时间</label>
+                        <input type="time" id="unifiedBirthTime" style="width: 100%; padding: 10px; background: #1a1a1a; border: 1px solid #555; border-radius: 6px; color: #fff; font-size: 14px;">
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+                    <div>
+                        <label style="display: block; color: #fff; font-size: 13px; margin-bottom: 6px;">性别</label>
+                        <select id="unifiedGender" style="width: 100%; padding: 10px; background: #1a1a1a; border: 1px solid #555; border-radius: 6px; color: #fff; font-size: 14px;">
+                            <option value="男">男</option>
+                            <option value="女">女</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; color: #fff; font-size: 13px; margin-bottom: 6px;">时区</label>
+                        <input type="text" id="unifiedTimezone" value="+08:00" style="width: 100%; padding: 10px; background: #1a1a1a; border: 1px solid #555; border-radius: 6px; color: #fff; font-size: 14px;">
+                    </div>
+                </div>
+                
+                <button id="generateUnifiedBtn" style="width: 100%; padding: 12px; background: linear-gradient(90deg, #00b4d8 0%, #00ff9d 100%); border: none; border-radius: 8px; color: #000; font-weight: bold; font-size: 15px; cursor: pointer; transition: all 0.3s;">
+                    🚀 生成完整命盘档案
+                </button>
+                <div id="unifiedGenStatus" style="margin-top: 12px; color: #00b4d8; font-size: 13px; min-height: 20px;"></div>
+            </div>
+
             <div class="upload-grid">
                 <!-- 八字命盘上传框 -->
                 <div class="upload-card" id="baziCard">
@@ -336,16 +421,16 @@
                 <div class="upload-card" id="ziweiCard">
                     <h3>紫微斗数命盘</h3>
                     <div class="dropzone" id="ziweiDropzone">
-                        <div class="dropzone-icon">☁️</div>
-                        <p class="dropzone-text">拖拽图片到这里 或</p>
+                        <div class="dropzone-icon">📄</div>
+                        <p class="dropzone-text">上传文墨天机 AI分析版文件 或</p>
                         <button class="btn-upload" onclick="document.getElementById('ziweiFile').click()">选择文件</button>
-                        <input type="file" id="ziweiFile" accept="image/*,.txt" style="display:none;">
-                        <p class="dropzone-hint">也可以直接粘贴命盘文本</p>
+                        <input type="file" id="ziweiFile" accept=".json,.txt,image/*" style="display:none;">
+                        <p class="dropzone-hint">⚠️ 仅支持文墨天机 AI分析版 .json / .txt 文件<br>图片仅作存底，不触发识别</p>
                     </div>
                     <textarea 
                         id="ziweiText" 
                         class="chart-input" 
-                        placeholder="或者直接粘贴紫微斗数命盘文本..."
+                        placeholder="或者直接粘贴文墨天机导出的 JSON 数据..."
                         rows="6"
                     ></textarea>
                 </div>
@@ -473,9 +558,18 @@
 
     <!-- 右侧：Primary Chatbox（唯一可对话的 AI） -->
     <aside class="chatbox-panel">
+        <!-- 用户信息显示区域 -->
+        <div class="chatbox-user-info" id="chatboxUserInfo">
+            <div class="user-avatar-display" id="chatboxUserAvatar"></div>
+            <div class="user-nickname" id="chatboxUserNickname"></div>
+        </div>
+        
         <div class="chatbox-header">
             <h3>💬 Child AI 助手</h3>
             <p class="chatbox-subtitle">我会引导你完成命盘验证</p>
+            <button id="expandChatBtn" class="expand-chat-btn" onclick="toggleChatExpand()">
+                <span id="expandIcon">⛶</span>
+            </button>
         </div>
         
         <!-- 结果选择区域 -->
@@ -502,7 +596,6 @@
         <div class="chatbox-messages" id="chatMessages">
             <!-- 初始欢迎消息 -->
             <div class="message ai-message">
-                <div class="message-avatar">🤖</div>
                 <div class="message-content">
                     <p>你好！我是 Child AI 助手。</p>
                     <p>请先上传你的<strong>八字命盘</strong>（可以拖拽图片或粘贴文本到左侧上传框）。</p>
@@ -523,7 +616,171 @@
     </aside>
 </div>
 
+<script>
+// 初始化聊天框顶部的用户信息显示
+document.addEventListener('DOMContentLoaded', function() {
+    const userData = {{ user_data | tojson }};
+    
+    if (userData && userData.nickname) {
+        // 生成用户头像
+        const avatarEl = document.getElementById('chatboxUserAvatar');
+        const nicknameEl = document.getElementById('chatboxUserNickname');
+        
+        if (avatarEl && nicknameEl) {
+            // 使用user-avatar.js的生成函数
+            if (typeof generateUserAvatar === 'function') {
+                const avatarData = generateUserAvatar(userData.nickname, userData.email);
+                avatarEl.textContent = avatarData.text;
+                avatarEl.style.background = avatarData.gradient;
+            } else {
+                // 降级方案：简单显示首字母
+                const firstChar = userData.nickname.charAt(0).toUpperCase();
+                avatarEl.textContent = firstChar;
+                avatarEl.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            }
+            
+            // 显示昵称
+            nicknameEl.textContent = userData.nickname;
+        }
+        
+        // 初始化用户信息卡片
+        if (window.userProfileCard && typeof window.userProfileCard.init === 'function') {
+            window.userProfileCard.init(userData);
+        }
+        
+        // 添加hover触发机制
+        const userInfoEl = document.getElementById('chatboxUserInfo');
+        if (userInfoEl) {
+            let hoverTimeout;
+            
+            userInfoEl.addEventListener('mouseenter', function() {
+                // 延迟300ms显示，避免误触
+                hoverTimeout = setTimeout(function() {
+                    if (window.userProfileCard && typeof window.userProfileCard.openProfileCard === 'function') {
+                        window.userProfileCard.openProfileCard();
+                    }
+                }, 300);
+            });
+            
+            userInfoEl.addEventListener('mouseleave', function() {
+                // 清除延迟显示
+                if (hoverTimeout) {
+                    clearTimeout(hoverTimeout);
+                }
+            });
+            
+            // 也支持点击触发
+            userInfoEl.addEventListener('click', function() {
+                if (window.userProfileCard && typeof window.userProfileCard.openProfileCard === 'function') {
+                    window.userProfileCard.openProfileCard();
+                }
+            });
+        }
+    }
+});
+</script>
+
+<div class="user-profile-card-overlay" id="profileCardOverlay">
+    <div class="user-profile-card" id="userProfileCard">
+        <button class="close-btn" id="closeProfileCard">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </button>
+        
+        <div class="profile-header">
+            <h3 data-i18n="navbar.profileCard.title">个人信息</h3>
+        </div>
+        
+        <div class="profile-user-info">
+            <div class="profile-avatar-large" id="profileAvatarLarge"></div>
+            <div class="profile-user-details">
+                <div class="profile-nickname-row">
+                    <span class="profile-nickname" id="profileNickname">昵称</span>
+                    <span class="user-type-badge" id="userTypeBadge" data-i18n="navbar.profileCard.normalUser">体验版</span>
+                    <button class="btn-subscribe" data-i18n="navbar.profileCard.subscribe">订阅套餐</button>
+                </div>
+                <div class="profile-meta">
+                    <span data-i18n="navbar.profileCard.registeredSince">套餐到期时间：</span>
+                    <span id="profileRegisteredDate">2025.09.20</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="profile-actions">
+            <a href="/user/profile" class="btn-primary" data-i18n="navbar.profileCard.goToProfile">
+                前往个人页面
+            </a>
+        </div>
+        
+        <div class="profile-divider"></div>
+        
+        <div class="profile-section">
+            <h4 data-i18n="navbar.profileCard.linkedAccounts">绑定账号</h4>
+            <p class="profile-hint" data-i18n="navbar.profileCard.linkedAccountsHint">您可以在下方绑定更多验证账号</p>
+            
+            <div class="linked-accounts">
+                <div class="linked-account-item">
+                    <div class="account-icon">📱</div>
+                    <div class="account-info">
+                        <span class="account-label" data-i18n="navbar.profileCard.phone">绑定手机</span>
+                        <span class="account-value" id="linkedPhoneValue">未绑定手机</span>
+                    </div>
+                    <button class="btn-link" data-i18n="navbar.profileCard.bind">绑定</button>
+                </div>
+                
+                <div class="linked-account-item">
+                    <div class="account-icon">💬</div>
+                    <div class="account-info">
+                        <span class="account-label" data-i18n="navbar.profileCard.wechat">绑定微信</span>
+                        <span class="account-value" id="linkedWechatValue">已绑定微信号</span>
+                    </div>
+                    <button class="btn-link" data-i18n="navbar.profileCard.unbind">解绑</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="profile-divider"></div>
+        
+        <div class="profile-section">
+            <h4 data-i18n="navbar.profileCard.apiUsage">API 使用情况</h4>
+            <p class="profile-hint" data-i18n="navbar.profileCard.apiUsageHint">当前套餐余额 Token 使用量</p>
+            
+            <div class="api-usage">
+                <div class="api-usage-item">
+                    <div class="api-usage-header">
+                        <span class="api-usage-label" data-i18n="navbar.profileCard.dailyUsed">今日已用</span>
+                        <span class="api-usage-value" id="dailyUsageValue">1,250 / 10,000</span>
+                    </div>
+                    <div class="api-progress-bar">
+                        <div class="api-progress-fill" id="dailyProgressFill" style="width: 12.5%"></div>
+                    </div>
+                    <div class="api-progress-percentage" id="dailyPercentage">12.5% 已使用</div>
+                </div>
+                
+                <div class="api-usage-item">
+                    <div class="api-usage-header">
+                        <span class="api-usage-label" data-i18n="navbar.profileCard.monthlyRemaining">本月剩余</span>
+                        <span class="api-usage-value" id="monthlyUsageValue">48,750 Token</span>
+                    </div>
+                    <div class="api-progress-bar">
+                        <div class="api-progress-fill" id="monthlyProgressFill" style="width: 51.25%"></div>
+                    </div>
+                    <div class="api-progress-percentage" id="monthlyPercentage">51.3% 已使用</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="profile-logout">
+            <button class="btn-logout" id="logoutBtn" data-i18n="navbar.profileCard.logout">
+                退出登录
+            </button>
+        </div>
+    </div>
+</div>
+
 <script src="/static/js/auto_env_fill.js"></script>
+<script src="/static/js/ziwei_summary.js?v=2.1"></script>
 <script src="/static/js/verify_wizard.js"></script>
 </body>
 </html>

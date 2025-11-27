@@ -44,3 +44,4 @@ requests
 email-validator
 flask-bcrypt
 flask-login
+verify
