@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LynkerAI - 智能命理验证系统</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+            overflow-x: hidden;
+        }
+        
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        
+        .logo:hover {
+            opacity: 0.85;
+        }
+        
+        .guru-nav {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        
+        .guru-nav a, .guru-nav button {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            font-family: inherit;
+        }
+        
+        .guru-nav a:hover, .guru-nav button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .guru-nav .logout-btn {
+            background: rgba(255, 80, 80, 0.2);
+            border-color: rgba(255, 100, 100, 0.5);
+        }
+        
+        .guru-nav .logout-btn:hover {
+            background: rgba(255, 80, 80, 0.3);
+        }
+        
+        .guru-label {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-right: 8px;
+        }
+        
+        .user-info {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-right: 8px;
+        }
+        
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 100px 20px 40px;
+            text-align: center;
+        }
+        
+        .hero-section {
+            max-width: 800px;
+            margin-bottom: 60px;
+        }
+        
+        .hero-section h1 {
+            font-size: 56px;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            font-weight: 800;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.2);
+        }
+        
+        .hero-section p {
+            font-size: 20px;
+            line-height: 1.6;
+            opacity: 0.95;
+            margin-bottom: 16px;
+        }
+        
+        .features {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            margin-top: 32px;
+            flex-wrap: wrap;
+        }
+        
+        .feature {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-size: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .cta-section {
+            background: white;
+            border-radius: 20px;
+            padding: 48px 60px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 100%;
+        }
+        
+        .cta-section h2 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 16px;
+        }
+        
+        .cta-section p {
+            color: #666;
+            font-size: 15px;
+            margin-bottom: 32px;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .btn {
+            padding: 16px 32px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(102, 126, 234, 0.5);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+        
+        .btn-secondary:hover {
+            background: #f8f9ff;
+            transform: translateY(-2px);
+        }
+        
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 24px 0;
+            color: #999;
+            font-size: 14px;
+        }
+        
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e0e0e0;
+        }
+        
+        .divider span {
+            padding: 0 16px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                padding: 16px 20px;
+            }
+            
+            .logo {
+                font-size: 20px;
+            }
+            
+            .guru-label, .user-info {
+                display: none;
+            }
+            
+            .hero-section h1 {
+                font-size: 36px;
+            }
+            
+            .hero-section p {
+                font-size: 16px;
+            }
+            
+            .cta-section {
+                padding: 36px 32px;
+            }
+            
+            .features {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="/" class="logo" data-i18n="common.lynkerAI">LynkerAI</a>
+        <div class="guru-nav">
+            {% if current_user.is_authenticated %}
+                <span class="user-info">{{ current_user.email }}</span>
+                <button onclick="logout()" class="logout-btn" data-i18n="common.logout">退出登录</button>
+            {% else %}
+                <span class="guru-label" data-i18n="landing.guruZone">命理师专区</span>
+                <a href="/login" data-i18n="common.login">登录</a>
+                <a href="/guru-register-direct" data-i18n="common.register">注册</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="hero-section">
+            <h1 data-i18n="landing.title">LynkerAI</h1>
+            <p data-i18n="landing.subtitle">智能命理验证系统</p>
+            <p data-i18n="landing.description">以 AI 连接古今智慧，打造数字化命理传承平台</p>
+            
+            <div class="features">
+                <div class="feature" data-i18n="landing.feature1">🔮 AI 智能验证</div>
+                <div class="feature" data-i18n="landing.feature2">📊 精准命盘分析</div>
+                <div class="feature" data-i18n="landing.feature3">🌟 专业命理师服务</div>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <h2 data-i18n="landing.ctaTitle">开启你的命理之旅</h2>
+            <p data-i18n="landing.ctaSubtitle">立即注册，探索命运的奥秘</p>
+            
+            <div class="cta-buttons">
+                <a href="/register" class="btn btn-primary" data-i18n="landing.registerBtn">立即注册</a>
+                <a href="/login" class="btn btn-secondary" data-i18n="landing.loginLink">已有账号？登录</a>
+            </div>
+        </div>
+
+        <footer>
+            © 2025 LynkerAI. All rights reserved.
+        </footer>
+    </div>
+
+    <script src="/static/js/i18n.js"></script>
+    <script src="/static/js/lang-switcher.js"></script>
+    <script>
+        // Initialize language switcher after DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            injectLanguageSwitcherStyles();
+            initLanguageSwitcher();
+        });
+
+        async function logout() {
+            try {
+                const response = await fetch('/api/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    window.location.replace('/');
+                } else {
+                    alert('退出登录失败，请重试');
+                }
+            } catch (error) {
+                console.error('Logout error:', error);
+                alert('网络错误，请重试');
+            }
+        }
+    </script>
+</body>
+</html>

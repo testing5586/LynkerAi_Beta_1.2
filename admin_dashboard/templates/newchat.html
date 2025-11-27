@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NewChat - 灵客AI 多话题聊天</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/verify.css') }}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            overflow: hidden;
+        }
+
+        .newchat-container {
+            display: flex;
+            height: 100vh;
+            width: 100%;
+        }
+
+        /* 左侧话题列表侧边栏 */
+        .topics-sidebar {
+            width: 280px;
+            background-color: #2a2a2a;
+            border-right: 1px solid #3a3a3a;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .topics-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .topics-header h2 {
+            font-size: 18px;
+            color: #00ff9d;
+            margin-bottom: 15px;
+        }
+
+        .new-topic-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #00ff9d 0%, #00cc7a 100%);
+            border: none;
+            border-radius: 8px;
+            color: #1a1a1a;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .new-topic-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 255, 157, 0.3);
+        }
+
+        .topics-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .topic-item {
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .topic-item:hover {
+            background-color: rgba(0, 255, 157, 0.1);
+        }
+
+        .topic-item.active {
+            background-color: rgba(0, 255, 157, 0.2);
+            border-left: 3px solid #00ff9d;
+        }
+
+        .topic-title {
+            flex: 1;
+            font-size: 14px;
+            color: #e0e0e0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .topic-actions {
+            display: none;
+            gap: 5px;
+        }
+
+        .topic-item:hover .topic-actions {
+            display: flex;
+        }
+
+        .topic-action-btn {
+            padding: 4px 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 4px;
+            color: #e0e0e0;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .topic-action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .topic-action-btn.delete {
+            color: #ff4444;
+        }
+
+        .topic-action-btn.delete:hover {
+            background: rgba(255, 68, 68, 0.2);
+        }
+
+        .topic-time {
+            font-size: 11px;
+            color: #808080;
+            margin-top: 4px;
+        }
+
+        /* 右侧聊天区域 */
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #1a1a1a;
+        }
+
+        .chat-topbar {
+            padding: 20px 30px;
+            background-color: #2a2a2a;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-topbar h3 {
+            font-size: 18px;
+            color: #e0e0e0;
+        }
+
+        .chat-topbar-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .topbar-btn {
+            padding: 8px 16px;
+            background: rgba(0, 255, 157, 0.15);
+            border: 1px solid rgba(0, 255, 157, 0.3);
+            border-radius: 6px;
+            color: #00ff9d;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .topbar-btn:hover {
+            background: rgba(0, 255, 157, 0.25);
+        }
+
+        /* 复用现有聊天框样式 */
+        .chatbox-messages {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 20px 30px;
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+
+        .chatbox-input-area {
+            padding: 20px 30px;
+            background-color: #2a2a2a;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 14px 18px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #e0e0e0;
+            font-size: 14px;
+            resize: none;
+            min-height: 50px;
+            max-height: 150px;
+            font-family: inherit;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: #00ff9d;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .send-btn {
+            padding: 14px 24px;
+            background: linear-gradient(135deg, #00ff9d 0%, #00cc7a 100%);
+            border: none;
+            border-radius: 12px;
+            color: #1a1a1a;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            height: 50px;
+        }
+
+        .send-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 255, 157, 0.3);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* 消息样式（复用） */
+        .message {
+            display: flex;
+            gap: 0px;
+            margin-bottom: 16px;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message-content {
+            flex: 1;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 14px 18px;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .message-content p {
+            margin: 10px 0;
+            line-height: 1.7;
+        }
+
+        .message-content p:first-child {
+            margin-top: 0;
+        }
+
+        .message-content p:last-child {
+            margin-bottom: 0;
+        }
+
+        .message.user-message .message-content {
+            background-color: rgba(0, 255, 157, 0.15);
+            border-left: 3px solid #00ff9d;
+        }
+
+        .message.ai-message .message-content {
+            background-color: rgba(0, 0, 0, 0.7);
+            border-left: 3px solid #808080;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #808080;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .empty-state-text {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .empty-state-hint {
+            font-size: 13px;
+            color: #606060;
+        }
+
+        /* 滚动条样式 */
+        .topics-list::-webkit-scrollbar,
+        .chatbox-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .topics-list::-webkit-scrollbar-track,
+        .chatbox-messages::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .topics-list::-webkit-scrollbar-thumb,
+        .chatbox-messages::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+
+        .topics-list::-webkit-scrollbar-thumb:hover,
+        .chatbox-messages::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="newchat-container">
+        <!-- 左侧话题列表 -->
+        <aside class="topics-sidebar">
+            <div class="topics-header">
+                <h2>💬 NewChat</h2>
+                <button class="new-topic-btn" onclick="createNewTopic()">+ 新建对话</button>
+            </div>
+            <div class="topics-list" id="topicsList">
+                <!-- 话题列表将在这里动态加载 -->
+            </div>
+        </aside>
+
+        <!-- 右侧聊天区域 -->
+        <main class="chat-main">
+            <div class="chat-topbar">
+                <h3 id="currentTopicTitle">选择或新建一个话题开始聊天</h3>
+                <div class="chat-topbar-actions">
+                    <button class="topbar-btn" onclick="renameTopic()" id="renameBtn" style="display:none;">✏️ 重命名</button>
+                    <button class="topbar-btn" onclick="deleteTopic()" id="deleteBtn" style="display:none;">🗑️ 删除</button>
+                </div>
+            </div>
+
+            <div class="chatbox-messages" id="chatMessages">
+                <!-- 空状态 -->
+                <div class="empty-state" id="emptyState">
+                    <div class="empty-state-icon">💭</div>
+                    <div class="empty-state-text">还没有选择话题</div>
+                    <div class="empty-state-hint">点击左侧「新建对话」开始聊天</div>
+                </div>
+            </div>
+
+            <div class="chatbox-input-area">
+                <div class="input-wrapper">
+                    <textarea 
+                        class="chat-input" 
+                        id="chatInput" 
+                        placeholder="输入消息...（按 Enter 发送，Shift+Enter 换行）"
+                        rows="1"
+                        disabled
+                    ></textarea>
+                    <button class="send-btn" id="sendBtn" onclick="sendMessage()" disabled>发送</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/newchat.js') }}"></script>
+</body>
+</html>

@@ -4,38 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>用户主页 - LynkerAI</title>
+    <link rel="stylesheet" href="/static/js/i18n.js">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: system-ui, -apple-system, sans-serif;
             background: #f5f7fa;
-        }
-        .navbar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 16px 32px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        .navbar h1 { font-size: 24px; }
-        .navbar .user-info {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-        .navbar button {
-            padding: 8px 16px;
-            background: rgba(255,255,255,0.2);
-            color: white;
-            border: 1px solid rgba(255,255,255,0.3);
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .navbar button:hover {
-            background: rgba(255,255,255,0.3);
         }
         .container {
             max-width: 1200px;
@@ -101,13 +75,7 @@
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <h1>LynkerAI</h1>
-        <div class="user-info">
-            <span>{{ profile.pseudonym }}</span>
-            <button onclick="logout()">退出登录</button>
-        </div>
-    </nav>
+    {% include 'components/navbar_logged_in.html' %}
 
     <div class="container">
         <div class="welcome">
@@ -147,21 +115,21 @@
         </div>
     </div>
 
+    <script src="/static/js/i18n.js"></script>
+    <script src="/static/js/lang-switcher.js"></script>
     <script>
-        async function logout() {
-            try {
-                const response = await fetch('/api/logout', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                
-                if (response.ok) {
-                    window.location.href = '/login';
-                }
-            } catch (error) {
-                console.error('Logout failed:', error);
+        // 初始化用户资料卡片组件
+        document.addEventListener('DOMContentLoaded', function() {
+            const userData = {{ user_data|tojson }};
+            if (window.userProfileCard && userData) {
+                window.userProfileCard.init(userData);
             }
-        }
+            
+            // 初始化语言切换器
+            if (window.initLanguageSwitcher) {
+                window.initLanguageSwitcher('lang-switcher-nav');
+            }
+        });
     </script>
 </body>
 </html>

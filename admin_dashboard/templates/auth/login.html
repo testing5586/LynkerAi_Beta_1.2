@@ -112,34 +112,51 @@
 <body>
     <div class="login-container">
         <div class="logo">
-            <h1>LynkerAI</h1>
-            <p>智能命理验证系统</p>
+            <h1 data-i18n="common.lynkerAI">LynkerAI</h1>
+            <p data-i18n="landing.subtitle">智能命理验证系统</p>
         </div>
 
         <div id="message"></div>
 
         <form id="loginForm">
             <div class="form-group">
-                <label for="email">邮箱</label>
+                <label for="email" data-i18n="common.email">邮箱</label>
                 <input type="email" id="email" required autocomplete="email">
             </div>
 
             <div class="form-group">
-                <label for="password">密码</label>
+                <label for="password" data-i18n="common.password">密码</label>
                 <input type="password" id="password" required autocomplete="current-password">
             </div>
 
-            <button type="submit" class="btn">登录</button>
+            <button type="submit" class="btn" data-i18n="common.login">登录</button>
         </form>
 
         <div class="register-link">
-            还没有账号？ <a href="/register">立即注册</a>
+            <span data-i18n="login.registerLink">还没有账号？</span> <a href="/register" data-i18n="login.registerLinkText">立即注册</a>
         </div>
     </div>
 
+    <script src="/static/js/i18n.js"></script>
+    <script src="/static/js/lang-switcher.js"></script>
+    <script>
+        // Initialize language switcher
+        document.addEventListener('DOMContentLoaded', () => {
+            injectLanguageSwitcherStyles();
+            // Add language switcher to the top of the page
+            const container = document.querySelector('.login-container');
+            const switcherDiv = document.createElement('div');
+            switcherDiv.style.cssText = 'position: absolute; top: 20px; right: 20px;';
+            switcherDiv.innerHTML = createLanguageSwitcher();
+            container.style.position = 'relative';
+            container.insertBefore(switcherDiv.firstElementChild, container.firstChild);
+            initLanguageSwitcher();
+        });
+    </script>
     <script>
         const form = document.getElementById('loginForm');
         const messageDiv = document.getElementById('message');
+        const submitBtn = form.querySelector('.btn');
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -148,6 +165,10 @@
             const password = document.getElementById('password').value;
             
             messageDiv.innerHTML = '';
+            
+            submitBtn.disabled = true;
+            submitBtn.setAttribute('data-i18n', 'common.loading');
+            submitBtn.textContent = i18n.t('common.loading');
             
             try {
                 const response = await fetch('/api/login', {
@@ -165,9 +186,16 @@
                     }, 500);
                 } else {
                     messageDiv.innerHTML = `<div class="error">${data.error}</div>`;
+                    submitBtn.disabled = false;
+                    submitBtn.setAttribute('data-i18n', 'common.login');
+                    submitBtn.textContent = i18n.t('common.login');
                 }
             } catch (error) {
-                messageDiv.innerHTML = `<div class="error">网络错误，请稍后重试</div>`;
+                messageDiv.innerHTML = `<div class="error" data-i18n="login.networkError">网络错误，请稍后重试</div>`;
+                i18n.updatePageContent();
+                submitBtn.disabled = false;
+                submitBtn.setAttribute('data-i18n', 'common.login');
+                submitBtn.textContent = i18n.t('common.login');
             }
         });
     </script>

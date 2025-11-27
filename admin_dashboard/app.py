@@ -136,9 +136,18 @@ try:
 except Exception as e:
     print(f"[WARN] 命理师模块挂载失败: {e}")
 
+# 注册 NewChat 多话题聊天系统 Blueprint
+try:
+    from newchat_routes import newchat_bp
+    app.register_blueprint(newchat_bp)
+    print("[OK] NewChat 多话题聊天系统已注册: /newchat, /newchat/api/topics, /newchat/api/topics/<id>/messages, /newchat/api/topics/<id>/chat")
+except Exception as e:
+    print(f"[WARN] NewChat 聊天系统挂载失败: {e}")
+
 @app.route("/")
 def index():
-    return redirect("/admin")
+    """LynkerAI 欢迎页"""
+    return render_template("landing.html")
 
 @app.route("/admin", methods=["GET", "POST"])
 def admin_login():

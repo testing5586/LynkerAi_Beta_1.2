@@ -4,6 +4,12 @@
  * 支持3组命盘数据切换
  */
 
+// 🧩 诊断模式：追踪紫微上传和粘贴路径
+console.log("%c[Ziwei DEBUG] Diagnostic mode active — start tracing upload + paste paths.","color:#4af");
+
+// ========== 控制引擎可见性（未来可切换）==========
+const engineEnabled = false; // 设为 true 可启用 Lynker 统一命理引擎
+
 // 全局状态管理
 const state = {
     userId: null,
@@ -86,12 +92,29 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
     
+    // 控制 Lynker 引擎显示/隐藏
+    const birthInfo = document.getElementById("birth-info");
+    const divider = document.getElementById("lynker-divider");
+    
+    if (!engineEnabled) {
+        if (birthInfo) birthInfo.style.display = "none";
+        if (divider) divider.style.display = "block";
+        console.log("📋 Lynker 统一命理引擎已收起（未来功能）");
+    } else {
+        if (birthInfo) birthInfo.style.display = "block";
+        if (divider) divider.style.display = "none";
+        console.log("✨ Lynker 统一命理引擎已启用");
+    }
+    
     initSidebar();
     initGroupSwitcher(); // 初始化组切换功能
     initDragDrop();
     initFileInputs();
     initTextInputs();
     initChatbox();
+    if (engineEnabled) {
+        initUnifiedGeneration(); // 只在启用时初始化统一命理生成
+    }
     
     // 加载初始数据（组1）
     renderCurrentGroup();
@@ -336,6 +359,8 @@ function initFileInputs() {
 }
 
 async function handleFileUpload(file, type) {
+    console.log("[Ziwei DEBUG] handleFileUpload triggered, file type =", file?.type, "name =", file?.name);
+    
     const textarea = document.getElementById(`${type}Text`);
     const statusSpan = document.getElementById(`${type}Status`);
     const currentGroup = getCurrentGroup();
@@ -344,8 +369,12 @@ async function handleFileUpload(file, type) {
     statusSpan.className = "result-status processing";
 
     try {
-        if (file.type.startsWith('image/')) {
-            // 保存图片的 Data URL 用于预览
+        // 🧠 使用智能检测函数识别文件类型
+        const detection = await detectWenMoFormat(file);
+        console.log('[Ziwei DEBUG] 文件检测结果:', detection.format);
+
+        // 🚫 图片文件：仅显示预览，不做任何 AI 识别
+        if (detection.format === 'image_only') {
             const reader = new FileReader();
             reader.onload = (e) => {
                 if (type === 'bazi') {
@@ -353,66 +382,54 @@ async function handleFileUpload(file, type) {
                 } else {
                     currentGroup.ziweiImageUrl = e.target.result;
                 }
-                // 立即显示图片预览
                 displayImagePreview(type, e.target.result);
             };
             reader.readAsDataURL(file);
 
-            // 如果是八字命盘，同时调用 Agent Workflow
+            // 八字图片：仍然调用 Agent Workflow（GPT-4o Vision）
             if (type === 'bazi') {
                 callAgentWorkflow(file);
+                return;
             }
 
-            // 图片文件 - 使用OCR识别
-            addAIMessage(`检测到图片文件 "${file.name}"，正在使用 OCR 识别文本...`);
-            statusSpan.textContent = "OCR 识别中...";
-            statusSpan.className = "result-status processing";
-
-            // 调用OCR API
-            const formData = new FormData();
-            formData.append('file', file);
-
-            const response = await fetch('/verify/api/ocr', {
-                method: 'POST',
-                body: formData
-            });
-
-            if (!response.ok) {
-                throw new Error(`OCR API returned status ${response.status}: ${response.statusText}`);
-            }
-
-            const data = await response.json();
-            console.log('[OCR Response]', data);
-
-            if (data.ok) {
-                // OCR识别成功
-                textarea.value = data.raw_text;
-                statusSpan.textContent = "OCR 识别完成";
+            // 紫微图片：仅存底，不识别
+            if (type === 'ziwei') {
+                statusSpan.textContent = "图片已上传（仅存底）";
                 statusSpan.className = "result-status success";
-
-                addAIMessage(`✅ OCR 识别完成！已提取文本内容。请检查识别结果，如有错误可以手动修改，然后点击输入框外部完成验证。`);
-
-                // 自动触发验证
-                await processChartText(data.raw_text, type);
-            } else {
-                // OCR识别失败
-                addAIMessage(`❌ OCR 识别失败：${data.toast}${data.raw_text ? '<br>识别到的部分文本已填入输入框，请检查和补充。' : ''}`);
-                if (data.raw_text) {
-                    textarea.value = data.raw_text;
-                }
-                statusSpan.textContent = "OCR 识别失败";
-                statusSpan.className = "result-status error";
+                addAIMessage(`
+                    <div style="padding: 16px; background: #2a1a1a; border-left: 4px solid #ff9d00; border-radius: 8px; margin: 12px 0;">
+                        <strong style="color: #ff9d00;">🚫 紫微命盘图片仅作存底，不会触发任何识别</strong><br>
+                        <p style="margin: 8px 0; color: #ccc; font-size: 13px;">
+                            请从文墨天机 App 导出 <strong>AI分析版文件（.json 或 .txt）</strong>，然后上传解析。
+                        </p>
+                    </div>
+                `);
+                return;
             }
-        } else {
-            // 文本文件
+        }
+
+        // ✅ 紫微 JSON/TXT 文件：调用三层 Agent 系统
+        if (type === 'ziwei' && (detection.format === 'wenmo_json_file' || detection.format === 'wenmo_txt_file')) {
+            console.log(`[Ziwei DEBUG] 🚀 检测到 ${detection.format}，调用三层 Agent 系统`);
+            await callZiweiPipeline(file);
+            return;
+        }
+
+        // 🔹 其他文本文件：读取内容后调用旧逻辑
+        if (!file.type.startsWith('image/')) {
             const text = await file.text();
             textarea.value = text;
             statusSpan.textContent = "文件已加载";
             statusSpan.className = "result-status success";
-
-            // 自动触发验证
             await processChartText(text, type);
+            return;
         }
+
+        // ⚙️ 未知格式：提示用户
+        addAIMessage(`⚠️ 无法识别文件格式 "${file.name}"，请上传 .json 或 .txt 文件。`);
+        statusSpan.textContent = "格式不支持";
+        statusSpan.className = "result-status error";
+
     } catch (error) {
         console.error("文件读取失败:", error);
         addAIMessage(`抱歉，读取文件 "${file.name}" 时出错了。<br>错误信息：${error.message}`);
@@ -451,8 +468,56 @@ function initTextInputs() {
     });
 }
 
+// ========== 智能检测紫微命盘格式 ==========
+/**
+ * detectWenMoFormat(textOrFile)
+ * 识别支持的文墨天机数据格式：
+ * ✅ JSON / TXT 文件或文本粘贴
+ * 🚫 图片文件（仅显示，不识别）
+ */
+async function detectWenMoFormat(input) {
+    // 🔹 如果是文件
+    if (input instanceof File) {
+        const name = input.name.toLowerCase();
+        if (name.endsWith('.json')) {
+            console.log('[Ziwei DEBUG] ✅ 检测到文墨天机 JSON 文件');
+            return { format: 'wenmo_json_file', data: input };
+        }
+        if (name.endsWith('.txt')) {
+            console.log('[Ziwei DEBUG] ✅ 检测到文墨天机 TXT 文件');
+            return { format: 'wenmo_txt_file', data: input };
+        }
+        if (name.endsWith('.png') || name.endsWith('.jpg') || name.endsWith('.jpeg')) {
+            console.log('[Ziwei DEBUG] 🖼 检测到命盘图片文件 — 不做 OCR 识别，仅显示图像');
+            return { format: 'image_only', data: input };
+        }
+    }
+
+    // 🔹 如果是纯文本输入
+    const text = typeof input === 'string' ? input.trim() : '';
+    try {
+        const parsed = JSON.parse(text);
+        if (parsed && (parsed.命主 || parsed.身主 || parsed.命局 || parsed.basic_info)) {
+            console.log('[Ziwei DEBUG] ✅ 检测到标准 JSON 格式文本');
+            return { format: 'wenmo_json_text', data: parsed };
+        }
+    } catch (e) {
+        // 忽略JSON解析错误
+    }
+
+    if (text.includes('命主') && text.includes('身主')) {
+        console.log('[Ziwei DEBUG] ✅ 检测到 TXT 格式文本');
+        return { format: 'wenmo_txt_text', data: text };
+    }
+
+    console.log('[Ziwei DEBUG] ⚙️ 未检测到已知格式 — 使用旧逻辑');
+    return { format: 'unknown', data: text };
+}
+
 // ========== 处理命盘文本 ==========
 async function processChartText(text, type) {
+    console.log("[Ziwei DEBUG] processChartText triggered, type =", type);
+    
     if (!text.trim()) return;
     
     const statusSpan = document.getElementById(`${type}Status`);
@@ -462,6 +527,24 @@ async function processChartText(text, type) {
     statusSpan.className = "result-status processing";
     
     try {
+        // ✅ 紫微命盘：使用智能检测函数识别格式
+        if (type === 'ziwei') {
+            const detection = await detectWenMoFormat(text);
+            
+            if (detection.format !== 'unknown') {
+                console.log(`[Ziwei DEBUG] 🚀 检测到 ${detection.format} 格式，调用三层Agent系统`);
+                
+                // 创建一个Blob对象模拟文件上传
+                const textContent = typeof detection.data === 'string' ? detection.data : text;
+                const blob = new Blob([textContent], { type: 'application/json' });
+                const file = new File([blob], `pasted_${detection.format}.txt`, { type: 'application/json' });
+                await callZiweiPipeline(file);
+                return; // 直接返回，不继续执行旧逻辑
+            } else {
+                console.log('[Ziwei DEBUG] ⚙️ 未检测到紫微格式，使用旧路由 /verify/api/preview');
+            }
+        }
+        
         // 如果有人生事件描述，使用AI验证
         const useAI = state.lifeEvents.trim().length > 0;
         
@@ -759,8 +842,13 @@ function displayResult(data, type) {
     const currentGroup = getCurrentGroup();
     let jsonToDisplay = data.parsed;
     
-    if (type === 'bazi' && currentGroup.agentFullData) {
-        // 合并 Agent 的完整数据（包括 environment, wuxing, ai_verifier）
+    // ✅ 紫微命盘：优先使用完整的三层 Agent 数据
+    if (type === 'ziwei' && currentGroup.ziweiFull) {
+        jsonToDisplay = currentGroup.ziweiFull;
+        console.log('[displayResult] ✅ 使用完整三层 Agent 数据（ziweiFull）');
+        console.log('[displayResult] 完整数据包含字段:', Object.keys(jsonToDisplay));
+    } else if (type === 'bazi' && currentGroup.agentFullData) {
+        // 八字命盘：合并 Agent 的完整数据（包括 environment, wuxing, ai_verifier）
         jsonToDisplay = {
             ...data.parsed,
             agent_recognition: {
@@ -860,6 +948,137 @@ function initChatbox() {
             sendMessage();
         }
     });
+}
+
+// ========== Lynker 统一命理生成 ==========
+function initUnifiedGeneration() {
+    const generateBtn = document.getElementById('generateUnifiedBtn');
+    if (!generateBtn) return;
+    
+    generateBtn.addEventListener('click', async () => {
+        const birthDate = document.getElementById('unifiedBirthDate')?.value;
+        const birthTime = document.getElementById('unifiedBirthTime')?.value;
+        const gender = document.getElementById('unifiedGender')?.value || '男';
+        const timezone = document.getElementById('unifiedTimezone')?.value || '+08:00';
+        const citySelect = document.getElementById('citySelect');
+        const selectedCity = citySelect?.options[citySelect.selectedIndex]?.text || '';
+        const countrySelect = document.getElementById('countrySelect');
+        const selectedCountry = countrySelect?.value || 'CN';
+        
+        const statusDiv = document.getElementById('unifiedGenStatus');
+        
+        if (!birthDate || !birthTime) {
+            statusDiv.textContent = '❌ 请填写完整的出生日期和时间';
+            statusDiv.style.color = '#ff4444';
+            return;
+        }
+        
+        statusDiv.textContent = '🧮 正在生成八字+紫微命盘...';
+        statusDiv.style.color = '#00b4d8';
+        
+        try {
+            const payload = {
+                user_id: state.userId,
+                birth_date: birthDate,
+                birth_time: birthTime,
+                gender: gender,
+                timezone: timezone,
+                location: {
+                    city: selectedCity,
+                    country: selectedCountry
+                },
+                source: 'user_input_unified'
+            };
+            
+            console.log('[Unified Generation] 发送请求:', payload);
+            
+            const response = await fetch('/verify/api/lynker/birthdata/process', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                statusDiv.textContent = '✅ 命盘生成成功！';
+                statusDiv.style.color = '#00ff9d';
+                
+                console.log('[Unified Generation] 生成成功:', result);
+                
+                // 显示生成结果
+                handleUnifiedGenerationResult(result);
+            } else {
+                statusDiv.textContent = `❌ 生成失败: ${result.error || '未知错误'}`;
+                statusDiv.style.color = '#ff4444';
+            }
+        } catch (error) {
+            console.error('[Unified Generation] 错误:', error);
+            statusDiv.textContent = `❌ 生成失败: ${error.message}`;
+            statusDiv.style.color = '#ff4444';
+        }
+    });
+}
+
+// 处理统一生成的结果
+function handleUnifiedGenerationResult(result) {
+    const currentGroup = getCurrentGroup();
+    
+    // 存储八字结果
+    if (result.bazi) {
+        currentGroup.bazi = result.bazi;
+        currentGroup.baziUploaded = true;
+        
+        // 更新八字文本框
+        const baziText = document.getElementById('baziText');
+        if (baziText) {
+            baziText.value = formatBaziFromAgent(result.bazi);
+        }
+        
+        // 显示八字结果
+        document.getElementById('baziStatus').textContent = "已生成";
+        document.getElementById('baziStatus').className = "result-status success";
+        document.getElementById('selectBaziBtn').style.display = 'inline-block';
+    }
+    
+    // 存储紫微结果
+    if (result.ziwei) {
+        const safeData = safeNormalizeResult({ standardized: result.ziwei });
+        currentGroup.ziwei = safeData;
+        currentGroup.ziweiUploaded = true;
+        
+        // 更新紫微文本框
+        const ziweiText = document.getElementById('ziweiText');
+        if (ziweiText) {
+            ziweiText.value = JSON.stringify(result.ziwei, null, 2).substring(0, 500) + '...';
+        }
+        
+        // 显示紫微结果
+        document.getElementById('ziweiStatus').textContent = "已生成";
+        document.getElementById('ziweiStatus').className = "result-status success";
+        document.getElementById('selectZiweiBtn').style.display = 'inline-block';
+        
+        // 渲染紫微摘要卡片
+        const resultContent = document.getElementById('ziweiResultContent');
+        if (resultContent && typeof renderZiweiSummary === 'function') {
+            resultContent.innerHTML = '<div id="unifiedZiweiCard"></div>';
+            setTimeout(() => {
+                renderZiweiSummary(safeData, 'unifiedZiweiCard');
+            }, 100);
+        }
+    }
+    
+    // 显示元数据信息
+    addAIMessage(`
+        <div style="padding: 12px; background: #1c1c1c; border-left: 3px solid #00ff9d; border-radius: 6px; margin: 8px 0;">
+            <strong style="color: #00ff9d;">📊 Lynker Unified Birth Engine v1.0</strong><br>
+            <span style="color: #aaa; font-size: 12px;">生成时间: ${result.meta?.created_at || new Date().toISOString()}</span><br>
+            <span style="color: #aaa; font-size: 12px;">数据库ID: ${result.meta?.record_id || 'N/A'}</span><br>
+            <span style="color: #aaa; font-size: 12px;">外部API: ${result.meta?.external_providers?.join(', ') || '本地生成'}</span>
+        </div>
+    `);
 }
 
 async function sendMessage() {
@@ -1002,7 +1221,6 @@ function addUserMessage(text) {
     const messageEl = document.createElement('div');
     messageEl.className = 'message user-message';
     messageEl.innerHTML = `
-        <div class="message-avatar">👤</div>
         <div class="message-content">
             <p>${text}</p>
         </div>
@@ -1023,7 +1241,6 @@ function addAIMessage(html) {
     const messageEl = document.createElement('div');
     messageEl.className = 'message ai-message';
     messageEl.innerHTML = `
-        <div class="message-avatar">🤖</div>
         <div class="message-content">
             ${html}
         </div>
@@ -1529,160 +1746,10 @@ function renderAISummary(summary, consistencyScore) {
 // No need for hooks - activation happens automatically after charts are verified
 
 // ========== 文墨天机 OCR 自动识别 ==========
-// 增强八字文件上传，使用文墨天机 OCR 解析器
-document.addEventListener('DOMContentLoaded', function() {
-    const baziFileInput = document.getElementById('baziFile');
-    
-    if (baziFileInput) {
-        // 移除原有的 change 监听器，添加文墨 OCR 监听器
-        baziFileInput.addEventListener('change', async function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            
-            const currentGroup = getCurrentGroup();
-            const statusSpan = document.getElementById('baziStatus');
-            const resultContent = document.getElementById('baziResultContent');
-            
-            // 1. 显示识别中状态
-            if (statusSpan) {
-                statusSpan.textContent = "文墨OCR识别中...";
-                statusSpan.className = "result-status processing";
-            }
-            if (resultContent) {
-                resultContent.innerHTML = '<p class="empty-state">正在识别命盘图，调用文墨天机OCR...</p>';
-            }
-            addAIMessage('检测到文墨天机命盘图片，正在使用智能OCR识别...');
-            
-            // 2. 发送到文墨 OCR 端点
-            const fd = new FormData();
-            fd.append('file', file);
-            
-            try {
-                const resp = await fetch('/verify/api/ocr_wenmo_auto', {
-                    method: 'POST',
-                    body: fd
-                });
-                const json = await resp.json();
-                
-                if (json.ok && json.data) {
-                    const data = json.data;
-                    console.log('[文墨OCR] 识别结果:', data);
-                    
-                    // 3. 根据类型处理结果
-                    if (data.type === 'bazi') {
-                        // 八字命盘 - 提取标准字段
-                        const parsed = {
-                            year_pillar: data.四柱?.年柱?.pillar || '',
-                            month_pillar: data.四柱?.月柱?.pillar || '',
-                            day_pillar: data.四柱?.日柱?.pillar || '',
-                            hour_pillar: data.四柱?.时柱?.pillar || '',
-                            birth_date: data.birth_info?.钟表时间 || data.birth_info?.真太阳时 || ''
-                        };
-                        
-                        // 保存完整数据
-                        currentGroup.baziResult = {
-                            parsed: parsed,
-                            wenmo_full_data: data  // 保存完整的文墨数据
-                        };
-                        
-                        // 生成文本用于后续验证
-                        const textForVerify = `
-年柱:${parsed.year_pillar} 月柱:${parsed.month_pillar} 日柱:${parsed.day_pillar} 时柱:${parsed.hour_pillar}
-出生时间:${parsed.birth_date}
-                        `.trim();
-                        
-                        currentGroup.baziText = textForVerify;
-                        
-                        // 显示结果
-                        displayResult(currentGroup.baziResult, 'bazi');
-                        
-                        if (statusSpan) {
-                            statusSpan.textContent = "验证完成";
-                            statusSpan.className = "result-status success";
-                        }
-                        
-                        addAIMessage(`✅ 文墨天机八字命盘识别完成！
-<br>年柱：<strong>${parsed.year_pillar}</strong>
-<br>月柱：<strong>${parsed.month_pillar}</strong>
-<br>日柱：<strong>${parsed.day_pillar}</strong>
-<br>时柱：<strong>${parsed.hour_pillar}</strong>
-<br>出生时间：${parsed.birth_date}`);
-                        
-                        // Mode B 激活检查
-                        checkModeBActivation();
-                        checkModeBReadiness();
-                        
-                    } else if (data.type === 'ziwei') {
-                        // 紫微命盘 - 提取基本信息
-                        const baseInfo = data.基本信息 || {};
-                        const parsed = {
-                            name: baseInfo.性别 ? '文墨用户' : '',
-                            gender: baseInfo.性别 || '',
-                            birth_time: baseInfo.钟表时间 || baseInfo.真太阳时 || '',
-                            main_star: '',
-                            ziwei_palace: ''
-                        };
-                        
-                        // 提取命宫主星
-                        const mingGong = data.命盘十二宫?.命宮 || data.命盘十二宫?.命宫;
-                        if (mingGong) {
-                            parsed.main_star = mingGong.主星?.join(', ') || '';
-                            parsed.ziwei_palace = mingGong.宫支 || '';
-                        }
-                        
-                        currentGroup.ziweiResult = {
-                            parsed: parsed,
-                            wenmo_full_data: data
-                        };
-                        
-                        // 生成文本
-                        const textForVerify = `
-主星:${parsed.main_star}
-命宫:${parsed.ziwei_palace}
-出生时间:${parsed.birth_time}
-                        `.trim();
-                        
-                        currentGroup.ziweiText = textForVerify;
-                        
-                        displayResult(currentGroup.ziweiResult, 'ziwei');
-                        
-                        const ziweiStatus = document.getElementById('ziweiStatus');
-                        if (ziweiStatus) {
-                            ziweiStatus.textContent = "验证完成";
-                            ziweiStatus.className = "result-status success";
-                        }
-                        
-                        addAIMessage(`✅ 文墨天机紫微命盘识别完成！<br>主星：<strong>${parsed.main_star}</strong>`);
-                        
-                        checkModeBActivation();
-                        checkModeBReadiness();
-                        
-                    } else {
-                        // 类型未知
-                        if (resultContent) {
-                            resultContent.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
-                        }
-                        addAIMessage('⚠️ 无法确定命盘类型，请检查上传的图片格式');
-                    }
-                    
-                } else {
-                    throw new Error(json.error || '识别失败');
-                }
-                
-            } catch (err) {
-                console.error('[文墨OCR] 识别失败:', err);
-                if (statusSpan) {
-                    statusSpan.textContent = "识别失败";
-                    statusSpan.className = "result-status error";
-                }
-                if (resultContent) {
-                    resultContent.innerHTML = `<p class="empty-state" style="color: #721c24;">识别失败：${err.message}</p>`;
-                }
-                addAIMessage(`❌ 文墨OCR识别失败：${err.message}<br>请尝试手动粘贴文本或上传清晰的命盘截图。`);
-            }
-        }, true);  // Use capture phase to override existing listeners
-    }
-});
+// ⛔ 已废弃：旧版文墨 OCR 监听器已移除
+// 现在使用：
+//   - 八字：Bazi Vision Agent (callAgentWorkflow)
+//   - 紫微：严格解析器 v0.9 (callZiweiPipeline → /verify/api/ziwei/upload_json)
 
 // ========== Prophecy Validation Center ==========
 // 预言验证中心 - 自动命盘预言生成与反馈
@@ -2058,6 +2125,332 @@ function handleAgentResult(result) {
     }
 }
 
+// ========== 紫微 JSON 文件上传 ==========
+async function callZiweiPipeline(file) {
+    console.log("[Ziwei DEBUG] callZiweiPipeline triggered — expected to activate 3-layer Agent");
+    
+    try {
+        // 检查文件类型
+        const fileName = file.name.toLowerCase();
+        const isImageFile = file.type.startsWith('image/') || fileName.endsWith('.png') || fileName.endsWith('.jpg') || fileName.endsWith('.jpeg');
+        const isJsonFile = fileName.endsWith('.json') || fileName.endsWith('.txt');
+        
+        // 如果是图片文件，显示提示信息
+        if (isImageFile) {
+            addAIMessage(`
+                <div style="padding: 16px; background: #2a1a1a; border-left: 4px solid #ff9d00; border-radius: 8px; margin: 12px 0;">
+                    <strong style="color: #ff9d00;">⚠️ 紫微命盘不再支持图片OCR识别</strong><br>
+                    <p style="margin: 8px 0; color: #ccc; font-size: 13px;">
+                        请使用以下两种方式之一：<br>
+                        1️⃣ <strong>推荐</strong>：从文墨天机 App 导出 AI分析版文件（.json 或 .txt），然后上传<br>
+                        2️⃣ 使用上方的 "Lynker 统一命理引擎" 输入出生资料，一键生成八字+紫微命盘
+                    </p>
+                </div>
+            `);
+            document.getElementById('ziweiStatus').textContent = "请上传JSON文件";
+            document.getElementById('ziweiStatus').className = "result-status error";
+            return;
+        }
+        
+        // 处理 JSON/TXT 文件
+        if (!isJsonFile) {
+            addAIMessage(`❌ 不支持的文件格式，请上传 .json 或 .txt 文件`);
+            document.getElementById('ziweiStatus').textContent = "格式错误";
+            document.getElementById('ziweiStatus').className = "result-status error";
+            return;
+        }
+        
+        addAIMessage('📄 上传文墨天机 AI分析版文件（使用严格解析器 v0.9）...');
+        
+        const reader = new FileReader();
+        reader.onload = async () => {
+            try {
+                // 直接上传到服务器，让后端严格解析器处理
+                // 后端会自动识别 JSON 或纯文本格式
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                const response = await fetch('/verify/api/ziwei/upload_json', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    const version = result.data?.meta?.parser_version || 'v1.1';
+                    addAIMessage(`✅ 文墨天机命盘解析成功（${version}）<br><small style="color: #888;">使用严格规则解析器 v0.9，无 AI 推断</small>`);
+                    
+                    // 显示命盘数据（传入完整的 result，让函数内部解析 result.data）
+                    handleZiweiJsonData(result);
+                    
+                    document.getElementById('ziweiStatus').textContent = "解析成功";
+                    document.getElementById('ziweiStatus').className = "result-status success";
+                } else {
+                    addAIMessage(`❌ 解析失败: ${result.error || '未知错误'}`);
+                    document.getElementById('ziweiStatus').textContent = "解析失败";
+                    document.getElementById('ziweiStatus').className = "result-status error";
+                }
+                
+            } catch (error) {
+                console.error('Ziwei upload error:', error);
+                addAIMessage(`❌ 上传失败: ${error.message}`);
+                document.getElementById('ziweiStatus').textContent = "上传失败";
+                document.getElementById('ziweiStatus').className = "result-status error";
+            }
+        };
+        
+        reader.readAsText(file);
+        
+    } catch (error) {
+        console.error('Failed to upload Ziwei JSON:', error);
+        addAIMessage(`❌ 上传失败: ${error.message}`);
+    }
+}
+
+// 处理上传的紫微 JSON 数据
+function handleZiweiJsonData(result) {
+    console.log("[Ziwei DEBUG] handleZiweiJsonData triggered —", result);
+
+    // ✅ 修正关键点：确保解析到正确层级
+    const data = result.data ? result.data : result;  // 有 data 层就取 data，否则取本身
+
+    // ✅ 保存完整结果
+    const currentGroup = getCurrentGroup();
+    currentGroup.ziweiFull = data;
+
+    // ✅ 记录日志
+    console.log("[ZiweiJSON] ✅ 完整三层 Agent 数据已保存到 currentGroup.ziweiFull");
+    console.log("[ZiweiJSON] 完整数据包含字段:", Object.keys(data));
+
+    try {
+        console.log('[ZiweiJSON] 接收到文墨天机数据:', data);
+        
+        // 验证完整的 ZiweiAI_v1.1 结构
+        console.log('[ZiweiResult v1.1] meta:', data.meta);
+        console.log('[ZiweiResult v1.1] basic_info:', data.basic_info);
+        console.log('[ZiweiResult v1.1] star_map:', data.star_map);
+        console.log('[ZiweiResult v1.1] transformations:', data.transformations);
+        console.log('[ZiweiResult v1.1] tags:', data.tags);
+        console.log('[ZiweiResult v1.1] 完整 JSON 结构:', JSON.stringify(data, null, 2));
+        
+        // 🧠 使用安全标准化函数统一数据结构
+        const safeData = safeNormalizeResult({ standardized: data });
+        
+        // ✨ 使用黑底摘要卡片组件显示
+        addAIMessage(`<div id="ziweiSummaryCard"></div>`);
+        
+        // 延迟渲染确保 DOM 已挂载
+        setTimeout(() => {
+            if (typeof renderZiweiSummary === 'function') {
+                renderZiweiSummary(safeData, 'ziweiSummaryCard');
+                console.log('[ZiweiJSON] ✅ 黑底摘要卡片已渲染');
+            } else {
+                console.error('[ZiweiJSON] ❌ renderZiweiSummary 函数未加载');
+                addAIMessage('⚠️ 摘要卡片渲染失败，请刷新页面');
+            }
+        }, 100);
+        
+        // 更新当前组数据
+        currentGroup.ziwei = safeData;
+        
+        // 显示选择按钮
+        document.getElementById('selectZiweiBtn').style.display = 'inline-block';
+        
+    } catch (error) {
+        console.error('处理紫微JSON数据失败:', error);
+        addAIMessage(`❌ 处理数据失败: ${error.message}`);
+    }
+}
+
+/**
+ * 🛡️ 安全结构检测与标准化函数
+ * 支持 ZiweiAI_v1.1 与 BaziAI_v2.1 双系统
+ * 自动补全缺失字段，防止 undefined 报错
+ */
+function safeNormalizeResult(result) {
+    // 安全兜底
+    if (!result || typeof result !== "object") {
+        console.warn("[SafeParser] Invalid result type, resetting to empty object");
+        return {
+            meta: {},
+            basic_info: {},
+            star_map: {},
+            transformations: {},
+            tags: {},
+            environment: {},
+            risk: {},
+        };
+    }
+
+    // 如果包含 standardized 层，则取内部数据
+    const data = result.standardized || result;
+
+    // --- 统一结构骨架 ---
+    const normalized = {
+        meta: data.meta || {},
+        basic_info: data.basic_info || {},
+        star_map: data.star_map || {},
+        transformations: data.transformations || {},
+        tags: data.tags || {},
+        environment: data.environment || {},
+        risk: data.risk || {},
+        astro_fingerprint: data.astro_fingerprint || {},
+        relationship_vector: data.relationship_vector || {},
+        success: data.success !== undefined ? data.success : true
+    };
+
+    // --- 自动补全关键字段 ---
+    normalized.basic_info["性别"] = normalized.basic_info["性别"] || "";
+    normalized.basic_info["命主"] = normalized.basic_info["命主"] || "";
+    normalized.basic_info["身主"] = normalized.basic_info["身主"] || "";
+    normalized.basic_info["命局"] = normalized.basic_info["命局"] || "";
+
+    normalized.tags["格局"] = normalized.tags["格局"] || [];
+    normalized.tags["性格"] = normalized.tags["性格"] || [];
+    normalized.tags["优势"] = normalized.tags["优势"] || [];
+    normalized.tags["风险因子"] = normalized.tags["风险因子"] || [];
+
+    normalized.environment = Object.assign(
+        {
+            city: "",
+            country: "",
+            climate_zone: "",
+            humidity_type: "",
+            terrain_type: "",
+        },
+        normalized.environment
+    );
+
+    normalized.relationship_vector = Object.assign(
+        { 婚姻: 0, 事业: 0, 健康: 0, 人际: 0 },
+        normalized.relationship_vector
+    );
+
+    return normalized;
+}
+
+function handleZiweiResult(result) {
+    try {
+        addAIMessage(`✅ <strong>紫微命盘三层识别完成！</strong>`);
+        
+        console.log('[ZiweiResult v1.1] 原始数据:', result);
+        
+        // 🧠 使用安全标准化函数统一数据结构
+        const safeData = safeNormalizeResult(result);
+        const basicInfo = safeData.basic_info;
+        const starMap = safeData.star_map;
+        const transformations = safeData.transformations;
+        const tags = safeData.tags;
+        
+        const currentGroup = getCurrentGroup();
+        const analysis = result.analysis;
+        
+        if (!safeData.success) {
+            addAIMessage('⚠️ 数据标准化失败');
+            return;
+        }
+        
+        console.log('[ZiweiResult v1.1] 标准化数据结构:', safeData);
+        console.log('[ZiweiResult v1.1] 版本:', safeData.meta.parser_version || "未标明");
+        
+        // 显示OCR模式标签
+        const ocrMode = safeData.meta.ocr_mode || result.ocr_mode || "intelligent";
+        const modeIcon = ocrMode === "strict" ? "🔍" : "🧠";
+        const modeLabel = ocrMode === "strict" ? "严格识别（纯OCR）" : "智能识别（带分析）";
+        addAIMessage(`<div style="display: inline-block; padding: 6px 12px; background: #2a2a2a; border: 1px solid #555; border-radius: 6px; color: #80e8ff; font-size: 13px; margin-bottom: 12px;">
+            ${modeIcon} <strong>模式:</strong> ${modeLabel}
+        </div>`);
+        
+        // ✨ 使用黑底摘要卡片组件显示（替代原有的文本显示）
+        addAIMessage(`<div id="ziweiSummaryCard"></div>`);
+        
+        // 延迟渲染确保 DOM 已挂载
+        setTimeout(() => {
+            if (typeof renderZiweiSummary === 'function') {
+                renderZiweiSummary(safeData, 'ziweiSummaryCard');
+                console.log('[ZiweiResult v1.1] ✅ 黑底摘要卡片已渲染');
+            } else {
+                console.error('[ZiweiResult v1.1] ❌ renderZiweiSummary 函数未加载');
+                addAIMessage('⚠️ 摘要卡片渲染失败，请刷新页面');
+            }
+        }, 100);
+        
+        // 显示 AI 分析摘要（独立于卡片之外）
+        if (analysis && analysis.summary) {
+            addAIMessage(`<div style="color: #fff; padding: 8px 0; margin: 8px 0;">
+                🧠 <strong>AI 分析:</strong><br>
+                <div style="margin-top: 6px; line-height: 1.6;">${analysis.summary}</div>
+            </div>`);
+        }
+        
+        // 保存完整数据到当前组
+        currentGroup.ziweiFullData = {
+            standardized: safeData,
+            analysis: analysis,
+            raw: result.raw,
+            timestamp: new Date().toISOString()
+        };
+        
+        // 创建简化的文本表示用于后续处理
+        let ziweiTextSummary = '';
+        if (basicInfo["性别"]) ziweiTextSummary += `性别: ${basicInfo["性别"]}\n`;
+        if (basicInfo["命局"]) ziweiTextSummary += `命局: ${basicInfo["命局"]}\n`;
+        if (starMap && starMap['命宫']) {
+            ziweiTextSummary += `命宫: ${starMap['命宫'].join('、')}\n`;
+        }
+        
+        // 更新文本框和状态
+        const ziweiText = document.getElementById('ziweiText');
+        if (ziweiText && ziweiTextSummary) {
+            ziweiText.value = ziweiTextSummary;
+        }
+        
+        // 更新状态
+        currentGroup.ziweiUploaded = true;
+        currentGroup.ziweiText = ziweiTextSummary;
+        document.getElementById('ziweiStatus').textContent = "AI识别完成";
+        document.getElementById('ziweiStatus').className = "result-status success";
+        
+        // ✅ 直接显示完整的 ZiweiAI_v1.1 JSON 结构
+        console.log('[ZiweiPipeline] 完整识别结果:', result);
+        console.log('[ZiweiPipeline] 标准化数据字段:', Object.keys(safeData));
+        
+        const resultContent = document.getElementById('ziweiResultContent');
+        if (resultContent) {
+            // 显示完整的 JSON 结构
+            const prettyJSON = JSON.stringify(safeData, null, 2);
+            const jsonDisplay = `
+                <details open style="margin-top: 16px; padding: 12px 0;">
+                    <summary style="cursor: pointer; font-weight: 600; color: #fff; margin-bottom: 8px;">
+                        📋 完整 ZiweiAI_v1.1 JSON 结构
+                    </summary>
+                    <pre style="margin: 8px 0 0 0; max-height: 500px; overflow-y: auto; background: transparent; padding: 12px; border-radius: 4px; border: 1px solid #555; font-size: 12px; line-height: 1.5; color: #fff;">${prettyJSON}</pre>
+                </details>
+            `;
+            
+            // 保留图片预览，添加 JSON 显示
+            const existingImagePreview = resultContent.querySelector('.image-preview-container');
+            if (existingImagePreview) {
+                existingImagePreview.insertAdjacentHTML('afterend', jsonDisplay);
+            } else {
+                resultContent.innerHTML = jsonDisplay + resultContent.innerHTML;
+            }
+        }
+        
+        // ⚠️ 不再调用 processChartText()，避免旧 API 覆盖数据
+        // if (ziweiTextSummary) {
+        //     processChartText(ziweiTextSummary, 'ziwei');
+        // }
+        
+        addAIMessage('✅ 紫微命盘处理完成！你可以继续上传其他时辰的命盘，或开始问卷验证。');
+        
+    } catch (error) {
+        console.error('Failed to handle Ziwei result:', error);
+        addAIMessage(`❌ 处理紫微结果失败: ${error.message}`);
+    }
+}
+
 function displayFullTable(fullTable) {
     try {
         const rows = fullTable.rows;
@@ -2131,4 +2524,22 @@ function formatBaziFromAgent(bazi) {
     if (hour) parts.push(`时柱:${hour}`);
     
     return parts.join(' ');
+}
+
+// ========== 聊天框展开功能 ==========
+let isChatExpanded = false;
+
+function toggleChatExpand() {
+    const expandIcon = document.getElementById('expandIcon');
+    const chatPanel = document.querySelector('.chatbox-panel');
+    
+    isChatExpanded = !isChatExpanded;
+    
+    if (isChatExpanded) {
+        chatPanel.classList.add('expanded');
+        expandIcon.textContent = '✕';
+    } else {
+        chatPanel.classList.remove('expanded');
+        expandIcon.textContent = '⛶';
+    }
 }

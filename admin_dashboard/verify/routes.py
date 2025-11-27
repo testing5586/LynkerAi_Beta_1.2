@@ -23,6 +23,20 @@ from verify.ai_prompts import get_primary_ai_prompt, get_ai_names_from_db
 from verify.ai_verifier import verify_chart_with_ai, verify_chart_without_ai, get_current_uploaded_charts
 from verify.child_ai_hints import generate_child_ai_hint
 from verify.wizard_loader import load_latest_wizard
+from verify.ziwei_vision_agent import ZiweiVisionAgent
+from verify.ziwei_normalizer import normalize_ziwei, validate_ziwei_structure
+from verify.ziwei_analysis_agent import ZiweiAnalysisAgent
+
+# ✅ 热加载 ziwei_normalizer 和 ziwei_analysis_agent 模块，确保使用最新版本
+import importlib
+from verify import ziwei_normalizer, ziwei_analysis_agent
+importlib.reload(ziwei_normalizer)
+importlib.reload(ziwei_analysis_agent)
+from verify.ziwei_normalizer import parse_wenmo_text  # ✅ 确保重新导入最新版本
+from verify.ziwei_analysis_agent import ZiweiAnalysisAgent  # ✅ 重新导入最新的 Analysis Agent
+
+print("[Ziwei DEBUG] ✅ 热加载 parse_wenmo_text() 成功启用最新版本")
+print("[Ziwei DEBUG] ✅ 热加载 ZiweiAnalysisAgent 成功启用最新版本")
 
 # Import validation manager with relative path to avoid circular imports
 try:
@@ -153,7 +167,16 @@ def render_page():
     # 存入 session 以便后续 API 调用
     session["user_id"] = user_id
     
-    return render_template("verify_wizard.html", user_id=user_id)
+    # 准备用户数据传递到前端
+    user_type = current_user.user_type or 'normal_user'  # 默认为普通用户
+    user_data = {
+        'nickname': current_user.first_name or current_user.email.split('@')[0],
+        'email': current_user.email,
+        'user_type': user_type,
+        'created_at': current_user.created_at.isoformat() if current_user.created_at else None
+    }
+    
+    return render_template("verify_wizard.html", user_id=user_id, user_data=user_data)
 
 
 @bp.post("/api/preview")
@@ -1081,3 +1104,385 @@ def run_child_ai_endpoint():
         }
     
     return jsonify(result)
+
+
+@bp.post("/api/ziwei/full_pipeline")
+@login_required
+def ziwei_full_pipeline():
+    """
+    紫微命盘完整三层流程：
+    Layer 1: GPT-4-Turbo-Vision OCR 识别
+    Layer 2: JSON 标准化
+    Layer 3: AI 命理分析
+    
+    请求参数:
+        image_base64: str, 紫微命盘图片的 base64 编码
+        analysis_focus: str (可选), 分析重点 ("career", "marriage", "wealth", "health", "family")
+        ocr_mode: str (可选), OCR模式 - "strict"(严格OCR) 或 "intelligent"(智能分析), 默认 "intelligent"
+    
+    查询参数:
+        ocr_mode: str (可选), OCR模式，可通过 URL 参数传递
+    
+    返回:
+        {
+            "ok": bool,
+            "raw": dict,           # Layer 1 原始识别结果
+            "standardized": dict,  # Layer 2 标准化结果
+            "analysis": dict,      # Layer 3 AI 分析报告
+            "validation": dict,    # 数据验证结果
+            "toast": str,
+            "ocr_mode": str        # 使用的识别模式
+        }
+    """
+    data = request.get_json() or {}
+    image_base64 = data.get("image_base64")
+    analysis_focus = data.get("analysis_focus")
+    
+    # 支持从 JSON body 或 URL 参数获取 ocr_mode
+    ocr_mode = data.get("ocr_mode") or request.args.get("ocr_mode", "intelligent")
+    
+    if not image_base64:
+        return jsonify({
+            "ok": False,
+            "error": "缺少命盘图片",
+            "toast": "❌ 请上传紫微命盘图片"
+        }), 400
+    
+    progress_messages = []
+    
+    def progress_callback(msg):
+        """收集进度消息"""
+        progress_messages.append(msg)
+        print(msg)
+    
+    try:
+        # Layer 1: OCR 识别
+        mode_label = "🔍 严格OCR" if ocr_mode == "strict" else "🧠 智能分析"
+        print("=" * 50)
+        print(f"🔮 第1层：GPT-4-Turbo-Vision OCR 识别 ({mode_label})")
+        print("=" * 50)
+        
+        vision_agent = ZiweiVisionAgent()
+        raw_result = vision_agent.process_image(image_base64, progress_callback, ocr_mode)
+        
+        if not raw_result.get("success"):
+            return jsonify({
+                "ok": False,
+                "error": raw_result.get("error", "OCR 识别失败"),
+                "toast": f"❌ OCR 识别失败: {raw_result.get('error', '未知错误')}",
+                "progress": progress_messages
+            }), 500
+        
+        # Layer 2: 标准化
+        print("=" * 50)
+        print("📋 第2层：JSON 标准化为 ZiweiAI_v1.0")
+        print("=" * 50)
+        
+        # 获取用户资料用于自动补全
+        user_profile = None
+        try:
+            from flask_login import current_user
+            if current_user and current_user.is_authenticated:
+                user_profile = {
+                    "gender": getattr(current_user, 'gender', None),
+                    "birth_time": getattr(current_user, 'birth_time', None)
+                }
+                print(f"[Pipeline] 获取到用户资料: {user_profile}")
+        except Exception as e:
+            print(f"[Pipeline] 无法获取用户资料: {e}")
+        
+        normalized = normalize_ziwei(raw_result, user_profile=user_profile)
+        
+        if not normalized.get("success"):
+            return jsonify({
+                "ok": False,
+                "error": normalized.get("error", "标准化失败"),
+                "raw": raw_result,
+                "toast": f"❌ 数据标准化失败: {normalized.get('error', '未知错误')}",
+                "progress": progress_messages
+            }), 500
+        
+        # 验证数据结构
+        validation = validate_ziwei_structure(normalized)
+        if validation["warnings"]:
+            print(f"⚠️ 数据验证警告: {validation['warnings']}")
+        
+        # Layer 3: AI 分析
+        print("=" * 50)
+        print("🧠 第3层：AI 命理分析")
+        print("=" * 50)
+        
+        analysis_agent = ZiweiAnalysisAgent()
+        analysis_result = analysis_agent.analyze_ziwei(normalized)
+        
+        if not analysis_result.get("success"):
+            # 即使分析失败，也返回前两层的结果
+            return jsonify({
+                "ok": True,
+                "raw": raw_result,
+                "standardized": normalized,
+                "analysis": None,
+                "analysis_error": analysis_result.get("error", "分析失败"),
+                "validation": validation,
+                "toast": "⚠️ 命盘识别和标准化完成，但 AI 分析失败",
+                "progress": progress_messages
+            })
+        
+        # 生成简短摘要
+        brief_summary = analysis_agent.generate_brief_summary(normalized)
+        
+        # 全部成功
+        print("=" * 50)
+        print("✅ 三层流程全部完成")
+        print("=" * 50)
+        
+        result = {
+            "ok": True,
+            "raw": raw_result,
+            "standardized": normalized,
+            "analysis": analysis_result.get("analysis"),
+            "brief_summary": brief_summary,
+            "validation": validation,
+            "ocr_mode": ocr_mode,
+            "toast": "✅ 紫微命盘识别与分析完成",
+            "progress": progress_messages
+        }
+        
+        # 调试日志：打印返回数据的结构
+        print(f"[ZiweiPipeline] 返回数据的顶层键: {list(result.keys())}")
+        if result.get("raw"):
+            print(f"[ZiweiPipeline] raw 数据的键: {list(result['raw'].keys())}")
+        if result.get("standardized"):
+            print(f"[ZiweiPipeline] standardized 数据的键: {list(result['standardized'].keys())}")
+            if result['standardized'].get('basic_info'):
+                print(f"[ZiweiPipeline] basic_info: {result['standardized']['basic_info']}")
+            if result['standardized'].get('star_map'):
+                print(f"[ZiweiPipeline] star_map 宫位数: {len(result['standardized']['star_map'])}")
+        if result.get("analysis"):
+            print(f"[ZiweiPipeline] analysis 数据的键: {list(result['analysis'].keys())}")
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        print(f"❌ 紫微命盘处理失败: {e}")
+        import traceback
+        traceback.print_exc()
+        
+        return jsonify({
+            "ok": False,
+            "error": str(e),
+            "toast": f"❌ 处理失败: {str(e)}",
+            "progress": progress_messages
+        }), 500
+
+
+@bp.post("/api/ziwei/upload_json")
+@login_required
+def upload_ziwei_json():
+    """
+    ZiweiAI v1.1 三层工作流（无 OCR 版）
+    数据源：文墨天机导出的 AI分析版 JSON / TXT
+    层级：
+      1️⃣ Parser → parse_wenmo_ai_file()
+      2️⃣ Normalizer → normalize_ziwei()
+      3️⃣ Analysis → ZiweiAnalysisAgent.analyze_ziwei()
+    """
+    try:
+        file = request.files.get("file")
+        if not file:
+            return jsonify({"success": False, "error": "未收到文件"}), 400
+
+        from flask_login import current_user
+        user_id = str(current_user.id) if current_user.is_authenticated else None
+        
+        if not user_id:
+            return jsonify({"success": False, "error": "用户未登录"}), 401
+
+        # 读取文件
+        file_bytes = file.read()
+        
+        # ========== Layer 1️⃣: Parser ==========
+        from .ziwei_parser import parse_wenmo_ai_file, validate_wenmo_file
+        
+        print("[ZiweiUpload] Layer 1️⃣: Parser 开始...")
+        parsed_data = parse_wenmo_ai_file(file_bytes, file.filename)
+        print("[ZiweiParser] ✅ Parsed WenMo data")
+        
+        # 验证是否为合法的文墨天机文件
+        is_valid, error_msg = validate_wenmo_file(parsed_data)
+        if not is_valid:
+            return jsonify({
+                "success": False, 
+                "error": error_msg
+            }), 400
+        
+        # ========== Layer 2️⃣: Normalizer ==========
+        print("[ZiweiUpload] Layer 2️⃣: Normalizer 开始...")
+        
+        # 获取用户资料（可选）
+        user_profile = None
+        try:
+            from supabase import create_client
+            import os
+            supabase = create_client(
+                os.getenv("SUPABASE_URL"),
+                os.getenv("SUPABASE_KEY")
+            )
+            profile_resp = supabase.table("user_profiles").select("*").eq("user_id", user_id).execute()
+            if profile_resp.data and len(profile_resp.data) > 0:
+                user_profile = profile_resp.data[0]
+        except Exception as e:
+            print(f"[ZiweiUpload] 无法获取用户资料: {e}")
+        
+        normalized_data = normalize_ziwei(parsed_data, user_profile=user_profile)
+        print("[ZiweiNormalizer] ✅ Normalization completed")
+        
+        if not normalized_data.get("success"):
+            return jsonify({
+                "success": False,
+                "error": normalized_data.get("error", "标准化失败")
+            }), 400
+        
+        # ========== Layer 3️⃣: Analysis Agent ==========
+        print("[ZiweiUpload] Layer 3️⃣: Analysis Agent 开始...")
+        
+        analysis_agent = ZiweiAnalysisAgent()
+        final_result = analysis_agent.analyze_ziwei(normalized_data)
+        print("[ZiweiAnalysis] ✅ Analysis completed")
+        
+        if not final_result.get("success"):
+            return jsonify({
+                "success": False,
+                "error": final_result.get("error", "分析失败")
+            }), 400
+        
+        # ========== 保存到数据库 ==========
+        parser_version = final_result.get("meta", {}).get("parser_version", "ZiweiAI_v1.1")
+        
+        try:
+            supabase.table("user_ziwei_charts").insert({
+                "user_id": user_id,
+                "parser_version": parser_version,
+                "source": final_result.get("meta", {}).get("source", "文墨天机"),
+                "data": final_result
+            }).execute()
+            print(f"[ZiweiUpload] ✅ 数据已保存到数据库（版本: {parser_version}）")
+        except Exception as e:
+            print(f"[ZiweiUpload] ⚠️ 数据库保存失败: {e}")
+        
+        # ========== 返回完整的三层处理结果 ==========
+        return jsonify({
+            "success": True, 
+            "data": final_result,
+            "toast": f"✅ 文墨天机命盘三层处理完成（{parser_version}）"
+        })
+        
+    except Exception as e:
+        print(f"❌ 上传紫微JSON失败: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            "success": False,
+            "error": f"上传失败: {str(e)}"
+        }), 500
+
+
+@bp.post("/api/lynker/birthdata/process")
+@login_required
+def process_birthdata():
+    """
+    Lynker Unified Birth Engine v1.0
+    接收出生资料 → 生成八字 + 紫微命盘 → 自动归档
+    支持未来文墨天机 / 问真接口
+    
+    请求参数:
+        birth_date: str, 出生日期 (YYYY-MM-DD)
+        birth_time: str, 出生时间 (HH:MM:SS)
+        timezone: str, 时区 (默认 +08:00)
+        location: dict, 出生地信息
+        gender: str, 性别
+        source: str, 数据来源 (默认 user_input)
+        
+    返回:
+        {
+            "success": True,
+            "bazi": {...},      # BaziAI_v1.2 结构
+            "ziwei": {...},     # ZiweiAI_v1.1 结构
+            "meta": {...}
+        }
+    """
+    try:
+        data = request.get_json() or {}
+        
+        birth_date = data.get("birth_date")
+        birth_time = data.get("birth_time")
+        timezone = data.get("timezone", "+08:00")
+        location = data.get("location", {})
+        gender = data.get("gender", "未知")
+        source = data.get("source", "user_input")
+        
+        if not birth_date or not birth_time:
+            return jsonify({
+                "success": False,
+                "error": "缺少出生日期或时间"
+            }), 400
+        
+        from flask_login import current_user
+        user_id = str(current_user.id) if current_user.is_authenticated else None
+        
+        if not user_id:
+            return jsonify({"success": False, "error": "用户未登录"}), 401
+        
+        # 调用本地八字分析
+        from .api_bazi_agent import generate_bazi_data
+        bazi_data = generate_bazi_data(birth_date, birth_time, timezone, location, gender)
+        
+        # 调用紫微分析（未来可替换为外部API）
+        from .api_ziwei_agent import generate_ziwei_data
+        ziwei_data = generate_ziwei_data(birth_date, birth_time, timezone, location, gender)
+        
+        # 合并结果
+        unified_data = {
+            "success": True,
+            "bazi": bazi_data,
+            "ziwei": ziwei_data,
+            "meta": {
+                "created_at": datetime.now().isoformat(),
+                "engine": "Lynker Unified Birth Engine v1.0",
+                "source": "LynkerAI",
+                "external_providers": ["WenMo", "WenZhen"]
+            }
+        }
+        
+        # 保存到数据库
+        from supabase import create_client
+        import os
+        supabase = create_client(
+            os.getenv("SUPABASE_URL"),
+            os.getenv("SUPABASE_KEY")
+        )
+        
+        supabase.table("user_birth_records").insert({
+            "user_id": user_id,
+            "birth_date": birth_date,
+            "birth_time": birth_time,
+            "timezone": timezone,
+            "location": location,
+            "gender": gender,
+            "bazi": bazi_data,
+            "ziwei": ziwei_data,
+            "source": source
+        }).execute()
+        
+        print(f"✅ 统一命理生成完成: user_id={user_id}, 八字+紫微已归档")
+        
+        return jsonify(unified_data)
+        
+    except Exception as e:
+        print(f"❌ 统一命理生成失败: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            "success": False,
+            "error": f"生成失败: {str(e)}"
+        }), 500

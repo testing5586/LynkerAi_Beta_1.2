@@ -103,60 +103,87 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🌟 创建用户档案</h1>
-            <p>填写你的灵性信息，开始探索命运奥秘</p>
+            <h1 data-i18n="userRegister.title">🌟 创建用户档案</h1>
+            <p data-i18n="userRegister.subtitle">填写你的灵性信息，开始探索命运奥秘</p>
         </div>
+
+        <!-- User Profile Avatar -->
+        <div id="userProfileAvatar"></div>
 
         <div id="message"></div>
 
         <form id="profileForm">
             <div class="form-group">
-                <label for="pseudonym">灵性假名 <span class="required">*</span></label>
-                <input type="text" id="pseudonym" required minlength="2">
-                <div class="help-text">请使用灵性假名，而非真实姓名（至少2个字符）</div>
-            </div>
-
-            <div class="form-group">
-                <label for="gender">性别（可选）</label>
+                <label for="gender" data-i18n="userRegister.genderLabel">性别（可选）</label>
                 <select id="gender">
-                    <option value="">请选择</option>
-                    <option value="male">男</option>
-                    <option value="female">女</option>
-                    <option value="other">其他</option>
+                    <option value="" data-i18n="userRegister.genderPlaceholder">请选择</option>
+                    <option value="male" data-i18n="userRegister.genderMale">男</option>
+                    <option value="female" data-i18n="userRegister.genderFemale">女</option>
+                    <option value="other" data-i18n="userRegister.genderOther">其他</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label for="birthDate">出生日期（可选）</label>
+                <label for="birthDate" data-i18n="userRegister.birthDateLabel">出生日期（可选）</label>
                 <input type="date" id="birthDate">
-                <div class="help-text">用于八字分析</div>
+                <div class="help-text" data-i18n="userRegister.birthDateHelp">用于八字分析</div>
             </div>
 
             <div class="form-group">
-                <label for="birthTime">出生时辰（可选）</label>
+                <label for="birthTime" data-i18n="userRegister.birthTimeLabel">出生时辰（可选）</label>
                 <input type="time" id="birthTime">
-                <div class="help-text">精确的时辰信息可提升分析准确度</div>
+                <div class="help-text" data-i18n="userRegister.birthTimeHelp">精确的时辰信息可提升分析准确度</div>
             </div>
 
             <div class="form-group">
-                <label for="birthLocation">出生地点（可选）</label>
-                <input type="text" id="birthLocation" placeholder="例：北京市">
+                <label for="birthLocation" data-i18n="userRegister.birthLocationLabel">出生地点（可选）</label>
+                <input type="text" id="birthLocation" data-i18n-placeholder="userRegister.birthLocationPlaceholder" placeholder="例：北京市">
             </div>
 
             <div class="form-group">
-                <label for="preferredProvider">AI 服务提供商</label>
+                <label for="preferredProvider" data-i18n="userRegister.aiProviderLabel">AI 服务提供商</label>
                 <select id="preferredProvider">
-                    <option value="LocalMock">LocalMock（免费模拟）</option>
-                    <option value="OpenAI">OpenAI（需 API Key）</option>
-                    <option value="Gemini">Gemini（有免费额度）</option>
+                    <option value="LocalMock" data-i18n="userRegister.aiProviderLocalMock">LocalMock（免费模拟）</option>
+                    <option value="OpenAI" data-i18n="userRegister.aiProviderOpenAI">OpenAI（需 API Key）</option>
+                    <option value="Gemini" data-i18n="userRegister.aiProviderGemini">Gemini（有免费额度）</option>
                 </select>
-                <div class="help-text">可在设置中修改</div>
+                <div class="help-text" data-i18n="userRegister.aiProviderHelp">可在设置中修改</div>
             </div>
 
-            <button type="submit" class="btn" id="submitBtn">创建档案</button>
+            <button type="submit" class="btn" id="submitBtn" data-i18n="userRegister.createBtn">创建档案</button>
         </form>
     </div>
 
+    <script src="/static/js/i18n.js"></script>
+    <script src="/static/js/lang-switcher.js"></script>
+    <script src="/static/js/user-avatar.js"></script>
+    <script>
+        // Initialize language switcher
+        document.addEventListener('DOMContentLoaded', () => {
+            injectLanguageSwitcherStyles();
+            // Add language switcher to the top of the page
+            const container = document.querySelector('.container');
+            const switcherDiv = document.createElement('div');
+            switcherDiv.style.cssText = 'position: absolute; top: 20px; right: 20px;';
+            switcherDiv.innerHTML = createLanguageSwitcher();
+            container.style.position = 'relative';
+            container.insertBefore(switcherDiv.firstElementChild, container.firstChild);
+            initLanguageSwitcher();
+            
+            // Initialize user avatar
+            const avatarContainer = document.getElementById('userProfileAvatar');
+            if (avatarContainer) {
+                const nickname = '{{ nickname }}';
+                const subtitle = i18n.t('userRegister.profileSubtitle');
+                avatarContainer.innerHTML = createUserAvatar(nickname, {
+                    size: 60,
+                    fontSize: 24,
+                    showName: true,
+                    subtitle: subtitle
+                });
+            }
+        });
+    </script>
     <script>
         const form = document.getElementById('profileForm');
         const messageDiv = document.getElementById('message');
@@ -165,7 +192,6 @@
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const pseudonym = document.getElementById('pseudonym').value.trim();
             const gender = document.getElementById('gender').value || null;
             const birthDate = document.getElementById('birthDate').value || null;
             const birthTime = document.getElementById('birthTime').value || null;
@@ -173,15 +199,16 @@
             const preferredProvider = document.getElementById('preferredProvider').value;
             
             messageDiv.innerHTML = '';
+            
             submitBtn.disabled = true;
-            submitBtn.textContent = '创建中...';
+            submitBtn.setAttribute('data-i18n', 'userRegister.creating');
+            submitBtn.textContent = i18n.t('userRegister.creating');
             
             try {
                 const response = await fetch('/api/user/normal-profile', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        pseudonym,
                         gender,
                         birthDate,
                         birthTime,
@@ -200,12 +227,15 @@
                 } else {
                     messageDiv.innerHTML = `<div class="error">${data.error}</div>`;
                     submitBtn.disabled = false;
-                    submitBtn.textContent = '创建档案';
+                    submitBtn.setAttribute('data-i18n', 'userRegister.createBtn');
+                    submitBtn.textContent = i18n.t('userRegister.createBtn');
                 }
             } catch (error) {
-                messageDiv.innerHTML = `<div class="error">网络错误，请稍后重试</div>`;
+                messageDiv.innerHTML = `<div class="error" data-i18n="userRegister.networkError">网络错误，请稍后重试</div>`;
+                i18n.updatePageContent();
                 submitBtn.disabled = false;
-                submitBtn.textContent = '创建档案';
+                submitBtn.setAttribute('data-i18n', 'userRegister.createBtn');
+                submitBtn.textContent = i18n.t('userRegister.createBtn');
             }
         });
     </script>

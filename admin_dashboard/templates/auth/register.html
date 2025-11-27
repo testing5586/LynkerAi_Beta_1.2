@@ -112,61 +112,92 @@
 <body>
     <div class="register-container">
         <div class="logo">
-            <h1>LynkerAI</h1>
-            <p>开始你的智能命理之旅</p>
+            <h1 data-i18n="common.lynkerAI">LynkerAI</h1>
+            <p data-i18n="register.title">开始你的智能命理之旅</p>
+        </div>
+
+        <div class="privacy-notice" data-i18n-html="register.privacyNotice" style="background: #f0f7ff; border-left: 4px solid #667eea; padding: 12px; border-radius: 4px; margin-bottom: 24px; font-size: 13px; color: #333;">
+            🔒 <strong>隐私保护提示</strong><br>为保护您的隐私，我们建议使用灵性假名（而非真实姓名），并考虑为此灵性旅程创建一个新邮箱。
         </div>
 
         <div id="message"></div>
 
         <form id="registerForm">
             <div class="form-group">
-                <label for="firstName">名字（可选）</label>
-                <input type="text" id="firstName" autocomplete="given-name">
+                <label for="nickname" data-i18n="register.nicknameLabel">昵称</label>
+                <input type="text" id="nickname" data-i18n-placeholder="register.nicknamePlaceholder" placeholder="设置一个独特的假名" autocomplete="nickname">
             </div>
 
             <div class="form-group">
-                <label for="lastName">姓氏（可选）</label>
-                <input type="text" id="lastName" autocomplete="family-name">
-            </div>
-
-            <div class="form-group">
-                <label for="email">邮箱 *</label>
+                <label for="email" data-i18n="register.emailLabel">邮箱 *</label>
                 <input type="email" id="email" required autocomplete="email">
             </div>
 
             <div class="form-group">
-                <label for="password">密码 *</label>
+                <label for="password" data-i18n="register.passwordLabel">密码 *</label>
                 <input type="password" id="password" required autocomplete="new-password" minlength="6">
-                <div class="help-text">至少 6 个字符</div>
+                <div class="help-text" data-i18n="register.passwordHelp">至少 6 个字符</div>
             </div>
 
-            <button type="submit" class="btn">注册</button>
+            <button type="submit" class="btn" data-i18n="register.registerBtn">注册</button>
         </form>
 
         <div class="login-link">
-            已有账号？ <a href="/login">立即登录</a>
+            <span data-i18n="register.loginLink">已有账号？</span> <a href="/login" data-i18n="register.loginLinkText">立即登录</a>
         </div>
     </div>
 
+    <script src="/static/js/i18n.js"></script>
+    <script src="/static/js/lang-switcher.js"></script>
+    <script>
+        // Initialize language switcher
+        document.addEventListener('DOMContentLoaded', () => {
+            injectLanguageSwitcherStyles();
+            // Add language switcher to the top of the page
+            const container = document.querySelector('.register-container');
+            const switcherDiv = document.createElement('div');
+            switcherDiv.style.cssText = 'position: absolute; top: 20px; right: 20px;';
+            switcherDiv.innerHTML = createLanguageSwitcher();
+            container.style.position = 'relative';
+            container.insertBefore(switcherDiv.firstElementChild, container.firstChild);
+            initLanguageSwitcher();
+        });
+    </script>
     <script>
         const form = document.getElementById('registerForm');
         const messageDiv = document.getElementById('message');
+        const submitBtn = form.querySelector('.btn');
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            const firstName = document.getElementById('firstName').value;
-            const lastName = document.getElementById('lastName').value;
+            const nickname = document.getElementById('nickname').value;
             
             messageDiv.innerHTML = '';
+            
+            if (!email) {
+                messageDiv.innerHTML = `<div class="error" data-i18n="register.emailRequired">邮箱为必填项</div>`;
+                i18n.updatePageContent();
+                return;
+            }
+            
+            if (!password) {
+                messageDiv.innerHTML = `<div class="error" data-i18n="register.passwordRequired">密码为必填项</div>`;
+                i18n.updatePageContent();
+                return;
+            }
+            
+            submitBtn.disabled = true;
+            submitBtn.setAttribute('data-i18n', 'register.registering');
+            submitBtn.textContent = i18n.t('register.registering');
             
             try {
                 const response = await fetch('/api/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password, firstName, lastName })
+                    body: JSON.stringify({ email, password, nickname })
                 });
                 
                 const data = await response.json();
@@ -178,9 +209,16 @@
                     }, 500);
                 } else {
                     messageDiv.innerHTML = `<div class="error">${data.error}</div>`;
+                    submitBtn.disabled = false;
+                    submitBtn.setAttribute('data-i18n', 'register.registerBtn');
+                    submitBtn.textContent = i18n.t('register.registerBtn');
                 }
             } catch (error) {
-                messageDiv.innerHTML = `<div class="error">网络错误，请稍后重试</div>`;
+                messageDiv.innerHTML = `<div class="error" data-i18n="register.networkError">网络错误，请稍后重试</div>`;
+                i18n.updatePageContent();
+                submitBtn.disabled = false;
+                submitBtn.setAttribute('data-i18n', 'register.registerBtn');
+                submitBtn.textContent = i18n.t('register.registerBtn');
             }
         });
     </script>

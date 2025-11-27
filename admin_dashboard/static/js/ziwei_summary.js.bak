@@ -1,0 +1,90 @@
+/* 🧩 Lynker Ziwei Summary v2.0 */
+/* 功能：Inspector 徽章 + 12宫摘要网格 + 渐层黑底样式 */
+
+function renderZiweiSummary(data, containerId) {
+  try {
+    // ✅ 从完整数据对象中提取各部分
+    const starMap = data.star_map || {};
+    const basicInfo = data.basic_info || {};
+    const transformations = data.transformations || {};
+
+    console.log("[ZiweiSummary v2.0] 接收到数据:", {
+      star_map: Object.keys(starMap),
+      basic_info: Object.keys(basicInfo),
+      transformations: transformations
+    });
+
+    // 🧭 Inspector 徽章：检测 star_map 数据结构
+    const mingGongData = starMap["命宫"];
+    const isDict = typeof mingGongData === "object" && !Array.isArray(mingGongData) && mingGongData !== null;
+    const badge = `<span class="ziwei-inspector-badge ${isDict ? "" : "warning"}">
+      ${isDict ? "✅ 数据结构: dict 正常" : "⚠️ 异常: star_map 非标准结构"}
+    </span>`;
+    console.log("[ZiweiInspector] star_map['命宫'] 类型检测:", isDict ? "dict ✅" : "非dict ⚠️");
+
+    const mg = starMap["命宫"] || {};
+    
+    // 繁简体兼容提取函数
+    const get = (obj, keys) => {
+      for (const k of keys) {
+        if (obj[k]) return obj[k];
+      }
+      return "";
+    };
+
+    const mainStar = get(mg, ["主星", "主星曜"]);
+    const assistStar = get(mg, ["辅星", "輔星"]);
+    const minorStar = get(mg, ["小星", "次星"]);
+
+    // ✅ 修复：命宫摘要只显示主星，不显示辅星和小星
+    const mingGongStars = mainStar && mainStar.trim() ? mainStar : "未识别";
+
+    const mingzhu = basicInfo["命主"] || "未知";
+    const shenzhu = basicInfo["身主"] || "未知";
+
+    const hua = transformations?.["生年四化"] || transformations || {};
+    const huaStr = [
+      `禄: ${hua["禄"] || hua["祿"] || ""}`,
+      `权: ${hua["权"] || hua["權"] || ""}`,
+      `科: ${hua["科"] || ""}`,
+      `忌: ${hua["忌"] || ""}`
+    ].join(" | ");
+
+    console.log("[ZiweiSummary] ✅ 命宫主星=", mingGongStars);
+
+    // 🖤 主卡内容（带 Inspector 徽章）
+    const mainCardHTML = `
+      <div class="summary-black-card">
+        ${badge}
+        <p><b>命宫:</b> ${mingGongStars}</p>
+        <p><b>命主:</b> ${mingzhu}; <b>身主:</b> ${shenzhu}</p>
+        <p><b>生年四化:</b> ${huaStr}</p>
+      </div>
+    `;
+
+    // 🏯 12宫摘要网格
+    const palaceGridHTML = Object.entries(starMap).map(([palace, info]) => {
+      if (!info || typeof info !== "object") return "";
+      const stars = [
+        get(info, ["主星", "主星曜"]),
+        get(info, ["辅星", "輔星"]),
+        get(info, ["小星", "次星"])
+      ].filter(s => s && s.trim()).join("、") || "无";
+      return `<div class="palace-card"><b>${palace}</b><br>${stars}</div>`;
+    }).join("");
+
+    // ✅ 插入主卡 + 12宫网格到容器
+    const summaryCard = document.getElementById(containerId);
+    if (summaryCard) {
+      summaryCard.innerHTML = `
+        ${mainCardHTML}
+        <div id="ziweiPalaceGrid" class="ziwei-palace-grid">${palaceGridHTML}</div>
+      `;
+      console.log("[ZiweiSummary v2.0] ✅ 主卡 + 12宫网格已成功插入 DOM，容器ID:", containerId);
+    } else {
+      console.error("[ZiweiSummary v2.0] ❌ 找不到容器元素，ID:", containerId);
+    }
+  } catch (e) {
+    console.error("[ZiweiSummary v2.0] ❌ 渲染错误:", e);
+  }
+}

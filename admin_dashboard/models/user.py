@@ -1,23 +1,26 @@
 """
 用户模型和数据库操作
-整合 LynkerAi Registration 用户系统到当前项目
+迁移至 Supabase - 不再使用 Neon PostgreSQL
+使用 BIGSERIAL 自增ID（不再使用UUID）
 """
 import os
-import uuid
-import psycopg2
-from psycopg2.extras import RealDictCursor
 from flask_login import UserMixin
 from flask_bcrypt import Bcrypt
 from datetime import datetime
+from supabase import create_client, Client
 
 bcrypt = Bcrypt()
 
-def get_db_connection():
-    """获取数据库连接"""
-    return psycopg2.connect(
-        os.environ['DATABASE_URL'],
-        cursor_factory=RealDictCursor
-    )
+def get_supabase_client() -> Client:
+    """获取 Supabase 客户端"""
+    url = os.environ.get('SUPABASE_URL')
+    key = os.environ.get('SUPABASE_KEY')
+    
+    if not url or not key:
+        raise ValueError("❌ 缺少 SUPABASE_URL 或 SUPABASE_KEY 环境变量")
+    
+    return create_client(url, key)
+
 
 class User(UserMixin):
     """
@@ -78,45 +81,44 @@ def create_user(email, password, first_name=None, last_name=None):
     """
     try:
         password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
-        user_id = str(uuid.uuid4())
         
-        conn = get_db_connection()
-        cur = conn.cursor()
+        supabase = get_supabase_client()
         
-        # 创建用户记录
-        cur.execute("""
-            INSERT INTO users (id, email, password_hash, first_name, last_name, name, is_active)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
-            RETURNING *
-        """, (user_id, email, password_hash, first_name, last_name, email, True))
+        # 创建用户记录（ID 由数据库 BIGSERIAL 自动生成）
+        response = supabase.table('users').insert({
+            'email': email,
+            'password_hash': password_hash,
+            'first_name': first_name,
+            'last_name': last_name,
+            'name': email,
+            'is_active': True
+        }).execute()
         
-        user_data = cur.fetchone()
-        conn.commit()
-        cur.close()
-        conn.close()
-        
-        return User(user_data) if user_data else None
-    except psycopg2.IntegrityError as e:
-        print(f"[User] 创建用户失败（邮箱已存在）: {e}")
+        if response.data and len(response.data) > 0:
+            return User(response.data[0])
         return None
     except Exception as e:
-        print(f"[User] 创建用户失败: {e}")
+        error_msg = str(e)
+        if 'duplicate key' in error_msg.lower() or 'unique' in error_msg.lower():
+            print(f"[User] 创建用户失败（邮箱已存在）: {e}")
+        else:
+            print(f"[User] 创建用户失败: {e}")
         return None
 
 
 def get_user_by_id(user_id):
     """通过 ID 获取用户"""
     try:
-        conn = get_db_connection()
-        cur = conn.cursor()
+        supabase = get_supabase_client()
         
-        cur.execute("SELECT * FROM users WHERE id = %s", (user_id,))
-        user_data = cur.fetchone()
+        response = supabase.table('users')\
+            .select('*')\
+            .eq('id', user_id)\
+            .execute()
         
-        cur.close()
-        conn.close()
-        
-        return User(user_data) if user_data else None
+        if response.data and len(response.data) > 0:
+            return User(response.data[0])
+        return None
     except Exception as e:
         print(f"[User] 获取用户失败: {e}")
         return None
@@ -125,16 +127,16 @@ def get_user_by_id(user_id):
 def get_user_by_email(email):
     """通过邮箱获取用户"""
     try:
-        conn = get_db_connection()
-        cur = conn.cursor()
+        supabase = get_supabase_client()
         
-        cur.execute("SELECT * FROM users WHERE email = %s", (email,))
-        user_data = cur.fetchone()
+        response = supabase.table('users')\
+            .select('*')\
+            .eq('email', email)\
+            .execute()
         
-        cur.close()
-        conn.close()
-        
-        return User(user_data) if user_data else None
+        if response.data and len(response.data) > 0:
+            return User(response.data[0])
+        return None
     except Exception as e:
         print(f"[User] 获取用户失败: {e}")
         return None
@@ -150,17 +152,17 @@ def verify_password(user, password):
         bool
     """
     try:
-        conn = get_db_connection()
-        cur = conn.cursor()
+        supabase = get_supabase_client()
         
-        cur.execute("SELECT password_hash FROM users WHERE id = %s", (user.id,))
-        result = cur.fetchone()
+        response = supabase.table('users')\
+            .select('password_hash')\
+            .eq('id', user.id)\
+            .execute()
         
-        cur.close()
-        conn.close()
-        
-        if result and result['password_hash']:
-            return bcrypt.check_password_hash(result['password_hash'], password)
+        if response.data and len(response.data) > 0:
+            password_hash = response.data[0].get('password_hash')
+            if password_hash:
+                return bcrypt.check_password_hash(password_hash, password)
         return False
     except Exception as e:
         print(f"[User] 验证密码失败: {e}")
@@ -174,25 +176,26 @@ def get_user_type(user_id):
         'guru' | 'normal_user' | 'new_user'
     """
     try:
-        conn = get_db_connection()
-        cur = conn.cursor()
+        supabase = get_supabase_client()
         
         # 检查是否是命理师
-        cur.execute("SELECT id FROM guru_profiles WHERE user_id = %s", (user_id,))
-        if cur.fetchone():
-            cur.close()
-            conn.close()
+        guru_response = supabase.table('guru_profiles')\
+            .select('id')\
+            .eq('user_id', user_id)\
+            .execute()
+        
+        if guru_response.data and len(guru_response.data) > 0:
             return 'guru'
         
         # 检查是否是普通用户
-        cur.execute("SELECT id FROM normal_user_profiles WHERE user_id = %s", (user_id,))
-        if cur.fetchone():
-            cur.close()
-            conn.close()
+        normal_response = supabase.table('normal_user_profiles')\
+            .select('id')\
+            .eq('user_id', user_id)\
+            .execute()
+        
+        if normal_response.data and len(normal_response.data) > 0:
             return 'normal_user'
         
-        cur.close()
-        conn.close()
         return 'new_user'
     except Exception as e:
         print(f"[User] 获取用户类型失败: {e}")
@@ -205,65 +208,55 @@ def create_normal_user_profile(user_id, pseudonym, **kwargs):
     """
     创建普通用户档案
     Args:
-        user_id: 用户 UUID
+        user_id: 用户 ID（BIGINT）
         pseudonym: 灵性假名（必填）
         **kwargs: 可选字段（gender, birth_date, preferred_provider 等）
     Returns:
         dict 档案数据或 None
     """
     try:
-        conn = get_db_connection()
-        cur = conn.cursor()
+        supabase = get_supabase_client()
         
-        profile_id = str(uuid.uuid4())
+        profile_data = {
+            'user_id': user_id,
+            'pseudonym': pseudonym,
+            'gender': kwargs.get('gender'),
+            'birth_date': kwargs.get('birth_date'),
+            'birth_time': kwargs.get('birth_time'),
+            'birth_location': kwargs.get('birth_location'),
+            'preferred_provider': kwargs.get('preferred_provider', 'LocalMock'),
+            'preferred_language': kwargs.get('preferred_language', 'zh'),
+            'avatar_url': kwargs.get('avatar_url')
+        }
         
-        cur.execute("""
-            INSERT INTO normal_user_profiles 
-            (id, user_id, pseudonym, gender, birth_date, birth_time, birth_location, 
-             preferred_provider, preferred_language, avatar_url)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-            RETURNING *
-        """, (
-            profile_id,
-            user_id,
-            pseudonym,
-            kwargs.get('gender'),
-            kwargs.get('birth_date'),
-            kwargs.get('birth_time'),
-            kwargs.get('birth_location'),
-            kwargs.get('preferred_provider', 'LocalMock'),
-            kwargs.get('preferred_language', 'zh'),
-            kwargs.get('avatar_url')
-        ))
+        response = supabase.table('normal_user_profiles').insert(profile_data).execute()
         
-        profile = cur.fetchone()
-        conn.commit()
-        cur.close()
-        conn.close()
-        
-        print(f"[NormalProfile] 创建成功: {pseudonym} (user_id: {user_id})")
-        return dict(profile) if profile else None
-    except psycopg2.IntegrityError:
-        print(f"[NormalProfile] 用户档案已存在")
+        if response.data and len(response.data) > 0:
+            print(f"[NormalProfile] 创建成功: {pseudonym} (user_id: {user_id})")
+            return response.data[0]
         return None
     except Exception as e:
-        print(f"[NormalProfile] 创建失败: {e}")
+        error_msg = str(e)
+        if 'duplicate key' in error_msg.lower() or 'unique' in error_msg.lower():
+            print(f"[NormalProfile] 用户档案已存在")
+        else:
+            print(f"[NormalProfile] 创建失败: {e}")
         return None
 
 
 def get_normal_user_profile(user_id):
     """获取普通用户档案"""
     try:
-        conn = get_db_connection()
-        cur = conn.cursor()
+        supabase = get_supabase_client()
         
-        cur.execute("SELECT * FROM normal_user_profiles WHERE user_id = %s", (user_id,))
-        profile = cur.fetchone()
+        response = supabase.table('normal_user_profiles')\
+            .select('*')\
+            .eq('user_id', user_id)\
+            .execute()
         
-        cur.close()
-        conn.close()
-        
-        return dict(profile) if profile else None
+        if response.data and len(response.data) > 0:
+            return response.data[0]
+        return None
     except Exception as e:
         print(f"[NormalProfile] 获取失败: {e}")
         return None
@@ -275,67 +268,62 @@ def create_guru_profile(user_id, pseudonym, bio, specializations, **kwargs):
     """
     创建命理师档案
     Args:
-        user_id: 用户 UUID
-        pseudonym: 灵性假名
+        user_id: 用户 ID（BIGINT）
+        pseudonym: 灵性假名 (展示名称)
         bio: 个人简介
         specializations: 专长列表 ['bazi', 'ziwei', 'iching', 'tarot']
-        **kwargs: 可选字段
+        **kwargs: 可选字段 (real_name, phone_number, display_name, years_of_experience, certification)
     Returns:
         dict 档案数据或 None
     """
     try:
-        conn = get_db_connection()
-        cur = conn.cursor()
+        supabase = get_supabase_client()
         
-        profile_id = str(uuid.uuid4())
+        profile_data = {
+            'user_id': user_id,
+            'pseudonym': pseudonym,
+            'bio': bio,
+            'specializations': specializations,
+            'region': kwargs.get('region'),
+            'nationality': kwargs.get('nationality'),
+            'ai_provider': kwargs.get('ai_provider', 'LocalMock'),
+            'ai_tone': kwargs.get('ai_tone', 'professional'),
+            'avatar_url': kwargs.get('avatar_url'),
+            'real_name': kwargs.get('real_name'),
+            'phone_number': kwargs.get('phone_number'),
+            'display_name': kwargs.get('display_name', pseudonym),
+            'years_of_experience': kwargs.get('years_of_experience'),
+            'certification': kwargs.get('certification')
+        }
         
-        cur.execute("""
-            INSERT INTO guru_profiles 
-            (id, user_id, pseudonym, bio, specializations, region, nationality,
-             ai_provider, ai_tone, avatar_url)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-            RETURNING *
-        """, (
-            profile_id,
-            user_id,
-            pseudonym,
-            bio,
-            specializations,  # PostgreSQL 数组
-            kwargs.get('region'),
-            kwargs.get('nationality'),
-            kwargs.get('ai_provider', 'LocalMock'),
-            kwargs.get('ai_tone', 'professional'),
-            kwargs.get('avatar_url')
-        ))
+        response = supabase.table('guru_profiles').insert(profile_data).execute()
         
-        profile = cur.fetchone()
-        conn.commit()
-        cur.close()
-        conn.close()
-        
-        print(f"[GuruProfile] 创建成功: {pseudonym} (user_id: {user_id})")
-        return dict(profile) if profile else None
-    except psycopg2.IntegrityError:
-        print(f"[GuruProfile] 命理师档案已存在")
+        if response.data and len(response.data) > 0:
+            print(f"[GuruProfile] 创建成功: {pseudonym} (user_id: {user_id})")
+            return response.data[0]
         return None
     except Exception as e:
-        print(f"[GuruProfile] 创建失败: {e}")
+        error_msg = str(e)
+        if 'duplicate key' in error_msg.lower() or 'unique' in error_msg.lower():
+            print(f"[GuruProfile] 命理师档案已存在")
+        else:
+            print(f"[GuruProfile] 创建失败: {e}")
         return None
 
 
 def get_guru_profile(user_id):
     """获取命理师档案"""
     try:
-        conn = get_db_connection()
-        cur = conn.cursor()
+        supabase = get_supabase_client()
         
-        cur.execute("SELECT * FROM guru_profiles WHERE user_id = %s", (user_id,))
-        profile = cur.fetchone()
+        response = supabase.table('guru_profiles')\
+            .select('*')\
+            .eq('user_id', user_id)\
+            .execute()
         
-        cur.close()
-        conn.close()
-        
-        return dict(profile) if profile else None
+        if response.data and len(response.data) > 0:
+            return response.data[0]
+        return None
     except Exception as e:
         print(f"[GuruProfile] 获取失败: {e}")
         return None
@@ -351,8 +339,8 @@ def validate_pseudonym(pseudonym):
     """
     import re
     
-    if len(pseudonym) < 2:
-        return False, "灵性假名至少需要 2 个字符"
+    if len(pseudonym) < 4:
+        return False, "灵性假名至少需要 4 个字符"
     
     # 检查是否为真名模式
     real_name_patterns = [
