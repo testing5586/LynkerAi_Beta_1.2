@@ -20,6 +20,7 @@ let currentMode = "same_yongshen";
 // 初始化
 function init() {
     renderFilterBar();
+    loadCurrentUser();  // Load user birth time data from session
     loadMatches();
     loadLeaderboard();
 }
@@ -166,6 +167,37 @@ function renderResults(data) {
     `;
         matchList.appendChild(div);
     });
+}
+
+// Load current user birth time data from session
+async function loadCurrentUser() {
+    try {
+        const res = await fetch(`${API_BASE}/api/get-current-user`);
+        const data = await res.json();
+
+        if (data.success) {
+            // Update user profile card elements
+            const userNameEl = document.getElementById('userName');
+            const userUidEl = document.getElementById('userUid');
+            const birthTimeEl = document.getElementById('birthTime');
+            const baziCodeEl = document.getElementById('baziCode');
+
+            if (userNameEl) userNameEl.textContent = data.name || '样板人A';
+            if (userUidEl) userUidEl.textContent = `UID: ${data.uid || '自定义'}`;
+            if (birthTimeEl) birthTimeEl.textContent = `${data.solar_date} ${data.solar_time}`;
+
+            // Note: bazi_code would need to be calculated from birth data
+            // For now, we'll leave it as is since there's no bazi calculation in the current API
+            // If baziCodeEl exists and data has bazi_code, update it
+            // if (baziCodeEl && data.bazi_code) baziCodeEl.textContent = data.bazi_code;
+
+            console.log('用户数据加载成功:', data);
+        } else {
+            console.log('未找到用户出生时间数据');
+        }
+    } catch (err) {
+        console.error('加载用户数据失败:', err);
+    }
 }
 
 // 排行榜模式 - BaziMatch 页面默认显示 Bazi 榜

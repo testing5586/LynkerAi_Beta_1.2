@@ -1,4 +1,4 @@
-/* 全局重置与基础样式 */
+/* Global Reset & Basic Styles */
 :root {
     --primary: #7c3aed;
     --primary-dark: #6d28d9;
@@ -18,22 +18,68 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
-/* 布局容器：双栏设计 */
+/* Layout Container */
 .layout-container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 24px;
     display: grid;
     grid-template-columns: 320px 1fr;
-    /* 左侧固定320px，右侧自适应 */
     gap: 24px;
     align-items: start;
 }
 
-/* ========== 左侧边栏 ========== */
+/* Sidebar */
 .sidebar {
     display: flex;
     flex-direction: column;
+}
+
+/* User Profile Card */
+.user-profile-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 32px 24px;
+    box-shadow: var(--shadow);
+    margin-bottom: 24px;
+}
+
+.profile-user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.user-avatar-large img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.user-name {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 4px;
+}
+
+.user-uid {
+    font-size: 14px;
+    color: var(--text-sub);
+}
+
+.profile-header {
+    font-size: 13px;
+    font-weight: 700;
+    color: #7c3aed;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
 }
 
 .profile-item {
@@ -56,7 +102,6 @@ body {
     font-size: 18px;
     font-weight: 700;
     font-family: 'JetBrains Mono', monospace;
-    /* 等宽字体适合显示数字和八字 */
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -67,7 +112,7 @@ body {
     font-weight: 700;
 }
 
-/* 2. 排行榜 (左侧) */
+/* Leaderboard Card */
 .leaderboard-card {
     background: var(--card-bg);
     border-radius: var(--radius);
@@ -84,7 +129,7 @@ body {
     gap: 8px;
 }
 
-/* 双榜切换组件 */
+/* Leaderboard Tabs */
 .leaderboard-tabs {
     display: flex;
     background: #f1f5f9;
@@ -150,7 +195,7 @@ body {
     color: #db2777;
 }
 
-/* 排行榜列表项 */
+/* Rank Item */
 .rank-item {
     display: flex;
     align-items: center;
@@ -183,7 +228,6 @@ body {
     font-weight: 700;
 }
 
-/* 前三名特殊样式 */
 .rank-item:nth-child(1) .rank-icon {
     background: linear-gradient(135deg, #fef3c7 0%, #fcd34d 100%);
     color: #92400e;
@@ -227,7 +271,7 @@ body {
     -webkit-text-fill-color: transparent;
 }
 
-/* ========== 右侧主内容 ========== */
+/* Main Content */
 .main-content {
     display: flex;
     flex-direction: column;
@@ -249,7 +293,7 @@ body {
     font-size: 14px;
 }
 
-/* 筛选面板 */
+/* Filter Panel */
 .filter-panel {
     background: var(--card-bg);
     border-radius: var(--radius);
@@ -302,7 +346,7 @@ body {
     transform: translateY(-1px);
 }
 
-/* 匹配结果卡片 */
+/* Match Card */
 .match-card,
 .bazi-match-card {
     background: var(--card-bg);
@@ -374,12 +418,22 @@ body {
 }
 
 .btn-primary {
-    background: var(--primary);
+    background: #8b5cf6;
     color: white;
+    width: 100%;
+    padding: 12px;
+    font-size: 15px;
+    box-shadow: 0 4px 14px 0 rgba(139, 92, 246, 0.39);
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    box-sizing: border-box;
 }
 
 .btn-primary:hover {
-    background: var(--primary-dark);
+    background: #7c3aed;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px 0 rgba(139, 92, 246, 0.23);
 }
 
 .btn-secondary {
@@ -391,7 +445,7 @@ body {
     background: #e2e8f0;
 }
 
-/* 响应式适配 */
+/* Responsive */
 @media (max-width: 768px) {
     .layout-container {
         grid-template-columns: 1fr;

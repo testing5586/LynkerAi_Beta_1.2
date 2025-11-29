@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
 <html lang="zh">
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>时间同频 · 灵客AI</title>
-    <link rel="stylesheet" href="{{ url_for('bazi.static', filename='css/samelife.css') }}?v=10" />
+    <link rel="stylesheet" href="{{ url_for('bazi.static', filename='css/common.css') }}?v=11" />
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap"
         rel="stylesheet">
@@ -44,6 +43,10 @@
                     <div class="profile-label">真太阳时</div>
                     <div class="profile-value" id="trueTime">---</div>
                 </div>
+
+                <a href="/bazi/birth-input" class="btn-primary">
+                    重新输入出生时间
+                </a>
             </div>
 
             <!-- 2. 排行榜 -->
@@ -92,7 +95,7 @@
 
     </div>
 
-    <script src="{{ url_for('bazi.static', filename='js/samelife.js') }}?v=10"></script>
+    <script src="{{ url_for('bazi.static', filename='js/modernmatch.js') }}?v=10"></script>
 
 </body>
 

@@ -29,14 +29,14 @@ bazi_bp = Blueprint('bazi', __name__, template_folder='templates', static_folder
 
 @bazi_bp.route('/')
 def index():
-    """主页 - 可以重定向到测试页面"""
-    return render_template('samelife.html')
+    """主页 - 现代时间匹配页面"""
+    return render_template('modernmatch.html')
 
 
-@bazi_bp.route('/samelife')
-def samelife_page():
-    """同命匹配页面"""
-    return render_template('samelife.html')
+@bazi_bp.route('/modernmatch')
+def modernmatch_page():
+    """现代时间匹配页面"""
+    return render_template('modernmatch.html')
 
 
 @bazi_bp.route('/api/match-same-life', methods=['POST'])
@@ -585,7 +585,7 @@ def api_save_birth_time():
         
         return jsonify({
             "success": True,
-            "redirect_url": "/samelife",
+            "redirect_url": "/modernmatch",
             "message": "出生时间已保存"
         })
     
