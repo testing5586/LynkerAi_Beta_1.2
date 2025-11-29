@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>同命匹配测试 · 灵客AI</title>
+    <link rel="stylesheet" href="/static/css/samelife.css" />
+</head>
+
+<body>
+
+    <div class="page">
+
+        <h1>同命匹配 · 寻找同频灵友</h1>
+        <p class="desc">基于灵客排盘引擎，按"时 / 点 / 刻 / 分" 精度匹配。</p>
+        <!-- 家庭结构区块 -->
+        <div class="family-section">
+            <h2 class="section-title">家庭结构分析</h2>
+
+            <!-- 结构类型 -->
+            <div id="structureType" class="structure-type">
+                <div class="type-badge">双亲均衡中性型</div>
+                <div class="type-desc">父母双方影响力处于中等水平</div>
+            </div>
+
+            <!-- 父柱 -->
+            <div class="column-block father-column">
+                <h3 class="column-title">父柱 (Father Column)</h3>
+                <div class="column-summary" id="fatherSummary">
+                    父亲存在感中等，权威投射中等，资源支持中等
+                </div>
+                <div class="metrics">
+                    <div class="metric-item">
+                        <div class="metric-label">存在强度</div>
+                        <div class="metric-bar">
+                            <div class="metric-fill" id="fatherPresence" style="width: 50%"></div>
+                        </div>
+                        <div class="metric-value">50</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-label">权威投射</div>
+                        <div class="metric-bar">
+                            <div class="metric-fill" id="fatherAuthority" style="width: 50%"></div>
+                        </div>
+                        <div class="metric-value">50</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-label">资源支持</div>
+                        <div class="metric-bar">
+                            <div class="metric-fill" id="fatherResource" style="width: 50%"></div>
+                        </div>
+                        <div class="metric-value">50</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-label">对抗张力</div>
+                        <div class="metric-bar">
+                            <div class="metric-fill" id="fatherConflict" style="width: 50%"></div>
+                        </div>
+                        <div class="metric-value">50</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-label">情感距离</div>
+                        <div class="metric-bar">
+                            <div class="metric-fill" id="fatherDistance" style="width: 50%"></div>
+                        </div>
+                        <div class="metric-value">50</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 母柱 -->
+            <div class="column-block mother-column">
+                <h3 class="column-title">母柱 (Mother Column)</h3>
+                <div class="column-summary" id="motherSummary">
+                    母亲存在感中等，情感黏结中等，滋养能力中等
+                </div>
+                <div class="metrics">
+                    <div class="metric-item">
+                        <div class="metric-label">存在强度</div>
+                        <div class="metric-bar">
+                            <div class="metric-fill" id="motherPresence" style="width: 50%"></div>
+                        </div>
+                        <div class="metric-value">50</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-label">情感黏结</div>
+                        <div class="metric-bar">
+                            <div class="metric-fill" id="motherBond" style="width: 50%"></div>
+                        </div>
+                        <div class="metric-value">50</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-label">滋养能力</div>
+                        <div class="metric-bar">
+                            <div class="metric-fill" id="motherNurture" style="width: 50%"></div>
+                        </div>
+                        <div class="metric-value">50</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-label">控制模式</div>
+                        <div class="metric-bar">
+                            <div class="metric-fill" id="motherControl" style="width: 50%"></div>
+                        </div>
+                        <div class="metric-value">50</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-label">缺失模式</div>
+                        <div class="metric-bar">
+                            <div class="metric-fill" id="motherEmpty" style="width: 50%"></div>
+                        </div>
+                        <div class="metric-value">50</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 匹配评分展示区 -->
+        <div class="match-score-section" id="matchScoreSection" style="display: none;">
+            <h2 class="section-title">匹配度分析</h2>
+
+            <!-- 综合评分 -->
+            <div class="composite-score-card">
+                <div class="composite-label">综合匹配度</div>
+                <div class="composite-value" id="compositeScore">88</div>
+                <div class="composite-bar">
+                    <div class="composite-fill" id="compositeFill" style="width: 88%"></div>
+                </div>
+                <div class="composite-interpretation" id="compositeInterpretation">
+                    高度相似的生命模式，值得深入交流
+                </div>
+            </div>
+
+            <!-- 三层评分 -->
+            <div class="score-layers">
+                <!-- 时间结构评分 -->
+                <div class="score-layer">
+                    <div class="layer-header">
+                        <span class="layer-icon">⏰</span>
+                        <span class="layer-name">时间结构</span>
+                        <span class="layer-value" id="timeScoreValue">85</span>
+                    </div>
+                    <div class="layer-bar">
+                        <div class="layer-fill time-fill" id="timeScoreFill" style="width: 85%"></div>
+                    </div>
+                    <div class="layer-detail" id="timeScoreDetail">时间结构相似度很高（85分）</div>
+                </div>
+
+                <!-- 父柱评分 -->
+                <div class="score-layer">
+                    <div class="layer-header">
+                        <span class="layer-icon">👨</span>
+                        <span class="layer-name">父柱相似度</span>
+                        <span class="layer-value" id="fatherScoreValue">92</span>
+                    </div>
+                    <div class="layer-bar">
+                        <div class="layer-fill father-fill" id="fatherScoreFill" style="width: 92%"></div>
+                    </div>
+                    <div class="layer-detail" id="fatherScoreDetail">父柱相似度极高（92分）</div>
+                </div>
+
+                <!-- 母柱评分 -->
+                <div class="score-layer">
+                    <div class="layer-header">
+                        <span class="layer-icon">👩</span>
+                        <span class="layer-name">母柱相似度</span>
+                        <span class="layer-value" id="motherScoreValue">88</span>
+                    </div>
+                    <div class="layer-bar">
+                        <div class="layer-fill mother-fill" id="motherScoreFill" style="width: 88%"></div>
+                    </div>
+                    <div class="layer-detail" id="motherScoreDetail">母柱相似度很高（88分）</div>
+                </div>
+            </div>
+
+            <!-- 权重说明 -->
+            <div class="weight-info">
+                <small>权重配置：时间 40% · 父柱 30% · 母柱 30%</small>
+            </div>
+        </div>
+
+        <!-- 匹配结果 -->
+        <div id="matchList" class="list"></div>
+
+    </div>
+
+    <script src="/static/js/samelife.js"></script>
+
+</body>
+
+</html>

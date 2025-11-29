@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>八字同频搜索 · 灵客AI</title>
+    <link rel="stylesheet" href="{{ url_for('bazi.static', filename='css/samelife.css') }}?v=10" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap"
+        rel="stylesheet">
+    <script>
+        const API_BASE = "{{ url_for('bazi.index') }}".replace(/\/$/, '');
+    </script>
+</head>
+
+<body>
+
+    <div class="layout-container">
+
+        <!-- 左侧边栏：核心信息区 -->
+        <aside class="sidebar">
+
+            <!-- 1. 高亮用户命盘卡 (新设计) -->
+            <div class="user-profile-card">
+                <div class="profile-header">CURRENT CHART</div>
+
+                <div class="profile-item">
+                    <div class="profile-label">出生时间</div>
+                    <div class="profile-value" id="birthTime">2000-03-20 08:18</div>
+                </div>
+
+                <div class="profile-item">
+                    <div class="profile-label">八字排盘</div>
+                    <div class="profile-value" id="baziCode">庚辰 戊寅 丁未 壬子</div>
+                </div>
+            </div>
+
+            <!-- 2. 双榜切换排行榜 -->
+            <div class="leaderboard-card">
+                <div class="section-title">
+                    同频排行榜
+                    <span id="algoBadge" class="algo-badge bazi">BaziMatchAgent</span>
+                </div>
+
+                <div class="leaderboard-tabs">
+                    <div class="tab-item" onclick="switchLeaderboard('time')" id="tab-time">🔮 现代时间榜</div>
+                    <div class="tab-item active" onclick="switchLeaderboard('bazi')" id="tab-bazi">🧘‍♂️ 八字同频榜</div>
+                </div>
+
+                <div id="leaderboardDesc" class="leaderboard-desc">
+                    本榜基于传统八字四柱系统匹配，不采用现代秒级时间算法。
+                </div>
+
+                <div id="weight-version" class="weight-tag" style="display:none"></div>
+                <div id="leaderboardList" class="leaderboard-list">
+                    <div class="loading">加载中...</div>
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- 右侧主内容区 -->
+        <main class="main-content">
+
+            <div class="page-header">
+                <h1>同命匹配 · 八字同频搜索</h1>
+                <p class="desc">基于天干地支结构的灵魂级匹配引擎</p>
+            </div>
+
+            <!-- 筛选控制面板 -->
+            <div class="filter-panel">
+                <!-- 评分体系说明 -->
+                <div
+                    style="background:#fef3c7;border-left:4px solid #f59e0b;padding:12px 16px;margin-bottom:16px;border-radius:8px;font-size:13px;color:#92400e;">
+                    <strong>📌 评分说明</strong><br>
+                    此评分采用传统八字匹配体系（年20分 → 年月40分 → 年月日70分 → 年月日时100分），仅在四柱完全一致时视为真正"同命"。<br>
+                    高阶时间频率匹配请使用<a href="{{ url_for('bazi.index') }}"
+                        style="color:#b45309;text-decoration:underline;">「时间同频搜索」</a>模块。
+                </div>
+
+                <div id="filter-status" class="filter-status">
+                    超级同频模式：8 项全匹配
+                </div>
+
+                <div class="filter-section">
+                    <div style="font-size:12px;color:#64748b;margin-bottom:12px;">筛选条件（可自定义）</div>
+                    <div id="bazi-criteria" class="match-criteria-bar"></div>
+                </div>
+            </div>
+
+            <!-- 匹配结果列表 -->
+            <div id="matchList" class="list"></div>
+
+        </main>
+
+    </div>
+
+    <script src="{{ url_for('bazi.static', filename='js/bazimatch.js') }}?v=12"></script>
+
+</body>
+
+</html>
