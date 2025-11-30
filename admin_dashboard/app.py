@@ -144,6 +144,21 @@ try:
 except Exception as e:
     print(f"[WARN] NewChat 聊天系统挂载失败: {e}")
 
+# 注册 Lynker Bazi Engine Blueprint
+try:
+    import sys
+    import os
+    # Add parent directory to sys.path to allow importing lynker_bazi_engine
+    parent_dir = os.path.join(os.path.dirname(__file__), '..')
+    if parent_dir not in sys.path:
+        sys.path.insert(0, parent_dir)
+    
+    from lynker_bazi_engine.app import bazi_bp
+    app.register_blueprint(bazi_bp, url_prefix='/bazi')
+    print("[OK] Lynker Bazi Engine 已注册: /bazi")
+except Exception as e:
+    print(f"[WARN] Lynker Bazi Engine 挂载失败: {e}")
+
 @app.route("/")
 def index():
     """LynkerAI 欢迎页"""

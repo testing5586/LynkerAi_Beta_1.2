@@ -4,7 +4,7 @@ Chat Hub v2.0 - 真实 AI 协作推理系统
 替代旧的模拟系统，集成 Lynker Engine
 """
 
-from lynker_engine import LynkerEngine
+from lynker_core import LynkerEngine
 from typing import List, Dict
 
 engine = None

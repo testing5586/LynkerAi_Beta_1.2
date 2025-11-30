@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>出生时间填写 - 命盘入口</title>
+    <link rel="stylesheet" href="{{ url_for('bazi.static', filename='css/birth_input.css') }}">
+    <script>
+        const API_BASE = "{{ url_for('bazi.index') }}".replace(/\/$/, '');
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="form-card">
+            <h1 class="page-title">📅 出生时间填写</h1>
+            <p class="page-subtitle">命盘入口 · 八字 · 紫微 · 同频</p>
+
+            <form id="birthForm">
+                <!-- 基本信息 -->
+                <section class="form-section">
+                    <h2 class="section-title">基本信息</h2>
+
+                    <div class="form-group">
+                        <label>命主姓名 (可空)</label>
+                        <input type="text" id="name" name="name" placeholder="灵友" class="form-input">
+                    </div>
+
+                    <div class="form-group">
+                        <label>性别</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="gender" value="男" checked>
+                                <span>男</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="gender" value="女">
+                                <span>女</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>历法模式</label>
+                        <div class="tab-group">
+                            <button type="button" class="tab-btn active" data-mode="solar">公历</button>
+                            <button type="button" class="tab-btn" data-mode="lunar" disabled>农历</button>
+                            <button type="button" class="tab-btn" data-mode="sizhu" disabled>四柱直输</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 出生时间 -->
+                <section class="form-section">
+                    <h2 class="section-title">出生时间</h2>
+
+                    <div class="form-group">
+                        <label>出生日期 *</label>
+                        <input type="date" id="birthDate" name="birthDate" required class="form-input">
+                    </div>
+
+                    <div class="form-group">
+                        <label>出生时间 (HH:MM) *</label>
+                        <input type="time" id="birthTime" name="birthTime" required class="form-input">
+                    </div>
+
+                    <div class="form-group">
+                        <label>出生地 (可空)</label>
+                        <input type="text" id="birthPlace" name="birthPlace" placeholder="北京市" class="form-input"
+                            list="city-list">
+                        <datalist id="city-list">
+                            <option value="北京市">北京市 (116.40°E, 39.90°N)</option>
+                            <option value="上海市">上海市 (121.47°E, 31.23°N)</option>
+                            <option value="广州市">广州市 (113.26°E, 23.13°N)</option>
+                            <option value="深圳市">深圳市 (114.06°E, 22.54°N)</option>
+                        </datalist>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="daylightSaving" name="daylightSaving">
+                            <span>夏令时</span>
+                        </label>
+
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="trueSolarTime" name="trueSolarTime" checked>
+                            <span>真太阳时 (默认勾选)</span>
+                        </label>
+
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="earlyLateZi" name="earlyLateZi">
+                            <span>早晚子时</span>
+                        </label>
+                    </div>
+                </section>
+
+                <!-- 自动显示块 -->
+                <section class="form-section auto-display">
+                    <h2 class="section-title">自动计算 (只读)</h2>
+
+                    <div class="display-row">
+                        <span class="display-label">真太阳时:</span>
+                        <span class="display-value" id="trueSolarTimeDisplay">---</span>
+                    </div>
+
+                    <div class="display-row">
+                        <span class="display-label">地点经纬:</span>
+                        <span class="display-value" id="coordinatesDisplay">---</span>
+                    </div>
+                </section>
+
+                <!-- 提交按钮 -->
+                <button type="submit" class="submit-btn">开始排盘</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="{{ url_for('bazi.static', filename='js/birth_input.js') }}"></script>
+</body>
+
+</html>

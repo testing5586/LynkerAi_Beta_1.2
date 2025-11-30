@@ -1,0 +1,299 @@
+"""
+同命匹配 API - Flask 后端
+用于测试 Supabase 表结构和匹配逻辑
+"""
+
+from flask import Flask, request, jsonify, render_template
+from flask_cors import CORS
+import os
+from engines.family_engine import calculate_family_columns, interpret_family_column
+from engines.match_engine import calculate_composite_match, interpret_match_score
+from db.family_columns_db import (
+    insert_family_columns,
+    get_family_columns_by_chart_id,
+    upsert_family_columns
+)
+from db.match_scores_db import (
+    insert_match_score,
+    get_match_score,
+    get_top_matches,
+    upsert_match_score
+)
+from supabase_client import test_connection
+
+app = Flask(__name__)
+CORS(app)
+
+# 配置模板和静态文件路径
+app.template_folder = 'templates'
+app.static_folder = 'static'
+
+
+@app.route('/')
+def index():
+    """主页 - 可以重定向到测试页面"""
+    return render_template('samelife.html')
+
+
+@app.route('/api/match-same-life', methods=['POST'])
+def match_same_life_api():
+    """
+    同命匹配 API
+    
+    请求体:
+    {
+        "mode": "fen"  // hour | point | ke | fen
+    }
+    
+    响应:
+    {
+        "matches": [
+            {
+                "user_id": "abc123",
+                "similarity": 98,
+                "birth_time": "2000-03-20 08:18",
+                "true_solar_time": "08:10"
+            }
+        ]
+    }
+    """
+    data = request.json
+    mode = data.get("mode", "fen")
+    
+    # TODO: 这里之后对接 Supabase RPC
+    # 暂时用假数据测试
+    
+    # 模拟不同模式的匹配结果
+    mock_data = {
+        "hour": [
+            {"user_id": "abc123def456", "similarity": 78, "birth_time": "2000-03-20 08:30", "true_solar_time": "08:22"},
+            {"user_id": "ghi789jkl012", "similarity": 72, "birth_time": "2000-05-15 08:45", "true_solar_time": "08:37"},
+            {"user_id": "mno345pqr678", "similarity": 68, "birth_time": "2000-07-08 08:15", "true_solar_time": "08:07"},
+        ],
+        "point": [
+            {"user_id": "stu901vwx234", "similarity": 85, "birth_time": "2000-03-20 08:20", "true_solar_time": "08:12"},
+            {"user_id": "yza567bcd890", "similarity": 82, "birth_time": "2000-04-12 08:25", "true_solar_time": "08:17"},
+        ],
+        "ke": [
+            {"user_id": "efg123hij456", "similarity": 92, "birth_time": "2000-03-20 08:18", "true_solar_time": "08:10"},
+            {"user_id": "klm789nop012", "similarity": 89, "birth_time": "2000-03-20 08:19", "true_solar_time": "08:11"},
+            {"user_id": "qrs345tuv678", "similarity": 87, "birth_time": "2000-06-10 08:17", "true_solar_time": "08:09"},
+            {"user_id": "wxy901zab234", "similarity": 84, "birth_time": "2000-08-22 08:16", "true_solar_time": "08:08"},
+        ],
+        "fen": [
+            {"user_id": "cde567fgh890", "similarity": 98, "birth_time": "2000-03-20 08:18", "true_solar_time": "08:10"},
+            {"user_id": "ijk123lmn456", "similarity": 96, "birth_time": "2000-03-20 08:18", "true_solar_time": "08:10"},
+        ]
+    }
+    
+    matches = mock_data.get(mode, [])
+    
+    return jsonify({
+        "success": True,
+        "mode": mode,
+        "matches": matches
+    })
+
+
+@app.route('/api/calc/family-columns', methods=['POST'])
+def calc_family_columns():
+    """
+    计算父母柱数据
+    
+    请求体:
+    {
+        "chart_data": {
+            "parents_palace": {
+                "main_stars": ["太阳", "天府"],
+                "transformations": {
+                    "化禄": true,
+                    "化权": false,
+                    "化科": true,
+                    "化忌": false
+                }
+            }
+        }
+    }
+    
+    响应:
+    {
+        "success": true,
+        "family_data": {
+            "father_presence": 65,
+            "father_authority": 70,
+            ...
+        },
+        "interpretation": {
+            "father_summary": "...",
+            "mother_summary": "...",
+            "structure_type": {...}
+        }
+    }
+    """
+    try:
+        data = request.json
+        chart_data = data.get("chart_data", {})
+        chart_id = data.get("chart_id")  # 可选：如果提供则保存到数据库
+        save_to_db = data.get("save_to_db", False)  # 是否保存到数据库
+        
+        # 计算父母柱数据
+        family_data = calculate_family_columns(chart_data)
+        
+        # 生成解读
+        interpretation = interpret_family_column(family_data)
+        
+        # 如果提供了 chart_id 且要求保存，则保存到数据库
+        db_record = None
+        if save_to_db and chart_id:
+            db_record = upsert_family_columns(chart_id, family_data)
+        
+        return jsonify({
+            "success": True,
+            "family_data": family_data,
+            "interpretation": interpretation,
+            "db_saved": db_record is not None,
+            "db_record_id": db_record["id"] if db_record else None
+        })
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
+@app.route('/api/family-columns/<int:chart_id>', methods=['GET'])
+def get_family_columns(chart_id):
+    """
+    根据 chart_id 获取父母柱数据
+    """
+    try:
+        record = get_family_columns_by_chart_id(chart_id)
+        
+        if record:
+            # 重新生成解读
+            interpretation = interpret_family_column(record)
+            
+            return jsonify({
+                "success": True,
+                "family_data": record,
+                "interpretation": interpretation
+            })
+        else:
+            return jsonify({
+                "success": False,
+                "error": "未找到该命盘的父母柱数据"
+            }), 404
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
+@app.route('/api/match/calculate', methods=['POST'])
+def calculate_match():
+    """
+    计算两个命盘之间的三层匹配度
+    
+    请求体:
+    {
+        "chart_id_a": 12345,
+        "chart_id_b": 67890,
+        "chart_data_a": {"time_diff_minutes": 0},
+        "chart_data_b": {"time_diff_minutes": 5},
+        "family_data_a": {"father_presence": 65, ...},
+        "family_data_b": {"father_presence": 70, ...},
+        "save_to_db": true
+    }
+    
+    响应:
+    {
+        "success": true,
+        "match_data": {
+            "time_score": 85,
+            "father_score": 92,
+            "mother_score": 88,
+            "composite_score": 88
+        },
+        "interpretation": {
+            "overall_interpretation": "...",
+            "time_summary": "..."
+        },
+        "db_saved": true
+    }
+    """
+    try:
+        data = request.json
+        
+        chart_id_a = data.get("chart_id_a")
+        chart_id_b = data.get("chart_id_b")
+        chart_data_a = data.get("chart_data_a", {})
+        chart_data_b = data.get("chart_data_b", {})
+        family_data_a = data.get("family_data_a", {})
+        family_data_b = data.get("family_data_b", {})
+        save_to_db = data.get("save_to_db", False)
+        
+        # 计算三层匹配度
+        match_data = calculate_composite_match(
+            chart_data_a,
+            chart_data_b,
+            family_data_a,
+            family_data_b
+        )
+        
+        # 生成解读
+        interpretation = interpret_match_score(match_data)
+        
+        # 如果提供了 chart_id 且要求保存，则保存到数据库
+        db_saved = False
+        db_record_id = None
+        
+        if save_to_db and chart_id_a and chart_id_b:
+            db_record = upsert_match_score(chart_id_a, chart_id_b, match_data)
+            if db_record:
+                db_saved = True
+                db_record_id = db_record["id"]
+        
+        return jsonify({
+            "success": True,
+            "match_data": match_data,
+            "interpretation": interpretation,
+            "db_saved": db_saved,
+            "db_record_id": db_record_id
+        })
+        
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
+@app.route('/api/supabase-test', methods=['GET'])
+def supabase_test():
+    """
+    测试 Supabase 连接
+    """
+    try:
+        is_connected = test_connection()
+        
+        if is_connected:
+            return jsonify({
+                "success": True,
+                "message": "Supabase 连接成功！"
+            })
+        else:
+            return jsonify({
+                "success": False,
+                "message": "Supabase 连接失败，请检查配置"
+            }), 500
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
+if __name__ == '__main__':
+    # 开发环境运行
+    app.run(host='0.0.0.0', port=5000, debug=True)
