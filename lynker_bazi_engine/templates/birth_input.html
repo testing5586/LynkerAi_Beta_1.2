@@ -1,123 +1,152 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>出生时间填写 - 命盘入口</title>
-    <link rel="stylesheet" href="{{ url_for('bazi.static', filename='css/birth_input.css') }}">
-    <script>
-        const API_BASE = "{{ url_for('bazi.index') }}".replace(/\/$/, '');
-    </script>
+    <title>灵客排盘 - 出生时间填写</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,#0f0f1a 0%,#1a1a2e 40%,#16213e 100%);min-height:100vh;padding:40px 20px;color:#e8e8e8}.container{max-width:520px;margin:0 auto}.header{text-align:center;margin-bottom:35px}.header-icon{font-size:42px;margin-bottom:12px}.header h1{color:#e0c3a8;font-size:28px;font-weight:500;letter-spacing:6px;margin-bottom:10px}.header-nav{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}.header-nav a{color:rgba(224,195,168,0.7);text-decoration:none;font-size:13px;padding:4px 12px;border-radius:20px;transition:all 0.3s}.header-nav a:hover,.header-nav a.active{background:rgba(224,195,168,0.15);color:#e0c3a8}.header-nav span{color:rgba(255,255,255,0.2)}.card{background:rgba(255,255,255,0.03);backdrop-filter:blur(20px);border-radius:20px;padding:35px;border:1px solid rgba(255,255,255,0.08);box-shadow:0 20px 60px rgba(0,0,0,0.4);margin-bottom:25px}.section-title{color:#e0c3a8;font-size:15px;font-weight:500;letter-spacing:3px;margin-bottom:22px;padding-bottom:12px;border-bottom:1px solid rgba(224,195,168,0.2)}.form-group{margin-bottom:22px}.form-label{display:block;color:rgba(255,255,255,0.6);font-size:13px;margin-bottom:10px;letter-spacing:1px}.form-label .required{color:#e07c7c;margin-left:2px}.form-label .optional{color:rgba(255,255,255,0.35);font-size:11px;margin-left:6px}.form-input,.form-select{width:100%;padding:14px 18px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:12px;color:#fff;font-size:15px;font-family:inherit;transition:all 0.3s}.form-input::placeholder{color:rgba(255,255,255,0.3)}.form-input:focus,.form-select:focus{outline:none;border-color:rgba(224,195,168,0.5);background:rgba(255,255,255,0.1);box-shadow:0 0 0 4px rgba(224,195,168,0.08)}.form-select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23e0c3a8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;padding-right:45px}.form-select option{background:#1a1a2e;color:#fff}input[type="date"],input[type="time"]{color-scheme:dark}input[type="date"]::-webkit-calendar-picker-indicator,input[type="time"]::-webkit-calendar-picker-indicator{filter:invert(0.7) sepia(1) saturate(0.5);cursor:pointer;opacity:0.7}.form-row{display:flex;gap:16px}.form-row .form-group{flex:1}.radio-group{display:flex;gap:12px;flex-wrap:wrap}.radio-item{display:flex;align-items:center;cursor:pointer;padding:10px 18px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:10px;transition:all 0.3s}.radio-item:hover{background:rgba(255,255,255,0.08);border-color:rgba(224,195,168,0.3)}.radio-item input[type="radio"]{display:none}.radio-item .radio-dot{width:18px;height:18px;border:2px solid rgba(255,255,255,0.3);border-radius:50%;margin-right:10px;position:relative;transition:all 0.3s}.radio-item input[type="radio"]:checked+.radio-dot{border-color:#e0c3a8}.radio-item input[type="radio"]:checked+.radio-dot::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:8px;height:8px;background:#e0c3a8;border-radius:50%}.radio-item input[type="radio"]:checked~span{color:#e0c3a8}.radio-item span{color:rgba(255,255,255,0.75);font-size:14px;transition:color 0.3s}.btn-group{display:flex;background:rgba(255,255,255,0.05);border-radius:12px;padding:4px;gap:4px}.btn-group .btn-option{flex:1;padding:12px 16px;background:transparent;border:none;border-radius:10px;color:rgba(255,255,255,0.5);font-size:14px;font-family:inherit;cursor:pointer;transition:all 0.3s;text-align:center}.btn-group .btn-option:hover{color:rgba(255,255,255,0.8)}.btn-group .btn-option.active{background:rgba(224,195,168,0.2);color:#e0c3a8}.btn-group input[type="radio"]{display:none}.checkbox-group{display:flex;flex-wrap:wrap;gap:16px}.checkbox-item{display:flex;align-items:center;cursor:pointer}.checkbox-item input[type="checkbox"]{display:none}.checkbox-item .checkbox-box{width:20px;height:20px;border:2px solid rgba(255,255,255,0.25);border-radius:6px;margin-right:10px;position:relative;transition:all 0.3s}.checkbox-item input[type="checkbox"]:checked+.checkbox-box{background:#e0c3a8;border-color:#e0c3a8}.checkbox-item input[type="checkbox"]:checked+.checkbox-box::after{content:'✓';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#1a1a2e;font-size:12px;font-weight:bold}.checkbox-item span{color:rgba(255,255,255,0.75);font-size:14px}.checkbox-item span.hint{color:rgba(255,255,255,0.4);font-size:12px;margin-left:4px}.calc-display{background:rgba(224,195,168,0.08);border:1px solid rgba(224,195,168,0.2);border-radius:12px;padding:20px}.calc-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0}.calc-row:not(:last-child){border-bottom:1px solid rgba(255,255,255,0.05)}.calc-label{color:rgba(255,255,255,0.5);font-size:13px}.calc-value{color:#e0c3a8;font-size:14px;font-weight:500;font-family:'Consolas',monospace}.calc-value.pending{color:rgba(255,255,255,0.3)}.submit-btn{width:100%;padding:18px 24px;background:linear-gradient(135deg,#e0c3a8 0%,#c9a87e 100%);border:none;border-radius:14px;color:#1a1a2e;font-size:16px;font-weight:600;font-family:inherit;letter-spacing:4px;cursor:pointer;transition:all 0.3s;box-shadow:0 4px 20px rgba(224,195,168,0.25)}.submit-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(224,195,168,0.35)}.submit-btn:active{transform:translateY(0)}@media(max-width:480px){.card{padding:25px 20px}.form-row{flex-direction:column;gap:0}.radio-group{flex-direction:column}.radio-item{width:100%}}
+    </style>
 </head>
-
 <body>
     <div class="container">
-        <div class="form-card">
-            <h1 class="page-title">📅 出生时间填写</h1>
-            <p class="page-subtitle">命盘入口 · 八字 · 紫微 · 同频</p>
-
-            <form id="birthForm">
-                <!-- 基本信息 -->
-                <section class="form-section">
-                    <h2 class="section-title">基本信息</h2>
-
-                    <div class="form-group">
-                        <label>命主姓名 (可空)</label>
-                        <input type="text" id="name" name="name" placeholder="灵友" class="form-input">
+        <div class="header">
+            <div class="header-icon">📅</div>
+            <h1>出生时间填写</h1>
+            <nav class="header-nav">
+                <a href="#" class="active">命盘入口</a>
+                <span>·</span>
+                <a href="#">八字</a>
+                <span>·</span>
+                <a href="#">紫微</a>
+                <span>·</span>
+                <a href="#">同频</a>
+            </nav>
+        </div>
+        
+        <form method="POST" action="/birth-input" id="birthForm">
+            <div class="card">
+                <h2 class="section-title">基本信息</h2>
+                
+                <div class="form-group">
+                    <label class="form-label">命主姓名 <span class="optional">(可空)</span></label>
+                    <input type="text" name="name" class="form-input" placeholder="灵友">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">性别</label>
+                    <div class="radio-group">
+                        <label class="radio-item">
+                            <input type="radio" name="gender" value="male" checked>
+                            <span class="radio-dot"></span>
+                            <span>男</span>
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" name="gender" value="female">
+                            <span class="radio-dot"></span>
+                            <span>女</span>
+                        </label>
                     </div>
-
-                    <div class="form-group">
-                        <label>性别</label>
-                        <div class="radio-group">
-                            <label class="radio-label">
-                                <input type="radio" name="gender" value="男" checked>
-                                <span>男</span>
-                            </label>
-                            <label class="radio-label">
-                                <input type="radio" name="gender" value="女">
-                                <span>女</span>
-                            </label>
-                        </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">历法模式</label>
+                    <div class="btn-group" id="calendarGroup">
+                        <label class="btn-option active">
+                            <input type="radio" name="calendar_type" value="solar" checked>
+                            公历
+                        </label>
+                        <label class="btn-option">
+                            <input type="radio" name="calendar_type" value="lunar">
+                            农历
+                        </label>
+                        <label class="btn-option">
+                            <input type="radio" name="calendar_type" value="sizhu">
+                            四柱直输
+                        </label>
                     </div>
-
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2 class="section-title">出生时间</h2>
+                
+                <div class="form-row">
                     <div class="form-group">
-                        <label>历法模式</label>
-                        <div class="tab-group">
-                            <button type="button" class="tab-btn active" data-mode="solar">公历</button>
-                            <button type="button" class="tab-btn" data-mode="lunar" disabled>农历</button>
-                            <button type="button" class="tab-btn" data-mode="sizhu" disabled>四柱直输</button>
-                        </div>
+                        <label class="form-label">出生日期 <span class="required">*</span></label>
+                        <input type="date" name="birth_date" class="form-input" required>
                     </div>
-                </section>
-
-                <!-- 出生时间 -->
-                <section class="form-section">
-                    <h2 class="section-title">出生时间</h2>
-
                     <div class="form-group">
-                        <label>出生日期 *</label>
-                        <input type="date" id="birthDate" name="birthDate" required class="form-input">
+                        <label class="form-label">出生时间 <span class="required">*</span></label>
+                        <input type="time" name="birth_time" class="form-input" required>
                     </div>
-
-                    <div class="form-group">
-                        <label>出生时间 (HH:MM) *</label>
-                        <input type="time" id="birthTime" name="birthTime" required class="form-input">
-                    </div>
-
-                    <div class="form-group">
-                        <label>出生地 (可空)</label>
-                        <input type="text" id="birthPlace" name="birthPlace" placeholder="北京市" class="form-input"
-                            list="city-list">
-                        <datalist id="city-list">
-                            <option value="北京市">北京市 (116.40°E, 39.90°N)</option>
-                            <option value="上海市">上海市 (121.47°E, 31.23°N)</option>
-                            <option value="广州市">广州市 (113.26°E, 23.13°N)</option>
-                            <option value="深圳市">深圳市 (114.06°E, 22.54°N)</option>
-                        </datalist>
-                    </div>
-
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">出生地 <span class="optional">(可空)</span></label>
+                    <select name="location" class="form-select">
+                        <option value="">请选择城市</option>
+                        <option value="beijing">北京市</option>
+                        <option value="shanghai">上海市</option>
+                        <option value="guangzhou">广州市</option>
+                        <option value="hong_kong">香港</option>
+                        <option value="taipei">台北</option>
+                        <option value="singapore">新加坡</option>
+                        <option value="kuala_lumpur" selected>吉隆坡</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
                     <div class="checkbox-group">
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="daylightSaving" name="daylightSaving">
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="daylight_saving">
+                            <span class="checkbox-box"></span>
                             <span>夏令时</span>
                         </label>
-
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="trueSolarTime" name="trueSolarTime" checked>
-                            <span>真太阳时 (默认勾选)</span>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="use_true_solar_time" checked>
+                            <span class="checkbox-box"></span>
+                            <span>真太阳时 <span class="hint">(默认)</span></span>
                         </label>
-
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="earlyLateZi" name="earlyLateZi">
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="early_zi">
+                            <span class="checkbox-box"></span>
                             <span>早晚子时</span>
                         </label>
                     </div>
-                </section>
-
-                <!-- 自动显示块 -->
-                <section class="form-section auto-display">
-                    <h2 class="section-title">自动计算 (只读)</h2>
-
-                    <div class="display-row">
-                        <span class="display-label">真太阳时:</span>
-                        <span class="display-value" id="trueSolarTimeDisplay">---</span>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2 class="section-title">自动计算 (只读)</h2>
+                <div class="calc-display">
+                    <div class="calc-row">
+                        <span class="calc-label">真太阳时:</span>
+                        <span class="calc-value pending" id="trueSolarTime">---</span>
                     </div>
-
-                    <div class="display-row">
-                        <span class="display-label">地点经纬:</span>
-                        <span class="display-value" id="coordinatesDisplay">---</span>
+                    <div class="calc-row">
+                        <span class="calc-label">地点经纬:</span>
+                        <span class="calc-value" id="locationCoords">3.14°N, 101.69°E</span>
                     </div>
-                </section>
-
-                <!-- 提交按钮 -->
-                <button type="submit" class="submit-btn">开始排盘</button>
-            </form>
-        </div>
+                </div>
+            </div>
+            
+            <button type="submit" class="submit-btn">开 始 排 盘</button>
+        </form>
     </div>
+    
+    <script>
+        document.querySelectorAll('.btn-group .btn-option').forEach(btn=>{btn.addEventListener('click',function(){this.parentElement.querySelectorAll('.btn-option').forEach(b=>b.classList.remove('active'));this.classList.add('active')})});
+        const coords={'beijing':'39.90°N, 116.41°E','shanghai':'31.23°N, 121.47°E','guangzhou':'23.13°N, 113.26°E','hong_kong':'22.32°N, 114.17°E','taipei':'25.03°N, 121.57°E','singapore':'1.35°N, 103.82°E','kuala_lumpur':'3.14°N, 101.69°E'};
+        document.querySelector('select[name="location"]').addEventListener('change',function(){const el=document.getElementById('locationCoords');el.textContent=this.value&&coords[this.value]?coords[this.value]:'---';el.classList.toggle('pending',!coords[this.value])});
 
-    <script src="{{ url_for('bazi.static', filename='js/birth_input.js') }}"></script>
+        // Handle form submission
+        document.getElementById('birthForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Submit form directly (no AJAX, use standard HTML form submission)
+            this.submit();
+        });
+    </script>
 </body>
-
 </html>

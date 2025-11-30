@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends "base_dark.html" %}
+
+{% block title %}紫微斗数 · 命盘结构匹配{% endblock %}
+
+{% block ranking_title %}紫微结构排行榜 🏆{% endblock %}
+
+{% block ranking_tabs %}
+  <button class="lk-pill lk-pill-active">命盘结构榜</button>
+{% endblock %}
+
+{% block ranking_desc %}
+根据命宫、身宫、福德宫等关键宫位与主星组合结构进行匹配，仅供研究与参考。
+{% endblock %}
+
+{% block ranking_list %}
+  {% for item in leaderboard %}
+  <div class="lk-ranking-item">
+    <div class="lk-ranking-medal">No.{{ loop.index }}</div>
+    <div class="lk-ranking-info">
+      <div class="lk-ranking-name">灵友 #{{ item.friend_id }}</div>
+      <div class="lk-ranking-meta">
+        匹配 {{ item.match_count }} 次 · 验证 {{ item.verify_count }} 次
+      </div>
+    </div>
+    <div class="lk-ranking-score">
+      {{ item.final_score|default(0) }}<span class="lk-score-unit">%</span>
+    </div>
+  </div>
+  {% endfor %}
+{% endblock %}
+
+{% block main_title %}紫微斗数 · 命盘结构匹配{% endblock %}
+
+{% block main_subtitle %}
+基于命宫、身宫与十二宫主星组合的结构相似度匹配，用于寻找"盘型相近"的灵友。
+{% endblock %}
+
+{% block content %}
+    
+  <!-- 这里你可以加一个宫位简略图 / 统计说明；先保持和前两个一致结构 -->
+  <section class="lk-banner">
+    <div class="lk-banner-icon">💡</div>
+    <div class="lk-banner-body">
+      <div class="lk-banner-title">结构匹配说明</div>
+      <div class="lk-banner-text">
+        此处只比较紫微斗数盘的"结构"，不考虑流年大限与当前运势。适合寻找盘型相近的灵友，用于经验分享与共同验证。
+      </div>
+    </div>
+  </section>
+
+  <!-- 你后面根据紫微结构设计筛选 Pill，比如：同命宫系、同身宫、同主星组合等 -->
+  <section class="lk-filter-bar">
+    <div class="lk-filter-label">筛选条件（可自定义）</div>
+    <div class="lk-filter-pills">
+      <!-- 预留 -->
+      <button class="lk-pill lk-pill-active">默认结构匹配</button>
+    </div>
+  </section>
+
+  <section class="lk-results">
+    {% for match in matches %}
+    <article class="lk-match-card">
+      <div class="lk-match-header">
+        <div class="lk-match-title">
+          灵友 #{{ match.friend_id }}
+        </div>
+        <div class="lk-match-score-badge">
+          {{ match.score }}% 结构相似
+        </div>
+      </div>
+
+      <div class="lk-match-meta">
+        <span class="lk-match-meta-label">命盘摘要：</span>
+        <span class="lk-match-meta-value">
+          {{ match.summary|default("命宫天府 · 身宫同落 · 福德武贪") }}
+        </span>
+      </div>
+
+      <div class="lk-match-tags">
+        {% for tag in match.tags %}
+          <span class="lk-tag">{{ tag }}</span>
+        {% endfor %}
+      </div>
+
+      <div class="lk-match-footer">
+        <button class="lk-btn lk-btn-primary"
+                onclick="window.location.href='{{ url_for('ziwei.ziwei_detail', friend_id=match.friend_id) }}'">
+          查看命盘
+        </button>
+        <button class="lk-btn lk-btn-ghost">
+          打招呼
+        </button>
+      </div>
+    </article>
+    {% else %}
+      <div class="lk-empty">暂无匹配结果。</div>
+    {% endfor %}
+  </section>
+
+{% endblock %}
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ziwei Match - Lynker AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/unified.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Left Profile Card -->
+        <div class="profile-card">
+            <div class="avatar">
+                {{ birth_data.name[0] if birth_data.name else 'U' }}
+            </div>
+            <h2 class="user-name">{{ birth_data.name or 'Unknown' }}</h2>
+            <p class="user-uid">UID: 8829301</p>
+            
+            <div class="profile-info-item">
+                <span class="label">Gender</span>
+                <span class="value">{{ 'Male' if birth_data.gender == 'male' else 'Female' }}</span>
+            </div>
+            <div class="profile-info-item">
+                <span class="label">Location</span>
+                <span class="value">{{ birth_data.location.name }}</span>
+            </div>
+            <div class="profile-info-item">
+                <span class="label">Solar Date</span>
+                <span class="value">{{ birth_data.true_solar_datetime[:10] }}</span>
+            </div>
+            <div class="profile-info-item">
+                <span class="label">Solar Time</span>
+                <span class="value">{{ birth_data.true_solar_datetime[11:16] }}</span>
+            </div>
+            <div class="profile-info-item">
+                <span class="label">Shichen</span>
+                <span class="value">{{ birth_data.shichen }} Hour</span>
+            </div>
+
+            <a href="/dashboard" class="back-btn">← Back to Dashboard</a>
+        </div>
+
+        <!-- Right Content Area -->
+        <div class="content-area">
+            <div class="page-header">
+                <h1 class="page-title">Ziwei Match</h1>
+                <p class="page-subtitle">Imperial Astrology Connection · 紫微斗数匹配</p>
+            </div>
+
+            <!-- Ziwei Grid Display -->
+            <div class="match-card" style="margin-bottom: 20px; padding: 15px;">
+                <div class="match-header">
+                    <div class="match-info">
+                        <h3>Ziwei Chart</h3>
+                        <p>Imperial Astrology</p>
+                    </div>
+                </div>
+                <!-- Simplified Grid for Layout Demo -->
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; aspect-ratio: 1;">
+                    <!-- Row 1 -->
+                    <div style="background: rgba(255,255,255,0.05); border-radius: 4px; padding: 5px; font-size: 10px; text-align: center; display:flex; align-items:center; justify-content:center;">Si</div>
+                    <div style="background: rgba(255,255,255,0.05); border-radius: 4px; padding: 5px; font-size: 10px; text-align: center; display:flex; align-items:center; justify-content:center;">Wu</div>
+                    <div style="background: rgba(255,255,255,0.05); border-radius: 4px; padding: 5px; font-size: 10px; text-align: center; display:flex; align-items:center; justify-content:center;">Wei</div>
+                    <div style="background: rgba(255,255,255,0.05); border-radius: 4px; padding: 5px; font-size: 10px; text-align: center; display:flex; align-items:center; justify-content:center;">Shen</div>
+                    
+                    <!-- Row 2 -->
+                    <div style="background: rgba(255,255,255,0.05); border-radius: 4px; padding: 5px; font-size: 10px; text-align: center; display:flex; align-items:center; justify-content:center;">Chen</div>
+                    <div style="grid-column: span 2; grid-row: span 2; display: flex; align-items: center; justify-content: center; background: rgba(224,195,168,0.1); border-radius: 4px;">
+                        <div style="text-align: center;">
+                            <div style="color: var(--accent-gold); font-size: 14px;">{{ birth_data.name }}</div>
+                            <div style="font-size: 10px; opacity: 0.7;">Ziwei Chart</div>
+                        </div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.05); border-radius: 4px; padding: 5px; font-size: 10px; text-align: center; display:flex; align-items:center; justify-content:center;">You</div>
+                    
+                    <!-- Row 3 -->
+                    <div style="background: rgba(255,255,255,0.05); border-radius: 4px; padding: 5px; font-size: 10px; text-align: center; display:flex; align-items:center; justify-content:center;">Mao</div>
+                    <!-- Center occupied -->
+                    <div style="background: rgba(255,255,255,0.05); border-radius: 4px; padding: 5px; font-size: 10px; text-align: center; display:flex; align-items:center; justify-content:center;">Xu</div>
+                    
+                    <!-- Row 4 -->
+                    <div style="background: rgba(255,255,255,0.05); border-radius: 4px; padding: 5px; font-size: 10px; text-align: center; display:flex; align-items:center; justify-content:center;">Yin</div>
+                    <div style="background: rgba(255,255,255,0.05); border-radius: 4px; padding: 5px; font-size: 10px; text-align: center; display:flex; align-items:center; justify-content:center;">Chou</div>
+                    <div style="background: rgba(255,255,255,0.05); border-radius: 4px; padding: 5px; font-size: 10px; text-align: center; display:flex; align-items:center; justify-content:center;">Zi</div>
+                    <div style="background: rgba(255,255,255,0.05); border-radius: 4px; padding: 5px; font-size: 10px; text-align: center; display:flex; align-items:center; justify-content:center;">Hai</div>
+                </div>
+            </div>
+
+            <!-- Score Hint -->
+            <div class="score-hint-box">
+                <div class="hint-icon">💡</div>
+                <div class="hint-text">
+                    Your Life Palace is in <strong>Zi</strong> with <strong>Zi Wei</strong> star. You are a natural leader.
+                    Compatible with people who have <strong>Tian Fu</strong> in their Life Palace.
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="filter-section">
+                <button class="filter-btn active">All Matches</button>
+                <button class="filter-btn">Life Palace Match</button>
+                <button class="filter-btn">Star Resonance</button>
+                <button class="filter-btn">Body Palace</button>
+                <button class="filter-btn">San Fang Si Zheng</button>
+            </div>
+
+            <!-- Match List -->
+            <div class="match-list">
+                <!-- Mock Match 1 -->
+                <div class="match-card">
+                    <div class="match-header">
+                        <div class="match-user">
+                            <div class="match-avatar" style="background: #e67e22;">J</div>
+                            <div class="match-info">
+                                <h3>James Tan</h3>
+                                <p>Kuala Lumpur · 1988</p>
+                            </div>
+                        </div>
+                        <div class="match-score">
+                            <div class="score-val">96</div>
+                            <div class="score-label">Score</div>
+                        </div>
+                    </div>
+                    <div class="match-tags">
+                        <span class="tag highlight">Life Palace Match</span>
+                        <span class="tag highlight">Star Resonance</span>
+                        <span class="tag">Tian Fu</span>
+                    </div>
+                    <div class="card-actions">
+                        <button class="action-btn btn-view">View Profile</button>
+                        <button class="action-btn btn-hi">Say Hi</button>
+                    </div>
+                </div>
+
+                <!-- Mock Match 2 -->
+                <div class="match-card">
+                    <div class="match-header">
+                        <div class="match-user">
+                            <div class="match-avatar" style="background: #9b59b6;">A</div>
+                            <div class="match-info">
+                                <h3>Alice Wong</h3>
+                                <p>Penang · 1994</p>
+                            </div>
+                        </div>
+                        <div class="match-score">
+                            <div class="score-val">90</div>
+                            <div class="score-label">Score</div>
+                        </div>
+                    </div>
+                    <div class="match-tags">
+                        <span class="tag highlight">Body Palace</span>
+                        <span class="tag">Tai Yang</span>
+                    </div>
+                    <div class="card-actions">
+                        <button class="action-btn btn-view">View Profile</button>
+                        <button class="action-btn btn-hi">Say Hi</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

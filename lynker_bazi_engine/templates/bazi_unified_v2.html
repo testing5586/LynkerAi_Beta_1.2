@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends "base_dark.html" %}
+
+{% block title %}同命匹配 · 八字同频搜索{% endblock %}
+
+{% block ranking_title %}同频排行榜 · BaziMatchAgent{% endblock %}
+
+{% block ranking_tabs %}
+  <button class="lk-pill lk-pill-active">八字同频榜</button>
+{% endblock %}
+
+{% block ranking_desc %}
+本榜基于传统八字四柱结构匹配，不采用现代秒级时间算法。
+{% endblock %}
+
+{% block ranking_list %}
+  {% for item in leaderboard %}
+  <div class="lk-ranking-item">
+    <div class="lk-ranking-medal">No.{{ loop.index }}</div>
+    <div class="lk-ranking-info">
+      <div class="lk-ranking-name">灵友 #{{ item.friend_id }}</div>
+      <div class="lk-ranking-meta">
+        匹配 {{ item.match_count }} 次 · 验证 {{ item.verify_count }} 次
+      </div>
+    </div>
+    <div class="lk-ranking-score">
+      {{ item.final_score|default(0) }}<span class="lk-score-unit">%</span>
+    </div>
+  </div>
+  {% endfor %}
+{% endblock %}
+
+{% block main_title %}同命匹配 · 八字同频搜索{% endblock %}
+
+{% block main_subtitle %}
+基于天干地支结构的灵魂级匹配引擎，仅在四柱完全一致时判为 100% 同命。
+{% endblock %}
+
+{% block content %}
+
+  <section class="lk-banner">
+    <div class="lk-banner-icon">💡</div>
+    <div class="lk-banner-body">
+      <div class="lk-banner-title">评分说明</div>
+      <div class="lk-banner-text">
+        此评分参考八字四柱匹配系数（年柱 20 分～年柱 40 分、年月日 70 分～年月日时 100 分），仅在四柱完全一致时为真正"同命"。
+        你可在 <span class="lk-tag-primary">时间同频模组</span> 中对比不同体系。
+      </div>
+    </div>
+  </section>
+
+  <section class="lk-filter-bar">
+    <div class="lk-filter-label">筛选条件（可自定义）</div>
+    <div class="lk-filter-pills">
+      <button class="lk-pill {% if filters.same_year_pillar %}lk-pill-active{% endif %}">同年柱</button>
+      <button class="lk-pill {% if filters.same_month_pillar %}lk-pill-active{% endif %}">同月柱</button>
+      <button class="lk-pill {% if filters.same_day_pillar %}lk-pill-active{% endif %}">同日柱</button>
+      <button class="lk-pill {% if filters.same_hour_pillar %}lk-pill-active{% endif %}">同时柱</button>
+      <button class="lk-pill {% if filters.same_stem_structure %}lk-pill-active{% endif %}">同天干结构</button>
+      <button class="lk-pill {% if filters.same_branch_structure %}lk-pill-active{% endif %}">同地支结构</button>
+      <button class="lk-pill {% if filters.same_pattern %}lk-pill-active{% endif %}">同格局</button>
+      <button class="lk-pill {% if filters.same_yongshen %}lk-pill-active{% endif %}">同用神</button>
+    </div>
+    <div class="lk-filter-mode">
+      宽松匹配模式：<span class="lk-tag-primary">{{ active_mode_label|default("7 项条件生效") }}</span>
+    </div>
+  </section>
+
+  <section class="lk-results">
+    {% for match in matches %}
+    <article class="lk-match-card">
+      <div class="lk-match-header">
+        <div class="lk-match-title">
+          灵友 #{{ match.friend_id }}
+        </div>
+        <div class="lk-match-score-badge">
+          {{ match.score }} 分匹配
+        </div>
+      </div>
+
+      <div class="lk-match-meta">
+        <span class="lk-match-meta-label">八字频率码：</span>
+        <span class="lk-match-meta-value">
+          {{ match.bazi_code }}  <!-- 比如：庚辰·戊寅·丁未·壬子 -->
+        </span>
+      </div>
+
+      <div class="lk-match-tags">
+        {% if match.same_year_pillar %}<span class="lk-tag">同年柱</span>{% endif %}
+        {% if match.same_month_pillar %}<span class="lk-tag">同月柱</span>{% endif %}
+        {% if match.same_day_pillar %}<span class="lk-tag">同日柱</span>{% endif %}
+        {% if match.same_hour_pillar %}<span class="lk-tag">同时柱</span>{% endif %}
+        {% if match.same_stem_structure %}<span class="lk-tag">同天干结构</span>{% endif %}
+        {% if match.same_branch_structure %}<span class="lk-tag">同地支结构</span>{% endif %}
+        {% if match.same_pattern %}<span class="lk-tag">同格局</span>{% endif %}
+        {% if match.same_yongshen %}<span class="lk-tag">同用神</span>{% endif %}
+      </div>
+
+      <div class="lk-match-footer">
+        <button class="lk-btn lk-btn-primary"
+                onclick="window.location.href='{{ url_for('bazi.bazi_detail', friend_id=match.friend_id) }}'">
+          查看命盘
+        </button>
+        <button class="lk-btn lk-btn-ghost">
+          打招呼
+        </button>
+      </div>
+    </article>
+    {% else %}
+      <div class="lk-empty">暂无匹配结果。</div>
+    {% endfor %}
+  </section>
+
+{% endblock %}

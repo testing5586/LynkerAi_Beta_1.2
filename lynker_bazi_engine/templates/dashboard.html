@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>灵客排盘 - 命盘总览</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,#0f0f1a 0%,#1a1a2e 40%,#16213e 100%);min-height:100vh;padding:40px 20px;color:#e8e8e8}
+        .container{max-width:800px;margin:0 auto}
+        .header{text-align:center;margin-bottom:40px}
+        .header h1{color:#e0c3a8;font-size:32px;font-weight:500;letter-spacing:8px;margin-bottom:12px}
+        .header p{color:rgba(255,255,255,0.5);font-size:14px;letter-spacing:2px}
+        
+        .user-info{background:rgba(255,255,255,0.03);backdrop-filter:blur(20px);border-radius:16px;padding:25px 30px;border:1px solid rgba(255,255,255,0.08);margin-bottom:30px}
+        .user-info h2{color:#e0c3a8;font-size:14px;font-weight:500;letter-spacing:2px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid rgba(224,195,168,0.15)}
+        .user-info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+        .info-item{display:flex;justify-content:space-between;padding:8px 0}
+        .info-item .label{color:rgba(255,255,255,0.5);font-size:13px}
+        .info-item .value{color:#fff;font-size:13px;font-weight:500}
+        .info-item .value.highlight{color:#e0c3a8}
+        
+        .charts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;margin-bottom:30px}
+        
+        .chart-card{background:rgba(255,255,255,0.03);backdrop-filter:blur(20px);border-radius:20px;padding:30px;border:1px solid rgba(255,255,255,0.08);transition:all 0.3s ease;cursor:pointer;text-decoration:none;display:block}
+        .chart-card:hover{transform:translateY(-4px);border-color:rgba(224,195,168,0.3);box-shadow:0 20px 40px rgba(0,0,0,0.3)}
+        .chart-card.pending{opacity:0.6}
+        .chart-card.pending:hover{transform:none;cursor:default}
+        
+        .chart-icon{font-size:48px;margin-bottom:16px;display:block}
+        .chart-title{color:#e0c3a8;font-size:18px;font-weight:500;letter-spacing:2px;margin-bottom:6px}
+        .chart-subtitle{color:rgba(255,255,255,0.4);font-size:12px;letter-spacing:1px;margin-bottom:16px}
+        .chart-status{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-size:12px}
+        .chart-status.ready{background:rgba(76,175,80,0.15);color:#81c784}
+        .chart-status.pending{background:rgba(255,193,7,0.15);color:#ffd54f}
+        
+        .action-bar{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+        .btn{padding:14px 32px;border-radius:12px;font-size:14px;font-family:inherit;cursor:pointer;transition:all 0.3s;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+        .btn-primary{background:linear-gradient(135deg,#e0c3a8 0%,#c9a87e 100%);color:#1a1a2e;border:none;font-weight:600;letter-spacing:2px}
+        .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(224,195,168,0.3)}
+        .btn-secondary{background:transparent;color:rgba(255,255,255,0.6);border:1px solid rgba(255,255,255,0.15)}
+        .btn-secondary:hover{border-color:rgba(224,195,168,0.4);color:#e0c3a8}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>命 盘 总 览</h1>
+            <p>DESTINY CHART DASHBOARD</p>
+        </div>
+        
+        <!-- 用户信息 -->
+        <div class="user-info">
+            <h2>📋 出生信息</h2>
+            <div class="user-info-grid">
+                <div class="info-item">
+                    <span class="label">姓名</span>
+                    <span class="value">{{ birth_data.name or '灵友' }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">性别</span>
+                    <span class="value">{{ '男' if birth_data.gender == 'male' else '女' }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">出生地</span>
+                    <span class="value">{{ birth_data.location.name }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">本地时间</span>
+                    <span class="value">{{ birth_data.local_datetime.replace('T', ' ') }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">真太阳时</span>
+                    <span class="value highlight">{{ birth_data.true_solar_datetime.replace('T', ' ') }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">时辰</span>
+                    <span class="value highlight">{{ birth_data.shichen }}时</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 三套命盘入口 -->
+        <div class="charts-grid">
+            <!-- ModernMatch -->
+            <a href="/bazi/modernmatch" class="chart-card {% if chart_summary.time_layers.ready %}ready{% else %}pending{% endif %}">
+                <span class="chart-icon">⏱️</span>
+                <h3 class="chart-title">现代时间命盘</h3>
+                <p class="chart-subtitle">ModernMatch</p>
+                <span class="chart-status {% if chart_summary.time_layers.ready %}ready{% else %}pending{% endif %}">
+                    {% if chart_summary.time_layers.ready %}
+                        ✓ 已生成
+                    {% else %}
+                        ◌ 待计算
+                    {% endif %}
+                </span>
+            </a>
+            
+            <!-- BaziMatchAgent -->
+            <a href="/bazi/match" class="chart-card {% if chart_summary.bazi.ready %}ready{% else %}pending{% endif %}">
+                <span class="chart-icon">🔮</span>
+                <h3 class="chart-title">八字命盘</h3>
+                <p class="chart-subtitle">BaziMatchAgent</p>
+                <span class="chart-status {% if chart_summary.bazi.ready %}ready{% else %}pending{% endif %}">
+                    {% if chart_summary.bazi.ready %}
+                        ✓ 已生成
+                    {% else %}
+                        ◌ 待计算
+                    {% endif %}
+                </span>
+            </a>
+            
+            <!-- ZiweiMatchAgent -->
+            <a href="/ziwei/match" class="chart-card {% if chart_summary.ziwei.ready %}ready{% else %}pending{% endif %}">
+                <span class="chart-icon">⭐</span>
+                <h3 class="chart-title">紫微斗数</h3>
+                <p class="chart-subtitle">ZiweiMatchAgent</p>
+                <span class="chart-status {% if chart_summary.ziwei.ready %}ready{% else %}pending{% endif %}">
+                    {% if chart_summary.ziwei.ready %}
+                        ✓ 已生成
+                    {% else %}
+                        ◌ 待计算
+                    {% endif %}
+                </span>
+            </a>
+        </div>
+        
+        <!-- 操作按钮 -->
+        <div class="action-bar">
+            <a href="{{ url_for('birth_input.birth_input_form') }}" class="btn btn-secondary">← 重新输入</a>
+            <a href="{{ url_for('birth_input.clear_session') }}" class="btn btn-secondary">清除数据</a>
+        </div>
+    </div>
+</body>
+</html>

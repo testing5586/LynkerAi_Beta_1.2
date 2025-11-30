@@ -1,0 +1,123 @@
+{% extends "base_dark.html" %}
+
+{% block title %}时间同频 · 毫秒级结构匹配{% endblock %}
+
+{% block ranking_title %}时间同频排行榜 🏆{% endblock %}
+
+{% block ranking_tabs %}
+  <!-- 如果有多个榜单模式可以做切换；先留一个 -->
+  <button class="lk-pill lk-pill-active">时间同频榜</button>
+{% endblock %}
+
+{% block ranking_desc %}
+  少于 5 次匹配样本会略微衰减 15%，100% 仅代表完美重叠结构，多次验证。
+{% endblock %}
+
+{% block ranking_list %}
+  {% for item in leaderboard %}
+  <div class="lk-ranking-item">
+    <div class="lk-ranking-medal">No.{{ loop.index }}</div>
+    <div class="lk-ranking-info">
+      <div class="lk-ranking-name">灵友 #{{ item.friend_id }}</div>
+      <div class="lk-ranking-meta">
+        匹配 {{ item.match_count }} 次 · 验证 {{ item.verify_count }} 次
+      </div>
+    </div>
+    <div class="lk-ranking-score">
+      {{ item.final_score|default(0) }} <span class="lk-score-unit">%</span>
+    </div>
+  </div>
+  {% endfor %}
+{% endblock %}
+
+{% block main_title %}时间同频 · 毫秒级结构匹配{% endblock %}
+
+{% block main_subtitle %}
+基于真太阳时的时间层级结构，进行频率匹配评分，不同于八字同命算法，分值为结构相似度参考指标。
+{% endblock %}
+
+{% block content %}
+
+  <!-- 顶部说明 Banner -->
+  <section class="lk-banner">
+    <div class="lk-banner-icon">💡</div>
+    <div class="lk-banner-body">
+      <div class="lk-banner-title">排行榜评分说明</div>
+      <div class="lk-banner-text">
+        当前榜单基于真太阳时 + 毫秒级时间结构评分，少于 5 次匹配样本将略微衰减 15%，100% 仅保留完全重叠结构，多次验证。
+      </div>
+    </div>
+  </section>
+
+  <!-- 筛选条件 -->
+  <section class="lk-filter-bar">
+    <div class="lk-filter-label">筛选条件（可自定义）</div>
+    <div class="lk-filter-pills">
+      <!-- 这里保持你现在的勾选逻辑，class 里可加 active 状态 -->
+      <button class="lk-pill {% if filters.same_year %}lk-pill-active{% endif %}"
+              data-filter="same_year">同年</button>
+      <button class="lk-pill {% if filters.same_month %}lk-pill-active{% endif %}"
+              data-filter="same_month">同月</button>
+      <button class="lk-pill {% if filters.same_day %}lk-pill-active{% endif %}"
+              data-filter="same_day">同日</button>
+      <button class="lk-pill {% if filters.same_shichen %}lk-pill-active{% endif %}"
+              data-filter="same_shichen">同时辰</button>
+      <button class="lk-pill {% if filters.same_hour %}lk-pill-active{% endif %}"
+              data-filter="same_hour">同小时</button>
+      <button class="lk-pill {% if filters.same_quarter %}lk-pill-active{% endif %}"
+              data-filter="same_quarter">同刻</button>
+      <button class="lk-pill {% if filters.same_minute %}lk-pill-active{% endif %}"
+              data-filter="same_minute">同分</button>
+    </div>
+    <div class="lk-filter-mode">
+      当前默认搜索模式：<span class="lk-tag-primary">100% 精准匹配</span>
+    </div>
+  </section>
+
+  <!-- 匹配结果列表 -->
+  <section class="lk-results">
+    {% for match in matches %}
+    <article class="lk-match-card">
+      <div class="lk-match-header">
+        <div class="lk-match-title">
+          灵友 #{{ match.friend_id }}
+        </div>
+        <div class="lk-match-score-badge">
+          {{ match.score }}% 同频
+        </div>
+      </div>
+
+      <div class="lk-match-meta">
+        <span class="lk-match-meta-label">频率结构：</span>
+        <span class="lk-match-meta-value">
+          {{ match.summary|default("完美同频") }}
+        </span>
+      </div>
+
+      <div class="lk-match-tags">
+        <!-- 这里展示已命中的层级，可按你现有的结构调 -->
+        {% if match.same_year %}<span class="lk-tag">同年</span>{% endif %}
+        {% if match.same_month %}<span class="lk-tag">同月</span>{% endif %}
+        {% if match.same_day %}<span class="lk-tag">同日</span>{% endif %}
+        {% if match.same_shichen %}<span class="lk-tag">同时辰</span>{% endif %}
+        {% if match.same_hour %}<span class="lk-tag">同小时</span>{% endif %}
+        {% if match.same_quarter %}<span class="lk-tag">同刻</span>{% endif %}
+        {% if match.same_minute %}<span class="lk-tag">同分</span>{% endif %}
+      </div>
+
+      <div class="lk-match-footer">
+        <button class="lk-btn lk-btn-primary"
+                onclick="window.location.href='{{ url_for('modernmatch.modernmatch_detail', friend_id=match.friend_id) }}'">
+          查看详情
+        </button>
+        <button class="lk-btn lk-btn-ghost">
+          打招呼
+        </button>
+      </div>
+    </article>
+    {% else %}
+      <div class="lk-empty">暂无匹配结果，可以放宽筛选条件试试。</div>
+    {% endfor %}
+  </section>
+
+{% endblock %}

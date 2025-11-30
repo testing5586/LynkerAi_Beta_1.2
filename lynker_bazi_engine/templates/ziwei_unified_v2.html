@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends "base_dark.html" %}
+
+{% block title %}紫微斗数 · 命盘结构匹配{% endblock %}
+
+{% block ranking_title %}紫微结构排行榜 🏆{% endblock %}
+
+{% block ranking_tabs %}
+  <button class="lk-pill lk-pill-active">命盘结构榜</button>
+{% endblock %}
+
+{% block ranking_desc %}
+根据命宫、身宫、福德宫等关键宫位与主星组合结构进行匹配，仅供研究与参考。
+{% endblock %}
+
+{% block ranking_list %}
+  {% for item in leaderboard %}
+  <div class="lk-ranking-item">
+    <div class="lk-ranking-medal">No.{{ loop.index }}</div>
+    <div class="lk-ranking-info">
+      <div class="lk-ranking-name">灵友 #{{ item.friend_id }}</div>
+      <div class="lk-ranking-meta">
+        匹配 {{ item.match_count }} 次 · 验证 {{ item.verify_count }} 次
+      </div>
+    </div>
+    <div class="lk-ranking-score">
+      {{ item.final_score|default(0) }}<span class="lk-score-unit">%</span>
+    </div>
+  </div>
+  {% endfor %}
+{% endblock %}
+
+{% block main_title %}紫微斗数 · 命盘结构匹配{% endblock %}
+
+{% block main_subtitle %}
+基于命宫、身宫与十二宫主星组合的结构相似度匹配，用于寻找"盘型相近"的灵友。
+{% endblock %}
+
+{% block content %}
+    
+  <!-- 这里你可以加一个宫位简略图 / 统计说明；先保持和前两个一致结构 -->
+  <section class="lk-banner">
+    <div class="lk-banner-icon">💡</div>
+    <div class="lk-banner-body">
+      <div class="lk-banner-title">结构匹配说明</div>
+      <div class="lk-banner-text">
+        此处只比较紫微斗数盘的"结构"，不考虑流年大限与当前运势。适合寻找盘型相近的灵友，用于经验分享与共同验证。
+      </div>
+    </div>
+  </section>
+
+  <!-- 你后面根据紫微结构设计筛选 Pill，比如：同命宫系、同身宫、同主星组合等 -->
+  <section class="lk-filter-bar">
+    <div class="lk-filter-label">筛选条件（可自定义）</div>
+    <div class="lk-filter-pills">
+      <!-- 预留 -->
+      <button class="lk-pill lk-pill-active">默认结构匹配</button>
+    </div>
+  </section>
+
+  <section class="lk-results">
+    {% for match in matches %}
+    <article class="lk-match-card">
+      <div class="lk-match-header">
+        <div class="lk-match-title">
+          灵友 #{{ match.friend_id }}
+        </div>
+        <div class="lk-match-score-badge">
+          {{ match.score }}% 结构相似
+        </div>
+      </div>
+
+      <div class="lk-match-meta">
+        <span class="lk-match-meta-label">命盘摘要：</span>
+        <span class="lk-match-meta-value">
+          {{ match.summary|default("命宫天府 · 身宫同落 · 福德武贪") }}
+        </span>
+      </div>
+
+      <div class="lk-match-tags">
+        {% for tag in match.tags %}
+          <span class="lk-tag">{{ tag }}</span>
+        {% endfor %}
+      </div>
+
+      <div class="lk-match-footer">
+        <button class="lk-btn lk-btn-primary"
+                onclick="window.location.href='{{ url_for('ziwei.ziwei_detail', friend_id=match.friend_id) }}'">
+          查看命盘
+        </button>
+        <button class="lk-btn lk-btn-ghost">
+          打招呼
+        </button>
+      </div>
+    </article>
+    {% else %}
+      <div class="lk-empty">暂无匹配结果。</div>
+    {% endfor %}
+  </section>
+
+{% endblock %}

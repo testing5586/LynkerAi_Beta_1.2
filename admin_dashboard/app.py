@@ -9,7 +9,6 @@ from admin_auth import verify_login
 from data_fetcher import get_dashboard_data
 from chat_hub_v2 import process_message, get_agent_info
 import requests
-
 import os
 
 # Correctly configure paths relative to the instance folder
@@ -20,6 +19,19 @@ app.config.from_mapping(
 app.secret_key = os.getenv("MASTER_VAULT_KEY")
 if not app.secret_key:
     raise ValueError("MASTER_VAULT_KEY environment variable must be set for secure session management")
+
+# DEBUG ROUTES
+@app.route('/test_alive')
+def test_alive():
+    return "Server is alive!"
+
+@app.route('/debug_login')
+def debug_login():
+    try:
+        return render_template('auth/login.html')
+    except Exception as e:
+        return f"Template Error: {e}"
+# END DEBUG ROUTES
 
 # ==================== Flask-Login 初始化 ====================
 from flask_login import LoginManager
@@ -159,6 +171,12 @@ try:
 except Exception as e:
     print(f"[WARN] Lynker Bazi Engine 挂载失败: {e}")
 
+# DEBUG: Print all registered routes
+print("\n=== Registered Routes ===")
+for rule in app.url_map.iter_rules():
+    print(f"{rule} -> {rule.endpoint}")
+print("=========================\n")
+
 @app.route("/")
 def index():
     """LynkerAI 欢迎页"""
@@ -205,4 +223,5 @@ def my_real_bazi():
     return render_template("agent/my_real_bazi.html")
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    print("Starting server on port 5002...")
+    app.run(host="0.0.0.0", port=5002, debug=True)

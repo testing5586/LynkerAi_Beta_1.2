@@ -460,7 +460,7 @@ def bazimatch_page():
 @bazi_bp.route('/birth-input')
 def birth_input_page():
     """出生时间填写页面 - 命盘入口"""
-    return render_template('birth_input.html')
+    return render_template('index.html')
 
 
 @bazi_bp.route('/api/calculate-true-solar-time', methods=['POST'])

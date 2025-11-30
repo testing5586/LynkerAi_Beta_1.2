@@ -34,8 +34,9 @@ function renderFilterBar() {
 
     container.innerHTML = BAZI_STEPS.map((step, idx) => {
         const isChecked = idx <= activeIndex;
-        return `<span class="criteria-chip ${isChecked ? 'on' : 'off'}" onclick="handleFilterClick('${step.key}')">
-          ${isChecked ? '✅' : '⬜'} ${step.label}
+        return `<span class="criteria-chip ${isChecked ? 'on' : 'off'}">
+          <input type="checkbox" ${isChecked ? 'checked' : ''} id="chk_${step.key}" onchange="handleFilterClick('${step.key}')">
+          <label for="chk_${step.key}">${step.label}</label>
         </span>`;
     }).join('');
 

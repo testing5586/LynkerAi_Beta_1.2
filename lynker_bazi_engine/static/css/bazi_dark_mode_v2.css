@@ -1,0 +1,150 @@
+/* ModernMatch Pink-Purple Gradient Theme for Bazi Match */
+
+/* Dark Mode Variables & Base Styles */
+body.dark-body {
+    --bg-page: #050915;
+    --card-bg: #0f1628;
+    --text-main: #f8fafc;
+    --text-sub: #94a3b8;
+    --accent-primary: #a855f7;
+    --accent-secondary: #ec4899;
+    --border-color: #1e293b;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    
+    background-color: var(--bg-page);
+    color: var(--text-main);
+    font-family: 'Inter', sans-serif;
+}
+
+.dark-body .card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+}
+
+.dark-body .navbar {
+    background-color: rgba(15, 22, 40, 0.8);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.dark-body .form-control, 
+.dark-body .form-select {
+    background-color: #1e293b;
+    border-color: #334155;
+    color: #f8fafc;
+}
+
+.dark-body .form-control:focus, 
+.dark-body .form-select:focus {
+    background-color: #1e293b;
+    border-color: var(--accent-primary);
+    color: #f8fafc;
+    box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.2);
+}
+
+.dark-body .text-muted {
+    color: var(--text-sub) !important;
+}
+
+/* ModernMatch Pink-Purple Gradient Buttons */
+.dark-body .btn {
+    border-radius: 12px;
+    font-weight: 600;
+    padding: 10px 24px;
+    transition: all 0.3s ease;
+}
+
+.dark-body .btn-primary {
+    background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%) !important;
+    border: none !important;
+    box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3) !important;
+    color: #ffffff !important;
+}
+
+.dark-body .btn-primary:hover {
+    background: linear-gradient(135deg, #9333ea 0%, #db2777 100%) !important;
+    box-shadow: 0 6px 16px rgba(168, 85, 247, 0.4) !important;
+    transform: translateY(-2px);
+}
+
+.dark-body .btn-secondary,
+.dark-body .btn-outline-secondary {
+    background: transparent;
+    color: #f8fafc;
+    border: 2px solid #475569;
+}
+
+.dark-body .btn-secondary:hover,
+.dark-body .btn-outline-secondary:hover {
+    background: #1e293b;
+    border-color: #64748b;
+    color: #f8fafc;
+    transform: translateY(-2px);
+}
+
+.dark-body .btn-light {
+    background: rgba(148, 163, 184, 0.1);
+    color: #cbd5e1;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.dark-body .btn-light:hover {
+    background: rgba(148, 163, 184, 0.2);
+    border-color: rgba(148, 163, 184, 0.3);
+    color: #e2e8f0;
+}
+
+/* Badges with Pink Gradient */
+.dark-body .badge {
+    background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%) !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 20px !important;
+    padding: 6px 14px !important;
+    font-weight: 600 !important;
+    font-size: 0.875rem !important;
+}
+
+/* Score Numbers in Gradient Text */
+.dark-body .text-primary,
+.dark-body .fw-bold.text-primary,
+.dark-body h6.text-primary,
+.dark-body .score-value {
+    background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+    font-weight: 700 !important;
+}
+
+/* Checkbox with Pink Accent */
+.dark-body input[type="checkbox"] {
+    accent-color: #ec4899 !important;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.dark-body .form-check-label {
+    color: #f8fafc !important;
+    cursor: pointer !important;
+}
+
+/* Alert Box */
+.dark-body .alert {
+    background: rgba(251, 191, 36, 0.1);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    color: #fbbf24;
+    border-radius: 12px;
+}
+
+/* Card Hover Effects */
+.dark-body .card:hover {
+    background: rgba(168, 85, 247, 0.05);
+    border-color: rgba(168, 85, 247, 0.2);
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+}

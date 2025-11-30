@@ -1,0 +1,386 @@
+<!-- templates/base_dark.html -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>{% block title %}Lynker · 命盘{% endblock %}</title>
+  {% block extra_css %}{% endblock %}
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    /* Lynker Dark Theme - Base Styles */
+    :root {
+      --bg-main: #0f0f1a;
+      --bg-secondary: #1a1a2e;
+      --bg-tertiary: #16213e;
+      --card-bg: rgba(255, 255, 255, 0.03);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text-primary: #e8e8e8;
+      --text-secondary: rgba(255, 255, 255, 0.5);
+      --accent-gold: #e0c3a8;
+      --accent-purple: #9d8ec4;
+      --glass-blur: blur(20px);
+      --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.2);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body.lk-body {
+      font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: linear-gradient(135deg, var(--bg-main) 0%, var(--bg-secondary) 40%, var(--bg-tertiary) 100%);
+      min-height: 100vh;
+      color: var(--text-primary);
+      padding: 20px;
+    }
+
+    .lk-shell {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 30px;
+    }
+
+    /* Sidebar */
+    .lk-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .lk-profile-card {
+      background: var(--card-bg);
+      backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 30px;
+      text-align: center;
+      box-shadow: var(--shadow-card);
+    }
+
+    .lk-avatar-circle {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: linear-gradient(45deg, #333, #555);
+      margin: 0 auto 20px;
+      border: 2px solid var(--accent-gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .lk-avatar-circle img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .lk-avatar-initial {
+      font-size: 40px;
+      color: #fff;
+    }
+
+    .lk-profile-name {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--accent-gold);
+      margin-bottom: 8px;
+    }
+
+    .lk-profile-uid {
+      font-size: 12px;
+      color: var(--text-secondary);
+      letter-spacing: 1px;
+    }
+
+    .lk-card {
+      background: var(--card-bg);
+      backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .lk-card-title {
+      font-size: 13px;
+      color: var(--accent-gold);
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(224, 195, 168, 0.15);
+      text-transform: uppercase;
+    }
+
+    .lk-card-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 13px;
+    }
+
+    .lk-card-row:last-child {
+      border-bottom: none;
+    }
+
+    .lk-label {
+      color: var(--text-secondary);
+    }
+
+    .lk-value {
+      color: #fff;
+      font-weight: 500;
+    }
+
+    .lk-btn {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 16px;
+    }
+
+    .lk-btn-outline {
+      background: transparent;
+      border: 1px solid var(--card-border);
+      color: var(--text-secondary);
+    }
+
+    .lk-btn-outline:hover {
+      border-color: var(--accent-gold);
+      color: var(--accent-gold);
+      background: rgba(224, 195, 168, 0.05);
+    }
+
+    /* Ranking Card */
+    .lk-card-ranking {
+      max-height: 500px;
+      overflow-y: auto;
+    }
+
+    .lk-ranking-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .lk-ranking-tab {
+      padding: 6px 14px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      color: var(--text-secondary);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .lk-ranking-tab:hover {
+      background: rgba(157, 142, 196, 0.1);
+      color: var(--accent-purple);
+      border-color: var(--accent-purple);
+    }
+
+    .lk-ranking-tab.active {
+      background: var(--accent-purple);
+      color: #fff;
+      border-color: var(--accent-purple);
+    }
+
+    .lk-ranking-desc {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    .lk-ranking-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .lk-ranking-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 12px;
+      transition: all 0.3s;
+    }
+
+    .lk-ranking-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .lk-ranking-badge {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .lk-ranking-badge.top1 { background: linear-gradient(135deg, #ffd700, #ffed4e); color: #333; }
+    .lk-ranking-badge.top2 { background: linear-gradient(135deg, #c0c0c0, #e8e8e8); color: #333; }
+    .lk-ranking-badge.top3 { background: linear-gradient(135deg, #cd7f32, #d4a574); color: #fff; }
+    .lk-ranking-badge.other { background: rgba(255, 255, 255, 0.1); color: var(--text-secondary); }
+
+    .lk-ranking-info {
+      flex: 1;
+    }
+
+    .lk-ranking-name {
+      font-size: 14px;
+      color: #fff;
+      font-weight: 500;
+    }
+
+    .lk-ranking-meta {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .lk-ranking-score {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--accent-gold);
+    }
+
+    /* Main Content */
+    .lk-main {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .lk-main-header {
+      margin-bottom: 10px;
+    }
+
+    .lk-main-title {
+      font-size: 28px;
+      font-weight: 500;
+      color: var(--accent-gold);
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+    }
+
+    .lk-main-subtitle {
+      font-size: 14px;
+      color: var(--text-secondary);
+      letter-spacing: 1px;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .lk-shell {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body class="lk-body">
+  <div class="lk-shell">
+    <!-- 左侧侧栏：个人信息 + 排行榜 -->
+    <aside class="lk-sidebar">
+      <div class="lk-profile-card">
+        <div class="lk-avatar-circle">
+          {% if current_user_avatar %}
+            <img src="{{ current_user_avatar }}" alt="avatar">
+          {% else %}
+            <span class="lk-avatar-initial">
+              {{ birth_data.name[0] if birth_data and birth_data.name else "U" }}
+            </span>
+          {% endif %}
+        </div>
+        <div class="lk-profile-main">
+          <div class="lk-profile-name">
+            {{ birth_data.name if birth_data and birth_data.name else "灵友" }}
+          </div>
+          <div class="lk-profile-uid">
+            UID: {{ current_user_uid|default("8829301") }}
+          </div>
+        </div>
+      </div>
+
+      <div class="lk-card lk-card-currentchart">
+        <div class="lk-card-title">CURRENT CHART</div>
+        <div class="lk-card-row">
+          <span class="lk-label">出生时间</span>
+          <span class="lk-value">
+            {{ birth_data.local_datetime[:16].replace('T', ' ') if birth_data and birth_data.local_datetime else "--" }}
+          </span>
+        </div>
+        <div class="lk-card-row">
+          <span class="lk-label">真太阳时</span>
+          <span class="lk-value">
+            {{ birth_data.true_solar_datetime[:16].replace('T', ' ') if birth_data and birth_data.true_solar_datetime else "--" }}
+          </span>
+        </div>
+        {% if birth_data and birth_data.shichen %}
+        <div class="lk-card-row">
+          <span class="lk-label">时辰</span>
+          <span class="lk-value">{{ birth_data.shichen }}时</span>
+        </div>
+        {% endif %}
+        {% if birth_data and birth_data.location %}
+        <div class="lk-card-row">
+          <span class="lk-label">出生地</span>
+          <span class="lk-value">{{ birth_data.location.name }}</span>
+        </div>
+        {% endif %}
+        <button class="lk-btn lk-btn-outline"
+                onclick="window.location.href='/birth-input'">
+          重新输入出生时间
+        </button>
+      </div>
+
+      <!-- 排行榜：具体标题 & 数据由子页面覆写 -->
+      <div class="lk-card lk-card-ranking">
+        <div class="lk-card-title">
+          {% block ranking_title %}同频排行榜 🏆{% endblock %}
+        </div>
+        <div class="lk-ranking-tabs">
+          {% block ranking_tabs %}{% endblock %}
+        </div>
+        <div class="lk-ranking-desc">
+          {% block ranking_desc %}{% endblock %}
+        </div>
+        <div class="lk-ranking-list">
+          {% block ranking_list %}
+          <!-- 子模板里循环排行榜 -->
+          {% endblock %}
+        </div>
+      </div>
+    </aside>
+
+    <!-- 右侧主内容 -->
+    <main class="lk-main">
+      <header class="lk-main-header">
+        <div class="lk-main-title">
+          {% block main_title %}命盘匹配{% endblock %}
+        </div>
+        <div class="lk-main-subtitle">
+          {% block main_subtitle %}{% endblock %}
+        </div>
+      </header>
+
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

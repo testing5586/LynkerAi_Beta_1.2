@@ -1,0 +1,302 @@
+{% set birth = birth_data or {} %}
+{% set location_value = birth.location if birth and birth.location is defined else None %}
+{% set location_name = '未提供' %}
+{% if location_value is mapping %}
+  {% set location_name = location_value.name if location_value.name is defined else location_value.get('name', '未提供') %}
+{% elif location_value %}
+  {% set location_name = location_value %}
+{% endif %}
+{% set local_dt = birth.local_datetime if birth and birth.local_datetime is defined else None %}
+{% set local_display = local_dt[:16]|replace('T', ' ') if local_dt else '---' %}
+{% set true_solar = birth.true_solar_datetime if birth and birth.true_solar_datetime is defined else None %}
+{% set solar_display = true_solar[:16]|replace('T', ' ') if true_solar else '---' %}
+{% set filter_labels = [
+  ('same_year', '同年'),
+  ('same_month', '同月'),
+  ('same_day', '同日'),
+  ('same_shichen', '同时辰'),
+  ('same_hour', '同小时'),
+  ('same_quarter', '同刻'),
+  ('same_minute', '同分')
+] %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>时间同频 · 灵客AI</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}?v=12" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+
+    <style>
+        body.dark-body {
+            --bg-page: #050915;
+            --card-bg: #0f1628;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+            background: radial-gradient(circle at top, rgba(67, 56, 202, 0.15), transparent 45%), #030711;
+            color: var(--text-main);
+        }
+
+        body.dark-body .user-profile-card,
+        body.dark-body .leaderboard-card,
+        body.dark-body .filter-panel,
+        body.dark-body .match-card,
+        body.dark-body .btn-secondary,
+        body.dark-body .criteria-chip.off {
+            background: rgba(15, 22, 40, 0.9);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            box-shadow: 0 10px 40px rgba(2, 6, 23, 0.6);
+        }
+
+        body.dark-body .layout-container {
+            align-items: start;
+        }
+
+        body.dark-body .profile-header,
+        body.dark-body .section-title {
+            color: #cdd5ff;
+        }
+
+        body.dark-body .profile-value,
+        body.dark-body .user-name,
+        body.dark-body .rank-user,
+        body.dark-body .page-header h1 {
+            color: var(--text-main);
+        }
+
+        .weight-tag {
+            background: rgba(125, 211, 252, 0.2);
+            color: #7dd3fc;
+            padding: 2px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+        }
+
+        .leaderboard-list .loading,
+        .match-list .loading,
+        .match-list .empty-state {
+            padding: 24px;
+            text-align: center;
+            color: var(--text-sub);
+            border-radius: 16px;
+            border: 1px dashed rgba(148, 163, 184, 0.2);
+        }
+
+        .info-callout {
+            padding: 16px;
+            border-radius: 16px;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 16px;
+            border: 1px solid rgba(125, 211, 252, 0.3);
+        }
+
+        .info-callout--blue {
+            background: rgba(14, 165, 233, 0.08);
+            color: #bae6fd;
+        }
+
+        .info-callout-sub {
+            font-size: 12px;
+            opacity: 0.75;
+        }
+
+        .filter-status {
+            background: rgba(79, 70, 229, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            color: #c7d2fe;
+        }
+
+        .match-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 12px 0;
+        }
+
+        .match-tag {
+            padding: 6px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            background: rgba(96, 165, 250, 0.15);
+            color: #bfdbfe;
+        }
+
+        .match-summary {
+            color: var(--text-sub);
+            margin: 12px 0 8px;
+        }
+
+        .match-card .card-actions {
+            border-top: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #a855f7, #ec4899);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            color: var(--text-main);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+        }
+
+        .match-badge {
+            background: linear-gradient(120deg, rgba(248, 250, 252, 0.1), rgba(248, 250, 252, 0.3));
+            border: 1px solid rgba(248, 250, 252, 0.2);
+        }
+
+        .leaderboard-card .rank-item {
+            background: rgba(15, 23, 42, 0.6);
+            border-color: rgba(148, 163, 184, 0.15);
+        }
+
+        .leaderboard-card .rank-icon {
+            background: rgba(30, 41, 59, 0.9);
+            color: #e2e8f0;
+        }
+
+        .match-list {
+            min-height: 200px;
+        }
+    </style>
+
+    <script>
+        window.API_BASE = "{{ request.host_url.rstrip('/') }}";
+    </script>
+</head>
+
+<body class="dark-body">
+    <div class="layout-container">
+
+        <aside class="sidebar">
+            <section class="user-profile-card">
+                <div class="profile-user-info">
+                    <div class="user-avatar-large">
+                        <img src="{{ birth_data.avatar|default('https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop') }}" alt="User Avatar" id="userAvatar" />
+                    </div>
+                    <div class="user-name" id="userName">{{ birth_data.name|default('灵友') }}</div>
+                    <div class="user-uid" id="userUid">UID: {{ birth_data.uid|default('---') }}</div>
+                </div>
+
+                <div class="profile-header">CURRENT CHART</div>
+
+                <div class="profile-item">
+                    <div class="profile-label">出生时间</div>
+                    <div class="profile-value" id="birthTime">{{ local_display }}</div>
+                </div>
+
+                <div class="profile-item">
+                    <div class="profile-label">真太阳时</div>
+                    <div class="profile-value" id="trueTime">{{ solar_display }}</div>
+                </div>
+
+                <a href="{{ url_for('birth_input.birth_input_form') }}" class="btn-primary" style="text-align:center;margin-top:16px;display:block;">
+                    重新输入出生时间
+                </a>
+            </section>
+
+            <section class="leaderboard-card">
+                <div class="leaderboard-header" style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+                    <h2 class="section-title" style="margin:0;">时间同频排行榜 🏆</h2>
+                    <span id="weight-version" class="weight-tag" style="{{ 'display:inline-flex;' if leaderboard else 'display:none;' }}">v0</span>
+                </div>
+
+                <div id="leaderboardList" class="leaderboard-list">
+                    {% if leaderboard %}
+                        {% for item in leaderboard %}
+                        <div class="rank-item">
+                            <div class="rank-icon">{{ '🥇' if loop.index == 1 else ('🥈' if loop.index == 2 else ('🥉' if loop.index == 3 else 'No.' ~ loop.index)) }}</div>
+                            <div class="rank-info">
+                                <div class="rank-user">灵友 #{{ item.friend_id }}</div>
+                                <div class="rank-stats">匹配 {{ item.match_count }} 次 · 验证 {{ item.verify_count }} 次</div>
+                            </div>
+                            <div class="rank-score">{{ item.final_score|default(0) }}%</div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="loading">暂无排行数据</div>
+                    {% endif %}
+                </div>
+            </section>
+        </aside>
+
+        <main class="main-content">
+            <header class="page-header">
+                <div>
+                    <h1>时间同频 · 毫秒级结构匹配</h1>
+                    <p class="desc">基于真太阳时与七层时间结构的精准同频搜索引擎</p>
+                </div>
+            </header>
+
+            <section class="filter-panel">
+                <div class="info-callout info-callout--blue">
+                    <strong>⚡ 排行榜评分说明</strong><br />
+                    当前榜单基于<strong>真太阳时 + 毫秒级时间结构</strong>进行同频评分，不同于八字同命算法，分值为结构相似度参考指标。<br />
+                    <span class="info-callout-sub">注：少于 5 次匹配样本将自动降权 15%，100% 仅保留完全重叠结构、多次验证者。</span>
+                </div>
+
+                <div id="filter-status" class="filter-status">
+                    当前默认搜索模式：100% 精准匹配
+                </div>
+
+                <div class="filter-section">
+                    <div class="filter-label" style="margin-bottom:6px;color:var(--text-sub);">筛选条件（可自定义）</div>
+                    <div id="match-criteria" class="match-criteria-bar">
+                        {% for key, label in filter_labels %}
+                            {% set idx = loop.index0 %}
+                            {% set is_active = filters.get(key) %}
+                            <span class="criteria-chip {{ 'on' if is_active else 'off' }}" data-filter="{{ key }}">
+                                {% if idx < 2 %}🔒{% elif is_active %}✅{% else %}⬜{% endif %} {{ label }}
+                            </span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
+
+            <section id="matchList" class="match-list">
+                {% if matches %}
+                    {% for match in matches %}
+                    <article class="match-card">
+                        <div class="card-header">
+                            <div class="name">灵友 #{{ match.friend_id }}</div>
+                            <div class="match-badge">{{ match.score }}% 同频</div>
+                        </div>
+                        <p class="match-summary">同频结构：{{ match.summary|default('结构解析筹备中') }}</p>
+                        <div class="match-tags">
+                            {% for key, label in filter_labels %}
+                                {% set hit = match[key] if key in match else False %}
+                                {% if hit %}
+                                    <span class="match-tag">{{ label }}</span>
+                                {% endif %}
+                            {% endfor %}
+                            {% for tag in match.tags|default([], true) %}
+                                <span class="match-tag" style="background:rgba(248,113,113,0.15);color:#fecaca;">{{ tag }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="card-actions">
+                            <a class="btn-secondary" href="{{ url_for('modernmatch.modernmatch_detail', friend_id=match.friend_id) }}">查看档案</a>
+                            <button class="btn-primary" type="button">打招呼</button>
+                        </div>
+                    </article>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">暂无匹配结果，可以尝试调整筛选条件。</div>
+                {% endif %}
+            </section>
+        </main>
+
+    </div>
+
+    <script src="{{ url_for('static', filename='js/modernmatch.js') }}?v=10" defer></script>
+</body>
+
+</html>

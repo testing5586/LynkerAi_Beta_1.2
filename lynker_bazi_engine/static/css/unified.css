@@ -1,0 +1,316 @@
+/* Unified UI System for Lynker Bazi Engine */
+:root {
+    --bg-gradient: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 40%, #16213e 100%);
+    --card-bg: rgba(255, 255, 255, 0.03);
+    --card-border: rgba(255, 255, 255, 0.08);
+    --text-primary: #e8e8e8;
+    --text-secondary: rgba(255, 255, 255, 0.5);
+    --accent-gold: #e0c3a8;
+    --accent-purple: #9d8ec4;
+    --accent-purple-hover: #b3a4d8;
+    --glass-blur: blur(20px);
+    --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg-gradient);
+    min-height: 100vh;
+    color: var(--text-primary);
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 30px;
+}
+
+/* Left Profile Card */
+.profile-card {
+    background: var(--card-bg);
+    backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--card-border);
+    border-radius: 24px;
+    padding: 30px;
+    text-align: center;
+    position: sticky;
+    top: 20px;
+    height: fit-content;
+    box-shadow: var(--shadow-card);
+}
+
+.avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #333, #555);
+    margin: 0 auto 20px;
+    border: 2px solid var(--accent-gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+}
+
+.user-name {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--accent-gold);
+    margin-bottom: 8px;
+}
+
+.user-uid {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+    letter-spacing: 1px;
+}
+
+.profile-info-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 13px;
+}
+
+.profile-info-item:last-child { border-bottom: none; }
+.profile-info-item .label { color: var(--text-secondary); }
+.profile-info-item .value { color: #fff; font-weight: 500; }
+
+.back-btn {
+    display: block;
+    margin-top: 30px;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid var(--card-border);
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: all 0.3s;
+    font-size: 13px;
+}
+
+.back-btn:hover {
+    border-color: var(--accent-gold);
+    color: var(--accent-gold);
+}
+
+/* Right Content Area */
+.content-area {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.page-header {
+    margin-bottom: 10px;
+}
+
+.page-title {
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--accent-gold);
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+}
+
+.page-subtitle {
+    font-size: 14px;
+    color: var(--text-secondary);
+    letter-spacing: 1px;
+}
+
+/* Score Hint Box */
+.score-hint-box {
+    background: rgba(224, 195, 168, 0.05);
+    border: 1px solid rgba(224, 195, 168, 0.15);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.hint-icon { font-size: 24px; }
+.hint-text { font-size: 13px; color: rgba(255,255,255,0.8); line-height: 1.5; }
+
+/* Filters */
+.filter-section {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    padding: 8px 20px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--card-border);
+    color: var(--text-secondary);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.filter-btn:hover {
+    background: rgba(157, 142, 196, 0.1);
+    color: var(--accent-purple);
+    border-color: var(--accent-purple);
+}
+
+.filter-btn.active {
+    background: var(--accent-purple);
+    color: #fff;
+    border-color: var(--accent-purple);
+    box-shadow: 0 4px 12px rgba(157, 142, 196, 0.3);
+}
+
+/* Match List Grid */
+.match-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+/* Match Card */
+.match-card {
+    background: var(--card-bg);
+    backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 24px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.match-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(224, 195, 168, 0.3);
+    box-shadow: var(--shadow-card);
+}
+
+.match-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.match-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.match-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+.match-info h3 {
+    font-size: 16px;
+    color: #fff;
+    margin-bottom: 4px;
+}
+
+.match-info p {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.match-score {
+    text-align: right;
+}
+
+.score-val {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--accent-gold);
+    line-height: 1;
+}
+
+.score-label {
+    font-size: 10px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+}
+
+.match-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.tag {
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.05);
+    color: rgba(255,255,255,0.7);
+}
+
+.tag.highlight {
+    background: rgba(224, 195, 168, 0.15);
+    color: var(--accent-gold);
+    border: 1px solid rgba(224, 195, 168, 0.2);
+}
+
+.card-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.action-btn {
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+    text-decoration: none;
+}
+
+.btn-view {
+    background: rgba(255,255,255,0.05);
+    color: #fff;
+}
+
+.btn-view:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+.btn-hi {
+    background: linear-gradient(135deg, #e0c3a8 0%, #c9a87e 100%);
+    color: #1a1a2e;
+    font-weight: 600;
+}
+
+.btn-hi:hover {
+    box-shadow: 0 4px 15px rgba(224, 195, 168, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        grid-template-columns: 1fr;
+    }
+    .profile-card {
+        position: relative;
+        top: 0;
+    }
+}

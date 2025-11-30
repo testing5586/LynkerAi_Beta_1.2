@@ -1,0 +1,594 @@
+{% extends "base_dark.html" %}
+
+{% block title %}时间同频 · 毫秒级结构匹配{% endblock %}
+
+{% block ranking_title %}时间同频排行榜 🏆{% endblock %}
+
+{% block ranking_tabs %}
+  <!-- 如果有多个榜单模式可以做切换；先留一个 -->
+  <button class="lk-pill lk-pill-active">时间同频榜</button>
+{% endblock %}
+
+{% block ranking_desc %}
+  少于 5 次匹配样本会略微衰减 15%，100% 仅代表完美重叠结构，多次验证。
+{% endblock %}
+
+{% block ranking_list %}
+  {% for item in leaderboard %}
+  <div class="lk-ranking-item">
+    <div class="lk-ranking-medal">No.{{ loop.index }}</div>
+    <div class="lk-ranking-info">
+      <div class="lk-ranking-name">灵友 #{{ item.friend_id }}</div>
+      <div class="lk-ranking-meta">
+        匹配 {{ item.match_count }} 次 · 验证 {{ item.verify_count }} 次
+      </div>
+    </div>
+    <div class="lk-ranking-score">
+      {{ item.final_score|default(0) }} <span class="lk-score-unit">%</span>
+    </div>
+  </div>
+  {% endfor %}
+{% endblock %}
+
+{% block main_title %}时间同频 · 毫秒级结构匹配{% endblock %}
+
+{% block main_subtitle %}
+基于真太阳时的时间层级结构，进行频率匹配评分，不同于八字同命算法，分值为结构相似度参考指标。
+{% endblock %}
+
+{% block content %}
+
+  <!-- 顶部说明 Banner -->
+  <section class="lk-banner">
+    <div class="lk-banner-icon">💡</div>
+    <div class="lk-banner-body">
+      <div class="lk-banner-title">排行榜评分说明</div>
+      <div class="lk-banner-text">
+        当前榜单基于真太阳时 + 毫秒级时间结构评分，少于 5 次匹配样本将略微衰减 15%，100% 仅保留完全重叠结构，多次验证。
+      </div>
+    </div>
+  </section>
+
+  <!-- 筛选条件 -->
+  <section class="lk-filter-bar">
+    <div class="lk-filter-label">筛选条件（可自定义）</div>
+    <div class="lk-filter-pills">
+      <!-- 这里保持你现在的勾选逻辑，class 里可加 active 状态 -->
+      <button class="lk-pill {% if filters.same_year %}lk-pill-active{% endif %}"
+              data-filter="same_year">同年</button>
+      <button class="lk-pill {% if filters.same_month %}lk-pill-active{% endif %}"
+              data-filter="same_month">同月</button>
+      <button class="lk-pill {% if filters.same_day %}lk-pill-active{% endif %}"
+              data-filter="same_day">同日</button>
+      <button class="lk-pill {% if filters.same_shichen %}lk-pill-active{% endif %}"
+              data-filter="same_shichen">同时辰</button>
+      <button class="lk-pill {% if filters.same_hour %}lk-pill-active{% endif %}"
+              data-filter="same_hour">同小时</button>
+      <button class="lk-pill {% if filters.same_quarter %}lk-pill-active{% endif %}"
+              data-filter="same_quarter">同刻</button>
+      <button class="lk-pill {% if filters.same_minute %}lk-pill-active{% endif %}"
+              data-filter="same_minute">同分</button>
+    </div>
+    <div class="lk-filter-mode">
+      当前默认搜索模式：<span class="lk-tag-primary">100% 精准匹配</span>
+    </div>
+  </section>
+
+  <!-- 匹配结果列表 -->
+  <section class="lk-results">
+    {% for match in matches %}
+    <article class="lk-match-card">
+      <div class="lk-match-header">
+        <div class="lk-match-title">
+          灵友 #{{ match.friend_id }}
+        </div>
+        <div class="lk-match-score-badge">
+          {{ match.score }}% 同频
+        </div>
+      </div>
+
+      <div class="lk-match-meta">
+        <span class="lk-match-meta-label">频率结构：</span>
+        <span class="lk-match-meta-value">
+          {{ match.summary|default("完美同频") }}
+        </span>
+      </div>
+
+      <div class="lk-match-tags">
+        <!-- 这里展示已命中的层级，可按你现有的结构调 -->
+        {% if match.same_year %}<span class="lk-tag">同年</span>{% endif %}
+        {% if match.same_month %}<span class="lk-tag">同月</span>{% endif %}
+        {% if match.same_day %}<span class="lk-tag">同日</span>{% endif %}
+        {% if match.same_shichen %}<span class="lk-tag">同时辰</span>{% endif %}
+        {% if match.same_hour %}<span class="lk-tag">同小时</span>{% endif %}
+        {% if match.same_quarter %}<span class="lk-tag">同刻</span>{% endif %}
+        {% if match.same_minute %}<span class="lk-tag">同分</span>{% endif %}
+      </div>
+
+      <div class="lk-match-footer">
+        <button class="lk-btn lk-btn-primary"
+                onclick="window.location.href='{{ url_for('modernmatch.modernmatch_detail', friend_id=match.friend_id) }}'">
+          查看详情
+        </button>
+        <button class="lk-btn lk-btn-ghost">
+          打招呼
+        </button>
+      </div>
+    </article>
+    {% else %}
+      <div class="lk-empty">暂无匹配结果，可以放宽筛选条件试试。</div>
+    {% endfor %}
+  </section>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Match - Lynker AI</title>
+    <style>
+        /* Unified UI System for Lynker Bazi Engine - INLINED for Reliability */
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 40%, #16213e 100%);
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-primary: #e8e8e8;
+            --text-secondary: rgba(255, 255, 255, 0.5);
+            --accent-gold: #e0c3a8;
+            --accent-purple: #9d8ec4;
+            --accent-purple-hover: #b3a4d8;
+            --glass-blur: blur(20px);
+            --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            color: var(--text-primary);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 30px;
+        }
+
+        /* Left Profile Card */
+        .profile-card {
+            background: var(--card-bg);
+            backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 30px;
+            text-align: center;
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+            box-shadow: var(--shadow-card);
+        }
+
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #333, #555);
+            margin: 0 auto 20px;
+            border: 2px solid var(--accent-gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: #fff;
+            overflow: hidden;
+        }
+        
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--accent-gold);
+            margin-bottom: 8px;
+        }
+
+        .user-uid {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            letter-spacing: 1px;
+        }
+
+        .profile-info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 13px;
+        }
+
+        .profile-info-item:last-child { border-bottom: none; }
+        .profile-info-item .label { color: var(--text-secondary); }
+        .profile-info-item .value { color: #fff; font-weight: 500; }
+
+        .back-btn {
+            display: block;
+            margin-top: 30px;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 13px;
+        }
+
+        .back-btn:hover {
+            border-color: var(--accent-gold);
+            color: var(--accent-gold);
+            background: rgba(224, 195, 168, 0.05);
+        }
+
+        /* Right Content Area */
+        .content-area {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .page-header {
+            margin-bottom: 10px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 500;
+            color: var(--accent-gold);
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            letter-spacing: 1px;
+        }
+
+        /* Score Hint Box */
+        .score-hint-box {
+            background: rgba(224, 195, 168, 0.05);
+            border: 1px solid rgba(224, 195, 168, 0.15);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .hint-icon { font-size: 24px; }
+        .hint-text { font-size: 13px; color: rgba(255,255,255,0.8); line-height: 1.5; }
+
+        /* Filters */
+        .filter-section {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 20px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--card-border);
+            color: var(--text-secondary);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-btn:hover {
+            background: rgba(157, 142, 196, 0.1);
+            color: var(--accent-purple);
+            border-color: var(--accent-purple);
+        }
+
+        .filter-btn.active {
+            background: var(--accent-purple);
+            color: #fff;
+            border-color: var(--accent-purple);
+            box-shadow: 0 4px 12px rgba(157, 142, 196, 0.3);
+        }
+
+        /* Match List Grid */
+        .match-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        /* Match Card */
+        .match-card {
+            background: var(--card-bg);
+            backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .match-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(224, 195, 168, 0.3);
+            box-shadow: var(--shadow-card);
+        }
+
+        .match-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .match-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .match-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #fff;
+        }
+
+        .match-info h3 {
+            font-size: 16px;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .match-info p {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .match-score {
+            text-align: right;
+        }
+
+        .score-val {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent-gold);
+            line-height: 1;
+        }
+
+        .score-label {
+            font-size: 10px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .match-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .tag {
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            background: rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.7);
+        }
+
+        .tag.highlight {
+            background: rgba(224, 195, 168, 0.15);
+            color: var(--accent-gold);
+            border: 1px solid rgba(224, 195, 168, 0.2);
+        }
+
+        .card-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .action-btn {
+            padding: 10px;
+            border-radius: 10px;
+            border: none;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn-view {
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+        }
+
+        .btn-view:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .btn-hi {
+            background: linear-gradient(135deg, #e0c3a8 0%, #c9a87e 100%);
+            color: #1a1a2e;
+            font-weight: 600;
+        }
+
+        .btn-hi:hover {
+            box-shadow: 0 4px 15px rgba(224, 195, 168, 0.3);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            .profile-card {
+                position: relative;
+                top: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Left Profile Card -->
+        <div class="profile-card">
+            <div class="avatar">
+                {{ birth_data.name[0] if birth_data.name else 'U' }}
+            </div>
+            <h2 class="user-name">{{ birth_data.name or 'Unknown' }}</h2>
+            <p class="user-uid">UID: 8829301</p>
+            
+            <div class="profile-info-item">
+                <span class="label">性别</span>
+                <span class="value">{{ '男' if birth_data.gender == 'male' else '女' }}</span>
+            </div>
+            <div class="profile-info-item">
+                <span class="label">出生地</span>
+                <span class="value">{{ birth_data.location.name }}</span>
+            </div>
+            <div class="profile-info-item">
+                <span class="label">真太阳时</span>
+                <span class="value">{{ birth_data.true_solar_datetime[:10] }}</span>
+            </div>
+            <div class="profile-info-item">
+                <span class="label">时间</span>
+                <span class="value">{{ birth_data.true_solar_datetime[11:16] }}</span>
+            </div>
+            <div class="profile-info-item">
+                <span class="label">时辰</span>
+                <span class="value">{{ birth_data.shichen }}时</span>
+            </div>
+
+            <a href="/dashboard" class="back-btn">← 返回总览</a>
+        </div>
+
+        <!-- Right Content Area -->
+        <div class="content-area">
+            <div class="page-header">
+                <h1 class="page-title">Modern Match</h1>
+                <p class="page-subtitle">Time Frequency Synchronization · 现代时间同频</p>
+            </div>
+
+            <!-- Score Hint -->
+            <div class="score-hint-box">
+                <div class="hint-icon">💡</div>
+                <div class="hint-text">
+                    您的时间频率结构显示出罕见的“龙虎”共振模式。
+                    您与出生在<strong>猴年</strong>或<strong>鼠年</strong>的人高度兼容。
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="filter-section">
+                <button class="filter-btn active">全部匹配</button>
+                <button class="filter-btn">同年</button>
+                <button class="filter-btn">同月</button>
+                <button class="filter-btn">同日</button>
+                <button class="filter-btn">同时辰</button>
+            </div>
+
+            <!-- Match List -->
+            <div class="match-list">
+                <!-- Mock Match 1 -->
+                <div class="match-card">
+                    <div class="match-header">
+                        <div class="match-user">
+                            <div class="match-avatar" style="background: #4a90e2;">李</div>
+                            <div class="match-info">
+                                <h3>李明</h3>
+                                <p>北京 · 1995</p>
+                            </div>
+                        </div>
+                        <div class="match-score">
+                            <div class="score-val">98</div>
+                            <div class="score-label">匹配度</div>
+                        </div>
+                    </div>
+                    <div class="match-tags">
+                        <span class="tag highlight">同年</span>
+                        <span class="tag highlight">同月</span>
+                        <span class="tag">金日主</span>
+                    </div>
+                    <div class="card-actions">
+                        <button class="action-btn btn-view">查看档案</button>
+                        <button class="action-btn btn-hi">打招呼</button>
+                    </div>
+                </div>
+
+                <!-- Mock Match 2 -->
+                <div class="match-card">
+                    <div class="match-header">
+                        <div class="match-user">
+                            <div class="match-avatar" style="background: #e24a90;">陈</div>
+                            <div class="match-info">
+                                <h3>陈莎莎</h3>
+                                <p>上海 · 1998</p>
+                            </div>
+                        </div>
+                        <div class="match-score">
+                            <div class="score-val">92</div>
+                            <div class="score-label">匹配度</div>
+                        </div>
+                    </div>
+                    <div class="match-tags">
+                        <span class="tag highlight">同日</span>
+                        <span class="tag">水元素</span>
+                    </div>
+                    <div class="card-actions">
+                        <button class="action-btn btn-view">查看档案</button>
+                        <button class="action-btn btn-hi">打招呼</button>
+                    </div>
+                </div>
+
+                <!-- Mock Match 3 -->
+                <div class="match-card">
+                    <div class="match-header">
+                        <div class="match-user">
+                            <div class="match-avatar" style="background: #50e3c2; color: #333;">吴</div>
+                            <div class="match-info">
+                                <h3>David Wu</h3>
+                                <p>新加坡 · 1992</p>
+                            </div>
+                        </div>
+                        <div class="match-score">
+                            <div class="score-val">88</div>
+                            <div class="score-label">匹配度</div>
+                        </div>
+                    </div>
+                    <div class="match-tags">
+                        <span class="tag highlight">同时辰</span>
+                        <span class="tag">土结构</span>
+                    </div>
+                    <div class="card-actions">
+                        <button class="action-btn btn-view">查看档案</button>
+                        <button class="action-btn btn-hi">打招呼</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

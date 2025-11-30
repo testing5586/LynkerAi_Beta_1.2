@@ -1,0 +1,202 @@
+/* Dark Mode Variables & Base Styles */
+body.dark-body {
+    --bg-page: #050915;
+    --card-bg: #0f1628;
+    --text-main: #f8fafc;
+    --text-sub: #94a3b8;
+    --accent-primary: #6366f1;
+    --accent-secondary: #8b5cf6;
+    --border-color: #1e293b;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    
+    background-color: var(--bg-page);
+    color: var(--text-main);
+    font-family: 'Inter', sans-serif;
+}
+
+.dark-body .card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+}
+
+.dark-body .navbar {
+    background-color: rgba(15, 22, 40, 0.8);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.dark-body .form-control, 
+.dark-body .form-select {
+    background-color: #1e293b;
+    border-color: #334155;
+    color: #f8fafc;
+}
+
+.dark-body .form-control:focus, 
+.dark-body .form-select:focus {
+    background-color: #1e293b;
+    border-color: var(--accent-primary);
+    color: #f8fafc;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
+.dark-body .text-muted {
+    color: var(--text-sub) !important;
+}
+
+/* ModernMatch Button Styles */
+.dark-body .btn {
+    border-radius: 12px;
+    font-weight: 600;
+    padding: 10px 24px;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.dark-body .btn-primary {
+    background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);
+}
+
+.dark-body .btn-primary:hover {
+    background: linear-gradient(135deg, #9333ea 0%, #db2777 100%);
+    box-shadow: 0 6px 16px rgba(168, 85, 247, 0.4);
+    transform: translateY(-2px);
+}
+
+.dark-body .btn-secondary,
+.dark-body .btn-outline-secondary {
+    background: transparent;
+    color: #f8fafc;
+    border: 2px solid #475569;
+}
+
+.dark-body .btn-secondary:hover,
+.dark-body .btn-outline-secondary:hover {
+    background: #1e293b;
+    border-color: #64748b;
+    color: #f8fafc;
+    transform: translateY(-2px);
+}
+
+.dark-body .btn-light {
+    background: rgba(148, 163, 184, 0.1);
+    color: #cbd5e1;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.dark-body .btn-light:hover {
+    background: rgba(148, 163, 184, 0.2);
+    border-color: rgba(148, 163, 184, 0.3);
+    color: #e2e8f0;
+}
+
+/* Filter Pills/Badges (同年柱, 同月柱, etc.) */
+.dark-body .badge,
+.dark-body .btn-sm,
+.dark-body .pillar-filter {
+    background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%) !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 20px;
+    padding: 6px 16px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.dark-body .badge:hover,
+.dark-body .btn-sm:hover,
+.dark-body .pillar-filter:hover {
+    background: linear-gradient(135deg, #9333ea 0%, #db2777 100%) !important;
+    transform: scale(1.05);
+}
+
+/* Keep checkbox functionality - don't override */
+.dark-body input[type="checkbox"] {
+    appearance: auto !important;
+    -webkit-appearance: checkbox !important;
+    width: 18px !important;
+    height: 18px !important;
+    margin-right: 8px !important;
+    cursor: pointer !important;
+    accent-color: #a855f7 !important;
+    background: transparent !important;
+    border: 2px solid #64748b !important;
+    border-radius: 4px !important;
+}
+
+.dark-body input[type="checkbox"]:checked {
+    accent-color: #ec4899 !important;
+    background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%) !important;
+}
+
+/* Label styling for checkbox labels */
+.dark-body .form-check-label,
+.dark-body label {
+    color: #f8fafc !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
+}
+
+/* Score Badges (88分, 92分) - aggressive targeting */
+.dark-body .score-badge,
+.dark-body .badge-score,
+.dark-body .badge-primary,
+.dark-body .badge-info,
+.dark-body .badge-secondary,
+.dark-body span.badge,
+.dark-body .text-primary,
+.dark-body .match-score {
+    background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%) !important;
+    color: #ffffff !important;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-weight: 700;
+    font-size: 0.875rem;
+    box-shadow: 0 2px 8px rgba(168, 85, 247, 0.3);
+}
+
+/* Force pink gradient on any score display */
+.dark-body [class*="score"],
+.dark-body [class*="分"] {
+    color: #ec4899 !important;
+    font-weight: 700;
+}
+
+/* Alert/Info Box */
+.dark-body .alert {
+    background: rgba(251, 191, 36, 0.1);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    color: #fbbf24;
+    border-radius: 12px;
+}
+
+/* Ranking Cards in Sidebar */
+.dark-body .ranking-card {
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);
+    border: 1px solid rgba(168, 85, 247, 0.2);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.dark-body .ranking-card:hover {
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, rgba(236, 72, 153, 0.15) 100%);
+    border-color: rgba(168, 85, 247, 0.3);
+    transform: translateY(-2px);
+}
+
+/* Universal pink gradient for all scores and ranking numbers */
+.dark-body .text-end.fw-bold,
+.dark-body .fw-bold.text-primary,
+.dark-body h6.text-primary,
+.dark-body .float-end {
+    background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+}

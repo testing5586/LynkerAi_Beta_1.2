@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>灵客排盘 - 紫微斗数</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,#0f0f1a 0%,#1a1a2e 40%,#16213e 100%);min-height:100vh;padding:40px 20px;color:#e8e8e8}
+        .container{max-width:900px;margin:0 auto}
+        .header{text-align:center;margin-bottom:40px}
+        .header-icon{font-size:56px;margin-bottom:16px}
+        .header h1{color:#e0c3a8;font-size:28px;font-weight:500;letter-spacing:6px;margin-bottom:8px}
+        .header p{color:rgba(255,255,255,0.5);font-size:13px;letter-spacing:2px}
+        
+        .card{background:rgba(255,255,255,0.03);backdrop-filter:blur(20px);border-radius:20px;padding:30px;border:1px solid rgba(255,255,255,0.08);margin-bottom:24px}
+        .card-title{color:#e0c3a8;font-size:15px;font-weight:500;letter-spacing:2px;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid rgba(224,195,168,0.15)}
+        
+        .palace-grid{display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(4,1fr);gap:8px;aspect-ratio:1}
+        .palace{background:rgba(255,255,255,0.04);border-radius:10px;padding:12px;text-align:center;border:1px solid rgba(255,255,255,0.08);display:flex;flex-direction:column;justify-content:center;min-height:100px}
+        .palace-name{color:#e0c3a8;font-size:13px;font-weight:500;margin-bottom:6px}
+        .palace-stars{color:rgba(255,255,255,0.6);font-size:11px;line-height:1.6}
+        .palace.center{grid-column:2/4;grid-row:2/4;background:rgba(224,195,168,0.08);border-color:rgba(224,195,168,0.2)}
+        .palace.center .palace-name{font-size:16px;color:#e0c3a8}
+        .palace.pending{opacity:0.5}
+        
+        .pending-notice{background:rgba(255,193,7,0.1);border:1px solid rgba(255,193,7,0.3);border-radius:12px;padding:20px;text-align:center;color:#ffd54f;margin-top:20px}
+        .pending-notice .icon{font-size:32px;margin-bottom:10px}
+        
+        .nav-bar{display:flex;gap:12px;justify-content:center;margin-top:30px}
+        .nav-btn{padding:12px 28px;border-radius:10px;font-size:14px;text-decoration:none;transition:all 0.3s}
+        .nav-btn.back{background:transparent;color:rgba(255,255,255,0.6);border:1px solid rgba(255,255,255,0.15)}
+        .nav-btn.back:hover{border-color:#e0c3a8;color:#e0c3a8}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-icon">⭐</div>
+            <h1>紫微斗数</h1>
+            <p>ZiweiMatchAgent · 十二宫命盘</p>
+        </div>
+        
+        <!-- 紫微盘 -->
+        <div class="card">
+            <h2 class="card-title">⭐ 紫微命盘</h2>
+            
+            <div class="palace-grid">
+                <!-- Row 1 -->
+                <div class="palace {% if ziwei.pending %}pending{% endif %}">
+                    <div class="palace-name">巳</div>
+                    <div class="palace-stars">—</div>
+                </div>
+                <div class="palace {% if ziwei.pending %}pending{% endif %}">
+                    <div class="palace-name">午</div>
+                    <div class="palace-stars">—</div>
+                </div>
+                <div class="palace {% if ziwei.pending %}pending{% endif %}">
+                    <div class="palace-name">未</div>
+                    <div class="palace-stars">—</div>
+                </div>
+                <div class="palace {% if ziwei.pending %}pending{% endif %}">
+                    <div class="palace-name">申</div>
+                    <div class="palace-stars">—</div>
+                </div>
+                
+                <!-- Row 2 -->
+                <div class="palace {% if ziwei.pending %}pending{% endif %}">
+                    <div class="palace-name">辰</div>
+                    <div class="palace-stars">—</div>
+                </div>
+                <!-- Center spans 2x2 -->
+                <div class="palace center">
+                    <div class="palace-name">{{ birth_data.name or '灵友' }}</div>
+                    <div class="palace-stars" style="color:rgba(255,255,255,0.5);font-size:12px">
+                        {{ birth_data.true_solar_datetime.replace('T', ' ')[:16] }}<br>
+                        {{ '男' if birth_data.gender == 'male' else '女' }}命
+                    </div>
+                </div>
+                <div class="palace {% if ziwei.pending %}pending{% endif %}">
+                    <div class="palace-name">酉</div>
+                    <div class="palace-stars">—</div>
+                </div>
+                
+                <!-- Row 3 -->
+                <div class="palace {% if ziwei.pending %}pending{% endif %}">
+                    <div class="palace-name">卯</div>
+                    <div class="palace-stars">—</div>
+                </div>
+                <div class="palace {% if ziwei.pending %}pending{% endif %}">
+                    <div class="palace-name">戌</div>
+                    <div class="palace-stars">—</div>
+                </div>
+                
+                <!-- Row 4 -->
+                <div class="palace {% if ziwei.pending %}pending{% endif %}">
+                    <div class="palace-name">寅</div>
+                    <div class="palace-stars">—</div>
+                </div>
+                <div class="palace {% if ziwei.pending %}pending{% endif %}">
+                    <div class="palace-name">丑</div>
+                    <div class="palace-stars">—</div>
+                </div>
+                <div class="palace {% if ziwei.pending %}pending{% endif %}">
+                    <div class="palace-name">子</div>
+                    <div class="palace-stars">—</div>
+                </div>
+                <div class="palace {% if ziwei.pending %}pending{% endif %}">
+                    <div class="palace-name">亥</div>
+                    <div class="palace-stars">—</div>
+                </div>
+            </div>
+            
+            {% if ziwei.pending %}
+            <div class="pending-notice">
+                <div class="icon">🔄</div>
+                <p>紫微斗数计算模块待实现</p>
+                <p style="font-size:12px;margin-top:8px;opacity:0.7">下一步将整合 iztro：十二宫、主星、四化</p>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="nav-bar">
+            <a href="{{ url_for('birth_input.dashboard') }}" class="nav-btn back">← 返回总览</a>
+        </div>
+    </div>
+</body>
+</html>

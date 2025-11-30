@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>灵客排盘 - 现代命盘</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,#0f0f1a 0%,#1a1a2e 40%,#16213e 100%);min-height:100vh;padding:40px 20px;color:#e8e8e8}
+        .container{max-width:800px;margin:0 auto}
+        .header{text-align:center;margin-bottom:40px}
+        .header-icon{font-size:56px;margin-bottom:16px}
+        .header h1{color:#e0c3a8;font-size:28px;font-weight:500;letter-spacing:6px;margin-bottom:8px}
+        .header p{color:rgba(255,255,255,0.5);font-size:13px;letter-spacing:2px}
+        
+        .card{background:rgba(255,255,255,0.03);backdrop-filter:blur(20px);border-radius:20px;padding:30px;border:1px solid rgba(255,255,255,0.08);margin-bottom:24px}
+        .card-title{color:#e0c3a8;font-size:15px;font-weight:500;letter-spacing:2px;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid rgba(224,195,168,0.15)}
+        
+        .info-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05)}
+        .info-row:last-child{border-bottom:none}
+        .info-row .label{color:rgba(255,255,255,0.5);font-size:14px}
+        .info-row .value{color:#fff;font-size:14px}
+        .info-row .value.gold{color:#e0c3a8;font-weight:500}
+        
+        .pending-notice{background:rgba(255,193,7,0.1);border:1px solid rgba(255,193,7,0.3);border-radius:12px;padding:20px;text-align:center;color:#ffd54f}
+        .pending-notice .icon{font-size:32px;margin-bottom:10px}
+        .pending-notice p{font-size:14px;opacity:0.9}
+        
+        .nav-bar{display:flex;gap:12px;justify-content:center;margin-top:30px}
+        .nav-btn{padding:12px 28px;border-radius:10px;font-size:14px;text-decoration:none;transition:all 0.3s}
+        .nav-btn.back{background:transparent;color:rgba(255,255,255,0.6);border:1px solid rgba(255,255,255,0.15)}
+        .nav-btn.back:hover{border-color:#e0c3a8;color:#e0c3a8}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-icon">⏱️</div>
+            <h1>现代命盘</h1>
+            <p>ModernMatch · 毫秒级时间结构</p>
+        </div>
+        
+        <!-- 出生信息 -->
+        <div class="card">
+            <h2 class="card-title">📋 出生信息</h2>
+            <div class="info-row">
+                <span class="label">姓名</span>
+                <span class="value">{{ birth_data.name or '灵友' }}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">出生时间</span>
+                <span class="value">{{ birth_data.local_datetime.replace('T', ' ') }}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">真太阳时</span>
+                <span class="value gold">{{ birth_data.true_solar_datetime.replace('T', ' ') }}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">时辰</span>
+                <span class="value gold">{{ birth_data.shichen }}时</span>
+            </div>
+            <div class="info-row">
+                <span class="label">出生地</span>
+                <span class="value">{{ birth_data.location.name }}</span>
+            </div>
+        </div>
+        
+        <!-- 时间层次 -->
+        <div class="card">
+            <h2 class="card-title">⏱️ 现代时间结构</h2>
+            {% if modern_layers.pending %}
+            <div class="pending-notice">
+                <div class="icon">🔄</div>
+                <p>时间层次计算模块待实现</p>
+                <p style="font-size:12px;margin-top:8px;opacity:0.7">下一步将实现：年层、月层、日层、时层分析</p>
+            </div>
+            {% else %}
+            <!-- TODO: 显示时间层次数据 -->
+            {% endif %}
+        </div>
+        
+        <div class="nav-bar">
+            <a href="{{ url_for('birth_input.dashboard') }}" class="nav-btn back">← 返回总览</a>
+        </div>
+    </div>
+</body>
+</html>

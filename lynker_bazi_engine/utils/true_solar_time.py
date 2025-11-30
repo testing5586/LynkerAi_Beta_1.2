@@ -1,8 +1,11 @@
 """
-True Solar Time Calculation Utility
+True Solar Time Calculation Utility (Wrapper for solar_time.py)
 Used by birth_input page to calculate accurate solar time based on longitude
+For backward compatibility with existing code
 """
-from datetime import datetime, timedelta
+
+from .solar_time import calculate_true_solar_time as calc_tst
+
 
 def calculate_true_solar_time(solar_date_str, solar_time_str, longitude):
     """
@@ -16,19 +19,11 @@ def calculate_true_solar_time(solar_date_str, solar_time_str, longitude):
     Returns:
         str: True solar time "YYYY-MM-DD HH:MM:SS"
     """
-    # Parse datetime
-    dt_str = f"{solar_date_str} {solar_time_str}"
-    dt = datetime.strptime(dt_str, "%Y-%m-%d %H:%M")
+    local_datetime = f"{solar_date_str} {solar_time_str}:00"
+    result = calc_tst(local_datetime, longitude, "+08:00")
     
-    # Calculate longitude correction in minutes
-    # Standard timezone center for China: 120°E
-    # Each 15° = 1 hour difference
-    # 1° longitude = 4 minutes time difference
+    if "error" in result:
+        # Fallback: return original if error
+        return f"{solar_date_str} {solar_time_str}:00"
     
-    standard_longitude = 120.0  # China uses 120°E as standard
-    correction_minutes = (longitude - standard_longitude) * 4
-    
-    # Apply correction
-    true_dt = dt + timedelta(minutes=correction_minutes)
-    
-    return true_dt.strftime("%Y-%m-%d %H:%M:%S")
+    return result.get("true_solar_datetime", f"{solar_date_str} {solar_time_str}:00")
