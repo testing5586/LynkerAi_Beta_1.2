@@ -329,6 +329,57 @@ def api_logout():
     return response
 
 
+@auth_bp.route('/api/user-profile', methods=['POST'])
+@login_required
+def api_create_user_profile():
+    """
+    创建普通用户档案（normal_user_profiles）
+    前提：用户已通过 /api/register 并处于登录状态
+    POST /api/user-profile
+    Body: { pseudonym, region?, nationality?, culturalBackground? }
+    """
+    try:
+        from models.user import get_supabase_client
+        
+        data = request.json or {}
+
+        pseudonym = (data.get("pseudonym") or "").strip()
+        region = data.get("region")
+        nationality = data.get("nationality")
+        cultural_background = data.get("culturalBackground")
+
+        if not pseudonym:
+            return jsonify({"error": "pseudonym is required"}), 400
+
+        supabase = get_supabase_client()
+        
+        result = supabase.table("normal_user_profiles").insert({
+            "user_id": int(current_user.id),
+            "pseudonym": pseudonym,
+            "region": region,
+            "nationality": nationality,
+            "cultural_background": cultural_background
+        }).execute()
+
+        if hasattr(result, 'error') and result.error:
+            return jsonify({"error": str(result.error)}), 500
+
+        return jsonify({
+            "success": True,
+            "profile": {
+                "pseudonym": pseudonym,
+                "region": region,
+                "nationality": nationality
+            }
+        }), 201
+
+    except Exception as e:
+        print("[api/user-profile] error:", e)
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": "internal server error"}), 500
+
+
 @auth_bp.route('/api/user', methods=['GET'])
 @login_required
 def api_get_current_user():

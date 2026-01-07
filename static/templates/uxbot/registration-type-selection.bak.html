@@ -1,0 +1,381 @@
+
+                <!DOCTYPE html>
+                <html lang="zh">
+                <head>
+                  <meta charset="UTF-8">
+                  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                  <meta name="color-scheme" content="light">
+                  <meta name="supported-color-schemes" content="light">
+                  <title>registration-type-selection</title>
+                  <style>
+                    *,
+                    *::before,
+                    *::after {
+                      box-sizing: border-box;
+                      margin: 0;
+                    }
+                    .iframe-outer {
+                      position: fixed;
+                      top: 0;
+                      left: 0;
+                      bottom: 0;
+                      right: 0;
+                      display: flex;
+                      justify-content: center;
+                      background-color: #E0E0E0;
+                    }
+                    .iframe-wrapper {
+                      width: 100%;
+                      height: 100%;
+                      margin: 0 auto;
+                      transform-origin: center top;
+                      flex-shrink: 0;
+                    }
+                    #dynamicIframe {
+                      border: none;
+                      width: 100%;
+                      height: 100%;
+                    }
+                  </style>
+                  <script>
+                const width = 1920
+                const height = 1080
+                const resolutionRatio = width && height ? width / height : 1
+                const pageNameMap = {
+                  'prognosis_service_entry': 'guru-search',
+    'master_list': 'guru-search-result',
+    'master_profile': 'guru-business-page',
+    'booking_appointment': 'guru-booking',
+    'consultation_room': 'user-videocall-room',
+    'payment_gateway': 'guru-payment-gateway',
+    'homology_match_discovery': 'samedestiny-matching',
+    'homology_match_profile_view': 'samedestiny-profile-summary',
+    'profile_detail': 'user-profile-details',
+    'knowledge_base_main': 'guru-db-knowledge',
+    'user_prognosis_record': 'user-db-predict-records',
+    'user_record_detail': 'user-db-predict-details',
+    'master_prognosis_record': 'guru-db-prophecy-chart',
+    'master_record_detail': 'guru-db-consult-details',
+    'forum_homepage': 'lynkerforum',
+    'create_post': 'posting-edit',
+    'post_moderation_queue': 'backend-content-approval',
+    'forum_post_detail': 'lynkerforum-article-comment',
+    'blackbox_page': 'backend-blackbox-auth',
+    'ai_generated_article': 'backend-AI-auto-article',
+    'registration_type_selection': 'registra-select',
+    'user_registration_form': 'registration-type-selection',
+    'master_registration_form': 'registra-guru',
+    'profile_setup_user': 'user-profile-setup',
+    'profile_setup_master': 'registra-guru-business',
+    'ai_generated_note_view': 'user-db-ai-markdown',
+    'master_backend_overview': 'guru-dashboard-main',
+    'master_studio_management': 'guru-studio',
+    'appointment_link_creation': 'guru-appointment',
+    'customer_prognosis_records_view': 'guru-customer-records',
+    'page_944544': 'lynkergroup',
+    'page_944545': 'arena',
+    'page_944864': 'user-post-edit',
+    'page_944865': 'lynkermates',
+    'page_945207': 'samedestiny-chatroom',
+    'page_962648': '我的真命盘',
+    'page_969102': 'index',
+    'page_979145': 'user-dashb-truechart',
+    'page_979336': 'user-dashb-prediction',
+    'page_979337': 'user-dashb-main',
+    'page_979400': 'user-dashb-booking',
+    'page_979401': 'user-dashb-knowledge',
+    'page_979411': 'user-dashb-aisetting',
+    'page_979468': 'user-dashb-billing',
+    'page_990256': 'guru-business-page-setup',
+    'page_1031922': 'guru-knowledge-main',
+    'page_1035721': 'guru-subscription',
+    'page_1041776': 'guru-saved-memory',
+    'page_1060063': 'user-friend-request',
+    'page_1060398': 'user-friends-overview'
+                }
+                const allPageIds = ["prognosis_service_entry","master_list","master_profile","booking_appointment","consultation_room","payment_gateway","homology_match_discovery","homology_match_profile_view","profile_detail","knowledge_base_main","user_prognosis_record","user_record_detail","master_prognosis_record","master_record_detail","forum_homepage","create_post","post_moderation_queue","forum_post_detail","blackbox_page","ai_generated_article","registration_type_selection","user_registration_form","master_registration_form","profile_setup_user","profile_setup_master","ai_generated_note_view","master_backend_overview","master_studio_management","appointment_link_creation","customer_prognosis_records_view","page_944544","page_944545","page_944864","page_944865","page_945207","page_962648","page_969102","page_979145","page_979336","page_979337","page_979400","page_979401","page_979411","page_979468","page_990256","page_1031922","page_1035721","page_1041776","page_1060063","page_1060398"]
+                const allFormatPageIdsMap = {"prognosis_service_entry":"prognosis-service-entry","master_list":"master-list","master_profile":"master-profile","booking_appointment":"booking-appointment","consultation_room":"consultation-room","payment_gateway":"payment-gateway","homology_match_discovery":"homology-match-discovery","homology_match_profile_view":"homology-match-profile-view","profile_detail":"profile-detail","knowledge_base_main":"knowledge-base-main","user_prognosis_record":"user-prognosis-record","user_record_detail":"user-record-detail","master_prognosis_record":"master-prognosis-record","master_record_detail":"master-record-detail","forum_homepage":"forum-homepage","create_post":"create-post","post_moderation_queue":"post-moderation-queue","forum_post_detail":"forum-post-detail","blackbox_page":"blackbox-page","ai_generated_article":"ai-generated-article","registration_type_selection":"registration-type-selection","user_registration_form":"user-registration-form","master_registration_form":"master-registration-form","profile_setup_user":"profile-setup-user","profile_setup_master":"profile-setup-master","ai_generated_note_view":"ai-generated-note-view","master_backend_overview":"master-backend-overview","master_studio_management":"master-studio-management","appointment_link_creation":"appointment-link-creation","customer_prognosis_records_view":"customer-prognosis-records-view","page_944544":"page-944544","page_944545":"page-944545","page_944864":"page-944864","page_944865":"page-944865","page_945207":"page-945207","page_962648":"page-962648","page_969102":"page-969102","page_979145":"page-979145","page_979336":"page-979336","page_979337":"page-979337","page_979400":"page-979400","page_979401":"page-979401","page_979411":"page-979411","page_979468":"page-979468","page_990256":"page-990256","page_1031922":"page-1031922","page_1035721":"page-1035721","page_1041776":"page-1041776","page_1060063":"page-1060063","page_1060398":"page-1060398"}
+                const IFRAME_MESSAGE_TYPE = {
+                  iframeNavigation: 'iframeNavigation',
+                }
+                const safeAddEventListener = function Tc(e,t,r,n=!1){e.removeEventListener(t,r,n),e.addEventListener(t,r,n)}
+                const processOnclick = (e,t,r)=>{if(r){const n=Pw(t);if(n.methodName&&Lp(n.methodName,r))return;e.preventDefault(),e.stopPropagation();const s=n.args||[],i=(s==null?void 0:s.find(u=>u))||"";i&&Mp(i)}}
+                const checkIframeMethod = (e,t)=>{try{return typeof t[e]=="function"||typeof t[e]=="function"}catch(r){return!1}}
+                const postIframeMessage = (targetPageId) => {
+                  window.parent.postMessage({
+                    type: IFRAME_MESSAGE_TYPE.iframeNavigation,
+                    targetPageId,
+                  })
+                }
+                const handleIframeLinkClick = (event) => {
+                  const dynamicIframe = document.querySelector('#dynamicIframe')
+                  if (!dynamicIframe?.contentWindow) {
+                    return
+                  }
+                  const link = event.target.closest('a')
+                  const target = event.target
+                  if (link) {
+                    const href = link.getAttribute('href')
+                    const onclick = link.getAttribute('onclick')
+                    if (href && href !== '#' && !href.startsWith('javascript:')) {
+                      event.preventDefault()
+                      event.stopPropagation()
+                      const targetPageId = getKeyByValueObj(allFormatPageIdsMap, href)
+                      if (targetPageId) {
+                        postIframeMessage(targetPageId)
+                      }
+                      return
+                    }
+                    if (onclick) {
+                      processOnclick(event, onclick, iframe.contentWindow, allFormatPageIdsMap)
+                    } else {
+                      event.preventDefault()
+                      event.stopPropagation() 
+                    }
+                    return
+                  }
+                  const onclick = target.getAttribute('onclick')
+                  if (onclick) {
+                    processOnclick(event, onclick, iframe.contentWindow, allFormatPageIdsMap)
+                  }
+                }
+                function stringExt(link) {
+                  let s = String(link || '')
+                  s = (s.split('#')[0] || '')
+                  s = (s.split('?')[0] || '')
+                  s = s.trim()
+                  s = s.split('/').filter(Boolean).pop() || ''
+                  const lower = s.toLowerCase()
+                  if (lower.endsWith('.html') || lower.endsWith('.php') || lower.endsWith('.aspx')) {
+                    s = s.slice(0, s.lastIndexOf('.'))
+                  }
+                  return s
+                }
+                function formatHref(href) {
+                  if (!href) {
+                    return ''
+                  }
+                  try {
+                    const url = new URL(href, window.location.href)
+                    const pathname = url.pathname || ''
+                    return stringExt(pathname)
+                  } catch {
+                    return stringExt(href)
+                  }
+                }
+                function getKeyByValueObj(obj, value) {
+                  const newValue = formatHref(value)
+                  const keyFind = Object.keys(obj).find(k => k === newValue)
+                  if (keyFind) {
+                    return keyFind
+                  }
+                  return Object.keys(obj).find(k => obj[k] === newValue)
+                }
+                function setIframeSize(w, h) {
+                  const currentContainerRadio = w / h
+                  let widthValue = w
+                  let heightValue = h
+                  let zoom = 1
+                  if (currentContainerRadio > resolutionRatio) {
+                    widthValue = h * resolutionRatio
+                    heightValue = h
+                  } else {
+                    widthValue = w
+                    heightValue = w / resolutionRatio
+                  }
+                  zoom = width ? widthValue / width : 1
+                  return {
+                    width: widthValue / zoom + 'px',
+                    height: heightValue / zoom + 'px',
+                    zoom,
+                  }
+                }
+                function adjustIframeSize() {
+                  const iframeWrapper = document.querySelector(".iframe-wrapper")
+                  const { width, height, zoom } = setIframeSize(window.innerWidth, window.innerHeight)
+                  iframeWrapper.style.height = height
+                  iframeWrapper.style.width = width
+                  iframeWrapper.style.transform = 'scale(' + zoom + ')'
+                }
+                function sanitizeFilename(name) {
+                  return name.replace(/[\/:*?"<>|]/g, '_')
+                }
+                function handlePostMessage(event) {
+                  if (!event.data) {
+                    return
+                  }
+                  const { type, targetPageId } = event.data
+                  const targetPageName = pageNameMap[targetPageId]
+                  if (type === "iframeNavigation" && targetPageId && targetPageName) {
+                    window.location.href = targetPageName + '.html'
+                  }
+                }
+                function setupIframeEvents() {
+                  const iframe = document.getElementById('dynamicIframe')
+                  if (iframe && iframe.contentWindow && iframe.contentWindow.document) {
+                    safeAddEventListener(iframe.contentWindow.document, 'click', handleIframeLinkClick, true)
+                  } else {
+                    setTimeout(setupIframeEvents, 100)
+                  }
+                }
+                window.addEventListener('message', handlePostMessage)
+                window.onload = function() {
+                  adjustIframeSize()
+                  setupIframeEvents()
+                }
+                window.onresize = adjustIframeSize
+                window.onunload = () => {
+                  window.removeEventListener('message', handlePostMessage)
+                }
+              </script>
+                </head>
+                <body>
+                  <div class="iframe-outer">
+                    <div class="iframe-wrapper">
+                      <iframe id="dynamicIframe" srcdoc='<html data-source-file="src/layouts/BaseLayout.astro" data-source-line-start="11" data-source-line-end="21" lang="en"><head data-source-file="src/layouts/BaseLayout.astro" data-source-line-start="12" data-source-line-end="17"><script>(function(){
+      function stringExt(link) {
+        let s = String(link || &#39;&#39;)
+        s = (s.split(&#39;#&#39;)[0] || &#39;&#39;)
+        s = (s.split(&#39;?&#39;)[0] || &#39;&#39;)
+        s = s.trim()
+        s = s.split(&#39;/&#39;).filter(Boolean).pop() || &#39;&#39;
+        const lower = s.toLowerCase()
+        if (lower.endsWith(&#39;.html&#39;) || lower.endsWith(&#39;.php&#39;) || lower.endsWith(&#39;.aspx&#39;)) {
+          s = s.slice(0, s.lastIndexOf(&#39;.&#39;))
+        }
+        return s
+      }
+      function formatHref(href) {
+        if (!href) {
+          return &#39;&#39;
+        }
+        try {
+          const url = new URL(href, window.location.href)
+          const pathname = url.pathname || &#39;&#39;
+          return stringExt(pathname)
+        } catch {
+          return stringExt(href)
+        }
+      }
+      function getKeyByValueObj(obj, value) {
+        const newValue = formatHref(value)
+        const keyFind = Object.keys(obj).find(k => k === newValue)
+        if (keyFind) {
+          return keyFind
+        }
+        return Object.keys(obj).find(k => obj[k] === newValue)
+      }
+      function emit(to, source){
+        try {
+          if (window.parent) {
+            const allFormatPageIdsMap = {"prognosis_service_entry":"prognosis-service-entry","master_list":"master-list","master_profile":"master-profile","booking_appointment":"booking-appointment","consultation_room":"consultation-room","payment_gateway":"payment-gateway","homology_match_discovery":"homology-match-discovery","homology_match_profile_view":"homology-match-profile-view","profile_detail":"profile-detail","knowledge_base_main":"knowledge-base-main","user_prognosis_record":"user-prognosis-record","user_record_detail":"user-record-detail","master_prognosis_record":"master-prognosis-record","master_record_detail":"master-record-detail","forum_homepage":"forum-homepage","create_post":"create-post","post_moderation_queue":"post-moderation-queue","forum_post_detail":"forum-post-detail","blackbox_page":"blackbox-page","ai_generated_article":"ai-generated-article","registration_type_selection":"registration-type-selection","user_registration_form":"user-registration-form","master_registration_form":"master-registration-form","profile_setup_user":"profile-setup-user","profile_setup_master":"profile-setup-master","ai_generated_note_view":"ai-generated-note-view","master_backend_overview":"master-backend-overview","master_studio_management":"master-studio-management","appointment_link_creation":"appointment-link-creation","customer_prognosis_records_view":"customer-prognosis-records-view","page_944544":"page-944544","page_944545":"page-944545","page_944864":"page-944864","page_944865":"page-944865","page_945207":"page-945207","page_962648":"page-962648","page_969102":"page-969102","page_979145":"page-979145","page_979336":"page-979336","page_979337":"page-979337","page_979400":"page-979400","page_979401":"page-979401","page_979411":"page-979411","page_979468":"page-979468","page_990256":"page-990256","page_1031922":"page-1031922","page_1035721":"page-1035721","page_1041776":"page-1041776","page_1060063":"page-1060063","page_1060398":"page-1060398"}
+            const IFRAME_MESSAGE_TYPE = {
+              iframeNavigation: &#39;iframeNavigation&#39;,
+            }
+            const targetPageId = getKeyByValueObj(allFormatPageIdsMap, String(to || &#39;&#39;))
+            if (targetPageId) {
+              window.parent.postMessage({
+                type: IFRAME_MESSAGE_TYPE.iframeNavigation,
+                targetPageId,
+              }, &#39;*&#39;)
+            }
+          }
+        } catch(e) {}
+      }
+      try{
+        if (&#39;navigation&#39; in window &amp;&amp; window.navigation &amp;&amp; typeof window.navigation.addEventListener===&#39;function&#39;){
+          window.navigation.addEventListener(&#39;navigate&#39;, function(e){
+            try{
+              var url = (e.destination &amp;&amp; e.destination.url) || &#39;&#39;;
+              if (e.canIntercept &amp;&amp; typeof e.intercept===&#39;function&#39;){ e.intercept({ handler:function(){} }) }
+              else if (e.preventDefault){ e.preventDefault() }
+              emit(url)
+            }catch(_){}
+          })
+        }
+      }catch(_){}
+    })();</script><meta name="supported-color-schemes" content="light"><meta name="color-scheme" content="light"><style>
+      :root, html, body { color-scheme: light; }
+      html { forced-color-adjust: none; }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Built with Astro">
+    <title data-source-file="src/layouts/BaseLayout.astro" data-source-line-start="16" data-source-line-end="16">普通用户注册 - 灵客AI</title>
+  <link rel="stylesheet" href="./assets/html/55750/ai-assistant-interaction-floating-window.B4Td28i4.css"><script src="./assets/static/uxbot/25_6/holder.js"></script><style>
+#ipzk {
+  font-size: 30px;
+}
+
+#ibj2jr {
+  background-image: linear-gradient(rgb(12, 12, 12) 0%, rgb(12, 12, 12) 100%);
+}
+
+#iayo6 {
+  width: 33.3333%;
+}
+
+#io30s,
+#i2xvp {
+  margin-left: 2rem;
+}
+
+</style></head>
+  <body data-source-file="src/layouts/BaseLayout.astro" data-source-line-start="18" data-source-line-end="20">
+    
+  <div data-source-file="src/pages/user-registration-form.astro" data-source-line-start="10" data-source-line-end="27" class="min-h-screen flex flex-col bg-background">
+<style>astro-island,astro-slot,astro-static-slot{display:contents}</style><script>(()=>{var e=async t=>{await(await t())()};(self.Astro||(self.Astro={})).load=e;window.dispatchEvent(new Event("astro:load"));})();</script><script>(()=>{var A=Object.defineProperty;var g=(i,o,a)=>o in i?A(i,o,{enumerable:!0,configurable:!0,writable:!0,value:a}):i[o]=a;var d=(i,o,a)=>g(i,typeof o!="symbol"?o+"":o,a);{let i={0:t=>m(t),1:t=>a(t),2:t=>new RegExp(t),3:t=>new Date(t),4:t=>new Map(a(t)),5:t=>new Set(a(t)),6:t=>BigInt(t),7:t=>new URL(t),8:t=>new Uint8Array(t),9:t=>new Uint16Array(t),10:t=>new Uint32Array(t),11:t=>1/0*t},o=t=>{let[l,e]=t;return l in i?i[l](e):void 0},a=t=>t.map(o),m=t=>typeof t!="object"||t===null?t:Object.fromEntries(Object.entries(t).map(([l,e])=>[l,o(e)]));class y extends HTMLElement{constructor(){super(...arguments);d(this,"Component");d(this,"hydrator");d(this,"hydrate",async()=>{var b;if(!this.hydrator||!this.isConnected)return;let e=(b=this.parentElement)==null?void 0:b.closest("astro-island[ssr]");if(e){e.addEventListener("astro:hydrate",this.hydrate,{once:!0});return}let c=this.querySelectorAll("astro-slot"),n={},h=this.querySelectorAll("template[data-astro-template]");for(let r of h){let s=r.closest(this.tagName);s!=null&amp;&amp;s.isSameNode(this)&amp;&amp;(n[r.getAttribute("data-astro-template")||"default"]=r.innerHTML,r.remove())}for(let r of c){let s=r.closest(this.tagName);s!=null&amp;&amp;s.isSameNode(this)&amp;&amp;(n[r.getAttribute("name")||"default"]=r.innerHTML)}let p;try{p=this.hasAttribute("props")?m(JSON.parse(this.getAttribute("props"))):{}}catch(r){let s=this.getAttribute("component-url")||"<unknown>",v=this.getAttribute("component-export");throw v&amp;&amp;(s+=` (export ${v})`),console.error(`[hydrate] Error parsing props for component ${s}`,this.getAttribute("props"),r),r}let u;await this.hydrator(this)(this.Component,p,n,{client:this.getAttribute("client")}),this.removeAttribute("ssr"),this.dispatchEvent(new CustomEvent("astro:hydrate"))});d(this,"unmount",()=>{this.isConnected||this.dispatchEvent(new CustomEvent("astro:unmount"))})}disconnectedCallback(){document.removeEventListener("astro:after-swap",this.unmount),document.addEventListener("astro:after-swap",this.unmount,{once:!0})}connectedCallback(){if(!this.hasAttribute("await-children")||document.readyState==="interactive"||document.readyState==="complete")this.childrenConnectedCallback();else{let e=()=>{document.removeEventListener("DOMContentLoaded",e),c.disconnect(),this.childrenConnectedCallback()},c=new MutationObserver(()=>{var n;((n=this.lastChild)==null?void 0:n.nodeType)===Node.COMMENT_NODE&amp;&amp;this.lastChild.nodeValue==="astro:end"&amp;&amp;(this.lastChild.remove(),e())});c.observe(this,{childList:!0}),document.addEventListener("DOMContentLoaded",e)}}async childrenConnectedCallback(){let e=this.getAttribute("before-hydration-url");e&amp;&amp;await import(e),this.start()}async start(){let e=JSON.parse(this.getAttribute("opts")),c=this.getAttribute("client");if(Astro[c]===void 0){window.addEventListener(`astro:${c}`,()=>this.start(),{once:!0});return}try{await Astro[c](async()=>{let n=this.getAttribute("renderer-url"),[h,{default:p}]=await Promise.all([import(this.getAttribute("component-url")),n?import(n):()=>()=>{}]),u=this.getAttribute("component-export")||"default";if(!u.includes("."))this.Component=h[u];else{this.Component=h;for(let f of u.split("."))this.Component=this.Component[f]}return this.hydrator=p,this.hydrate},e,this)}catch(n){console.error(`[astro-island] Error hydrating ${this.getAttribute("component-url")}`,n)}}attributeChangedCallback(){this.hydrate()}}d(y,"observedAttributes",["props"]),customElements.get("astro-island")||customElements.define("astro-island",y)}})();</script><astro-island uid="sLzO9" prefix="r0" component-url="https://sketchflow-public.s3.us-east-1.amazonaws.com/html/55750/Header.ecIJUDPd.js" component-export="default" renderer-url="https://sketchflow-public.s3.us-east-1.amazonaws.com/html/55750/client.DCqT-qd1.js" props="{&amp;quot;variant&amp;quot;:[0,&amp;quot;minimal&amp;quot;],&amp;quot;currentPath&amp;quot;:[0,&amp;quot;/user-registration-form&amp;quot;]}" ssr="" client="load" opts="{&amp;quot;name&amp;quot;:&amp;quot;Header&amp;quot;,&amp;quot;value&amp;quot;:true}" await-children=""><header id="iojh" class="sticky top-0 z-50 w-full border-b transition-all bg-background/80 backdrop-blur-sm" data-source-file="src/components/common/Header.tsx" data-source-line-start="115" data-source-line-end="122"><div class="container flex h-16 items-center justify-between px-4" data-source-file="src/components/common/Header.tsx" data-source-line-start="116" data-source-line-end="121"><a href="./969102.html" class="flex items-center space-x-2" data-source-file="src/components/common/Header.tsx" data-source-line-start="117" data-source-line-end="119"><span id="ipzk" style="font-size:30px" class="font-bold text-gradient-mystical" data-source-file="src/components/common/Header.tsx" data-source-line-start="118" data-source-line-end="118">灵客AI</span></a></div></header><!--astro:end--></astro-island>
+    
+    <main data-source-file="src/pages/user-registration-form.astro" data-source-line-start="13" data-source-line-end="24" class="flex-1 container px-4 py-12">
+      <div data-source-file="src/pages/user-registration-form.astro" data-source-line-start="14" data-source-line-end="23" class="max-w-2xl mx-auto">
+         
+         <div data-source-file="src/pages/user-registration-form.astro" data-source-line-start="16" data-source-line-end="19" class="mb-8 text-center">
+           <h1 data-source-file="src/pages/user-registration-form.astro" data-source-line-start="17" data-source-line-end="17" class="text-3xl font-bold mb-2 text-gradient-mystical">加入灵客AI</h1>
+           <p data-source-file="src/pages/user-registration-form.astro" data-source-line-start="18" data-source-line-end="18" class="text-muted-foreground">创建您的账户，开启命理探索之旅</p>
+         </div>
+
+         
+         <astro-island uid="2x03i3" prefix="r1" component-url="https://sketchflow-public.s3.us-east-1.amazonaws.com/html/55750/UserRegistrationForm.tAZrOn_t.js" component-export="default" renderer-url="https://sketchflow-public.s3.us-east-1.amazonaws.com/html/55750/client.DCqT-qd1.js" props="{}" ssr="" client="load" opts="{&amp;quot;name&amp;quot;:&amp;quot;UserRegistrationForm&amp;quot;,&amp;quot;value&amp;quot;:true}" await-children=""><div class="space-y-6" data-source-file="src/components/user-registration-form/UserRegistrationForm.tsx" data-source-line-start="192" data-source-line-end="468"><div class="flex justify-end" data-source-file="src/components/user-registration-form/UserRegistrationForm.tsx" data-source-line-start="194" data-source-line-end="199"><button class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;amp;_svg]:pointer-events-none [&amp;amp;_svg]:size-4 [&amp;amp;_svg]:shrink-0 border border-input bg-transparent shadow-sm hover:bg-accent hover:text-accent-foreground h-8 rounded-md px-3 text-xs gap-2" data-source-file="src/components/ui/button.tsx" data-source-line-start="47" data-source-line-end="51" type="button" id="radix-:r1R1:" aria-haspopup="menu" aria-expanded="false" data-state="closed"><span class="text-lg" data-source-file="src/components/user-registration-form/LanguageSelector.tsx" data-source-line-start="35" data-source-line-end="35">🇨🇳</span><span data-source-file="src/components/user-registration-form/LanguageSelector.tsx" data-source-line-start="36" data-source-line-end="36">中文</span><!--$--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down h-4 w-4" aria-hidden="true" data-source-file="src/components/user-registration-form/LanguageSelector.tsx" data-source-line-start="37" data-source-line-end="37"><path d="m6 9 6 6 6-6"></path></svg><!--/$--></button></div><div class="space-y-4" data-source-file="src/components/user-registration-form/RegistrationProgress.tsx" data-source-line-start="20" data-source-line-end="76"><div class="w-full bg-muted rounded-full h-2 overflow-hidden" data-source-file="src/components/user-registration-form/RegistrationProgress.tsx" data-source-line-start="22" data-source-line-end="27"><div class="h-full bg-mystical-gradient transition-all duration-300" style="width:33.33333333333333%" data-source-file="src/components/user-registration-form/RegistrationProgress.tsx" data-source-line-start="23" data-source-line-end="26"></div></div><div class="flex items-center justify-between" data-source-file="src/components/user-registration-form/RegistrationProgress.tsx" data-source-line-start="30" data-source-line-end="70"><div class="flex flex-col items-center flex-1" data-source-file="src/components/user-registration-form/RegistrationProgress.tsx" data-source-line-start="32" data-source-line-end="68"><div class="w-10 h-10 rounded-full flex items-center justify-center mb-2 transition-all bg-mystical-gradient text-white glow-primary" data-source-file="src/components/user-registration-form/RegistrationProgress.tsx" data-source-line-start="34" data-source-line-end="48"><!--$--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user h-5 w-5" aria-hidden="true" data-source-file="src/components/user-registration-form/RegistrationProgress.tsx" data-source-line-start="46" data-source-line-end="46"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg><!--/$--></div><p class="text-xs font-medium text-center text-foreground" data-source-file="src/components/user-registration-form/RegistrationProgress.tsx" data-source-line-start="51" data-source-line-end="57">账户信息</p><div class="absolute w-12 h-0.5 top-5 left-1/2 transition-all bg-muted" style="margin-left:2rem" data-source-file="src/components/user-registration-form/RegistrationProgress.tsx" data-source-line-start="61" data-source-line-end="66"></div></div><div class="flex flex-col items-center flex-1" data-source-file="src/components/user-registration-form/RegistrationProgress.tsx" data-source-line-start="32" data-source-line-end="68"><div class="w-10 h-10 rounded-full flex items-center justify-center mb-2 transition-all bg-muted text-muted-foreground" data-source-file="src/components/user-registration-form/RegistrationProgress.tsx" data-source-line-start="34" data-source-line-end="48"><!--$--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin h-5 w-5" aria-hidden="true" data-source-file="src/components/user-registration-form/RegistrationProgress.tsx" data-source-line-start="46" data-source-line-end="46"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle></svg><!--/$--></div><p class="text-xs font-medium text-center text-muted-foreground" data-source-file="src/components/user-registration-form/RegistrationProgress.tsx" data-source-line-start="51" data-source-line-end="57">地理信息</p><div class="absolute w-12 h-0.5 top-5 left-1/2 transition-all bg-muted" style="margin-left:2rem" data-source-file="src/components/user-registration-form/RegistrationProgress.tsx" data-source-line-start="61" data-source-line-end="66"></div></div><div class="flex flex-col items-center flex-1" data-source-file="src/components/user-registration-form/RegistrationProgress.tsx" data-source-line-start="32" data-source-line-end="68"><div class="w-10 h-10 rounded-full flex items-center justify-center mb-2 transition-all bg-muted text-muted-foreground" data-source-file="src/components/user-registration-form/RegistrationProgress.tsx" data-source-line-start="34" data-source-line-end="48"><!--$--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-globe h-5 w-5" aria-hidden="true" data-source-file="src/components/user-registration-form/RegistrationProgress.tsx" data-source-line-start="46" data-source-line-end="46"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg><!--/$--></div><p class="text-xs font-medium text-center text-muted-foreground" data-source-file="src/components/user-registration-form/RegistrationProgress.tsx" data-source-line-start="51" data-source-line-end="57">文化背景</p></div></div><div class="text-center text-sm text-muted-foreground" data-source-file="src/components/user-registration-form/RegistrationProgress.tsx" data-source-line-start="73" data-source-line-end="75">第 <!-- -->1<!-- --> / <!-- -->3<!-- --> 步</div></div><div class="rounded-xl border bg-card text-card-foreground shadow glass-card border-primary/20" data-source-file="src/components/ui/card.tsx" data-source-line-start="9" data-source-line-end="16"><div class="flex flex-col space-y-1.5 p-6" data-source-file="src/components/ui/card.tsx" data-source-line-start="24" data-source-line-end="28"><div class="font-semibold leading-none tracking-tight" data-source-file="src/components/ui/card.tsx" data-source-line-start="36" data-source-line-end="40">账户信息</div><div class="text-sm text-muted-foreground" data-source-file="src/components/ui/card.tsx" data-source-line-start="48" data-source-line-end="52">创建您的账户以开始使用平台</div></div><div class="p-6 pt-0" data-source-file="src/components/ui/card.tsx" data-source-line-start="60" data-source-line-end="60"><form class="space-y-6" data-source-file="src/components/user-registration-form/UserRegistrationForm.tsx" data-source-line-start="220" data-source-line-end="457"><div class="space-y-6" data-source-file="src/components/user-registration-form/UserRegistrationForm.tsx" data-source-line-start="223" data-source-line-end="275"><div class="space-y-2" data-source-file="src/components/user-registration-form/UserRegistrationForm.tsx" data-source-line-start="225" data-source-line-end="244"><label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center space-x-2" for="pseudonym" data-source-file="src/components/user-registration-form/UserRegistrationForm.tsx" data-source-line-start="226" data-source-line-end="230"><span data-source-file="src/components/user-registration-form/UserRegistrationForm.tsx" data-source-line-start="227" data-source-line-end="227">假名</span><span class="text-destructive" data-source-file="src/components/user-registration-form/UserRegistrationForm.tsx" data-source-line-start="228" data-source-line-end="228">*</span><span class="text-xs text-muted-foreground" data-source-file="src/components/user-registration-form/UserRegistrationForm.tsx" data-source-line-start="229" data-source-line-end="229">(至少5个字)</span></label><input class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm" id="pseudonym" placeholder="输入您的假名，例如：紫微星君" data-source-file="src/components/ui/input.tsx" data-source-line-start="8" data-source-line-end="16" value=""><p class="text-xs text-muted-foreground" data-source-file="src/components/user-registration-form/UserRegistrationForm.tsx" data-source-line-start="241" data-source-line-end="243">您的假名将在平台上显示，用于保护您的隐私</p></div><div class="space-y-2" data-source-file="src/components/user-registration-form/UserRegistrationForm.tsx" data-source-line-start="247" data-source-line-end="266"><label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center space-x-2" for="email" data-source-file="src/components/user-registration-form/UserRegistrationForm.tsx" data-source-line-start="248" data-source-line-end="251"><span data-source-file="src/components/user-registration-form/UserRegistrationForm.tsx" data-source-line-start="249" data-source-line-end="249">Gmail邮箱</span><span class="text-destructive" data-source-file="src/components/user-registration-form/UserRegistrationForm.tsx" data-source-line-start="250" data-source-line-end="250">*</span></label><input type="email" class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm" id="email" placeholder="your.email@gmail.com" data-source-file="src/components/ui/input.tsx" data-source-line-start="8" data-source-line-end="16" value=""><p class="text-xs text-muted-foreground" data-source-file="src/components/user-registration-form/UserRegistrationForm.tsx" data-source-line-start="263" data-source-line-end="265">建议创建新的Gmail账户以获得更好的隐私保护</p></div><div role="alert" class="relative w-full rounded-lg border px-4 py-3 text-sm [&amp;amp;&amp;gt;svg+div]:translate-y-[-3px] [&amp;amp;&amp;gt;svg]:absolute [&amp;amp;&amp;gt;svg]:left-4 [&amp;amp;&amp;gt;svg]:top-4 [&amp;amp;&amp;gt;svg]:text-foreground [&amp;amp;&amp;gt;svg~*]:pl-7 text-foreground border-accent/50 bg-accent/5" data-source-file="src/components/ui/alert.tsx" data-source-line-start="26" data-source-line-end="31"><!--$--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info h-4 w-4 text-accent" aria-hidden="true" data-source-file="src/components/user-registration-form/UserRegistrationForm.tsx" data-source-line-start="270" data-source-line-end="270"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg><!--/$--><div class="[&amp;amp;_p]:leading-relaxed text-sm" data-source-file="src/components/ui/alert.tsx" data-source-line-start="51" data-source-line-end="55">您的个人信息将被加密存储，我们承诺不会与第三方共享您的数据。</div></div></div><div class="flex items-center justify-between pt-6 border-t" data-source-file="src/components/user-registration-form/UserRegistrationForm.tsx" data-source-line-start="417" data-source-line-end="456"><button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;amp;_svg]:pointer-events-none [&amp;amp;_svg]:size-4 [&amp;amp;_svg]:shrink-0 border border-input bg-transparent shadow-sm hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2" type="button" disabled="" data-source-file="src/components/ui/button.tsx" data-source-line-start="47" data-source-line-end="51"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left mr-2 h-4 w-4" aria-hidden="true" data-source-file="src/components/user-registration-form/UserRegistrationForm.tsx" data-source-line-start="424" data-source-line-end="424"><path d="m15 18-6-6 6-6"></path></svg>上一步</button><button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;amp;_svg]:pointer-events-none [&amp;amp;_svg]:size-4 [&amp;amp;_svg]:shrink-0 text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2 bg-mystical-gradient hover:opacity-90" type="button" data-source-file="src/components/ui/button.tsx" data-source-line-start="47" data-source-line-end="51">下一步<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right ml-2 h-4 w-4" aria-hidden="true" data-source-file="src/components/user-registration-form/UserRegistrationForm.tsx" data-source-line-start="435" data-source-line-end="435"><path d="m9 18 6-6-6-6"></path></svg></button></div></form></div></div><div class="text-center text-sm text-muted-foreground" data-source-file="src/components/user-registration-form/UserRegistrationForm.tsx" data-source-line-start="462" data-source-line-end="467">已有账户？<!-- --> <a href="./home-page.html" class="text-primary hover:underline font-medium" data-source-file="src/components/user-registration-form/UserRegistrationForm.tsx" data-source-line-start="464" data-source-line-end="466">返回首页登录</a></div></div><!--astro:end--></astro-island>
+       </div>
+    </main>
+
+    <astro-island uid="Z1zqJ2y" prefix="r2" component-url="https://sketchflow-public.s3.us-east-1.amazonaws.com/html/55750/Footer.BT9wcZV-.js" component-export="default" renderer-url="https://sketchflow-public.s3.us-east-1.amazonaws.com/html/55750/client.DCqT-qd1.js" props="{&amp;quot;variant&amp;quot;:[0,&amp;quot;simple&amp;quot;]}" ssr="" client="load" opts="{&amp;quot;name&amp;quot;:&amp;quot;Footer&amp;quot;,&amp;quot;value&amp;quot;:true}" await-children=""><footer id="ibj2jr" class="border-t bg-background/50 backdrop-blur-sm mt-auto" style="background-image:linear-gradient(#0c0c0c 0%, #0c0c0c 100%)" data-source-file="src/components/common/Footer.tsx" data-source-line-start="14" data-source-line-end="28"><div class="container px-4 py-6" data-source-file="src/components/common/Footer.tsx" data-source-line-start="15" data-source-line-end="27"><div class="flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-muted-foreground" data-source-file="src/components/common/Footer.tsx" data-source-line-start="16" data-source-line-end="26"><p data-source-file="src/components/common/Footer.tsx" data-source-line-start="17" data-source-line-end="17">© <!-- -->2026<!-- --> 灵客AI. 同命相知。</p><div class="flex items-center gap-4" data-source-file="src/components/common/Footer.tsx" data-source-line-start="18" data-source-line-end="25"><a href="./placeholder.html" class="hover:text-foreground transition-colors" data-source-file="src/components/common/Footer.tsx" data-source-line-start="19" data-source-line-end="21">隐私政策</a><a href="./placeholder.html" class="hover:text-foreground transition-colors" data-source-file="src/components/common/Footer.tsx" data-source-line-start="22" data-source-line-end="24">服务条款</a></div></div></div></footer><!--astro:end--></astro-island>
+  </div>
+
+  <script>
+    const originalBack = window.history.back
+    const originalForward = window.history.forward
+    const originalGo = window.history.go
+    function isValidNavigation(){
+      if(!window.parent.history.state.back || !window.parent.history.state.back.startsWith(&#39;/designPage&#39;)){
+        return false
+      }
+      return true
+    }
+    window.history.back = function(...args) {
+      if(!isValidNavigation()){
+        return
+      }
+      return originalBack.apply(this, args);
+    };
+
+    window.history.forward = function(...args) {
+      if(!isValidNavigation()){
+        return
+      }
+      return originalForward.apply(this, args);
+    };
+
+    window.history.go = function(...args) {
+      if(!isValidNavigation()){
+        return
+      }
+      return originalGo.apply(this, args);
+    };
+  </script></body></html>'></iframe>
+                    </div>
+                  </div>
+
+                </body>
+                </html>
+            

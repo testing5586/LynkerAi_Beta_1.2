@@ -20,11 +20,16 @@ def home():
     profile = current_user.profile
     
     # 准备用户数据传递到前端
+    # created_at 可能已经是字符串（从数据库返回），需要处理
+    created_at = current_user.created_at
+    if created_at:
+        created_at = created_at.isoformat() if hasattr(created_at, 'isoformat') else str(created_at)
+    
     user_data = {
         'nickname': current_user.first_name or current_user.email.split('@')[0],
         'email': current_user.email,
         'user_type': user_type,
-        'created_at': current_user.created_at.isoformat() if current_user.created_at else None
+        'created_at': created_at
     }
     
     return render_template('user/home.html', profile=profile, user_data=user_data)

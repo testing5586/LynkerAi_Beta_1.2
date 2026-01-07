@@ -448,9 +448,15 @@ def api_bazi_match():
 
 
 @bazi_bp.route('/bazimatch')
+@bazi_bp.route('/match')
 def bazimatch_page():
     """八字同频匹配页面"""
     return render_template('bazimatch.html')
+
+@bazi_bp.route('/modernmatch')
+def modernmatch_page():
+    """时间同频匹配页面 - 毫秒级结构匹配"""
+    return render_template('modernmatch.html')
 
 
 # ============================================================

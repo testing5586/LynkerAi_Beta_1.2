@@ -1,36 +1,61 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
 <html lang="zh">
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>时间同频 · 灵客AI</title>
-    <link rel="stylesheet" href="{{ url_for('bazi.static', filename='css/samelife.css') }}?v=10" />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap"
-        rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('bazi.static', filename='css/samelife.css') }}?v=11" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <style>
+        /* Logo 左上角 */
+        .brand-logo {
+            position: fixed;
+            top: 20px;
+            left: 24px;
+            font-size: 20px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s ease;
+        }
+        .brand-logo:hover {
+            transform: scale(1.05);
+        }
+        .brand-logo::before {
+            content: '✦';
+            font-size: 18px;
+        }
+    </style>
     <script>
         const API_BASE = "{{ url_for('bazi.index') }}".replace(/\/$/, '');
     </script>
 </head>
 
 <body>
+    <!-- Logo -->
+    <a href="/landing.html" class="brand-logo">灵客AI</a>
 
     <div class="layout-container">
 
         <!-- 左侧边栏：核心信息区 -->
         <aside class="sidebar">
 
-            <!-- 1. 高亮用户命盘卡 (动态数据) -->
+            <!-- 1. 高亮用户命盘卡片(动态数据) -->
             <div class="user-profile-card">
                 <div class="profile-user-info">
                     <div class="user-avatar-large">
                         <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop"
-                            alt="User Avatar" id="userAvatar">
+                            alt="User Avatar" id="userAvatar" class="profile-avatar">
                     </div>
-                    <div class="user-name" id="userName">灵友</div>
-                    <div class="user-uid" id="userUid">UID: ---</div>
+                    <div class="profile-name" id="userName">灵友</div>
+                    <div class="profile-uid" id="userUid">UID: ---</div>
                 </div>
 
                 <div class="profile-header">CURRENT CHART</div>
@@ -44,11 +69,28 @@
                     <div class="profile-label">真太阳时</div>
                     <div class="profile-value" id="trueTime">---</div>
                 </div>
+                
+                <a href="/bazi/birth-input" class="btn-reinput">重新输入</a>
             </div>
 
             <!-- 2. 排行榜 -->
             <div class="leaderboard-card">
-                <h2 class="section-title">时间同频排行榜 🏆</h2>
+                <h2 class="section-title">🏆 时间同频排行榜</h2>
+                
+                <!-- 双榜切换 -->
+                <div class="leaderboard-tabs">
+                    <div class="tab-item active" data-engine="time" onclick="switchLeaderboard('time')">
+                        ⏱️ 时间同频
+                    </div>
+                    <div class="tab-item" data-engine="bazi" onclick="switchLeaderboard('bazi')">
+                        🔮 八字同命
+                    </div>
+                </div>
+                
+                <div class="leaderboard-desc" id="leaderboardDesc">
+                    基于真太阳时 + 秒级时间结构进行同频评分
+                </div>
+                
                 <div id="weight-version" class="weight-tag" style="display:none"></div>
                 <div id="leaderboardList" class="leaderboard-list">
                     <div class="loading">加载中...</div>
@@ -61,17 +103,16 @@
         <main class="main-content">
 
             <div class="page-header">
-                <h1>时间同频 · 毫秒级结构匹配</h1>
+                <h1>时间同频 · 秒级结构匹配</h1>
                 <p class="desc">基于真太阳时的精准同频搜索引擎</p>
             </div>
 
             <!-- 筛选控制面板 -->
             <div class="filter-panel">
                 <!-- 评分体系说明 -->
-                <div
-                    style="background:#dbeafe;border-left:4px solid #3b82f6;padding:12px 16px;margin-bottom:16px;border-radius:8px;font-size:13px;color:#1e3a8a;">
+                <div>
                     <strong>⚡ 排行榜评分说明</strong><br>
-                    当前榜单基于<strong>真太阳时 + 毫秒级时间结构</strong>进行同频评分，不同于八字同命算法，分值为结构相似度参考指标。<br>
+                    当前榜单基于<strong>真太阳时 + 秒级时间结构</strong>进行同频评分，不同于八字同命算法，分值为结构相似度参考指标。<br>
                     <span style="font-size:11px;opacity:0.8;">注：少于5次匹配样本将自动降权15%，100%仅限完美匹配+多次验证。</span>
                 </div>
 
@@ -80,7 +121,7 @@
                 </div>
 
                 <div class="filter-section">
-                    <div style="font-size:12px;color:#64748b;margin-bottom:12px;">筛选条件（可自定义）</div>
+                    <div>筛选条件（可自定义）</div>
                     <div id="match-criteria" class="match-criteria-bar"></div>
                 </div>
             </div>
@@ -92,7 +133,66 @@
 
     </div>
 
-    <script src="{{ url_for('bazi.static', filename='js/samelife.js') }}?v=10"></script>
+    <script src="{{ url_for('bazi.static', filename='js/samelife.js') }}?v=11"></script>
+    <script>
+        // 双榜切换功能
+        let currentEngine = 'time';
+        
+        function switchLeaderboard(engine) {
+            currentEngine = engine;
+            
+            // 更新 Tab 样式
+            document.querySelectorAll('.tab-item').forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.dataset.engine === engine) {
+                    tab.classList.add('active');
+                }
+            });
+            
+            // 更新描述
+            const descEl = document.getElementById('leaderboardDesc');
+            if (engine === 'time') {
+                descEl.textContent = '基于真太阳时 + 秒级时间结构进行同频评分';
+            } else {
+                descEl.textContent = '基于八字命盘结构进行同命匹配评分';
+            }
+            
+            // 重新加载排行榜
+            loadLeaderboard(engine);
+        }
+        
+        async function loadLeaderboard(engine) {
+            const listEl = document.getElementById('leaderboardList');
+            listEl.innerHTML = '<div class="loading">加载中...</div>';
+            
+            try {
+                const resp = await fetch(`${API_BASE}/api/leaderboard/top?limit=5&engine=${engine}`);
+                const data = await resp.json();
+                
+                if (data.leaderboard && data.leaderboard.length > 0) {
+                    listEl.innerHTML = data.leaderboard.map((item, idx) => `
+                        <div class="rank-item">
+                            <div class="rank-icon">${idx < 3 ? ['🥇', '🥈', '🥉'][idx] : (idx + 1)}</div>
+                            <div class="rank-info">
+                                <div class="rank-user">${item.nickname || '匿名用户'}</div>
+                                <div class="rank-stats">${item.match_count || 0} 次匹配</div>
+                            </div>
+                            <div class="rank-score">${(item.score * 100).toFixed(1)}%</div>
+                        </div>
+                    `).join('');
+                } else {
+                    listEl.innerHTML = '<div class="loading">暂无排行数据</div>';
+                }
+            } catch (e) {
+                listEl.innerHTML = '<div class="loading">加载失败</div>';
+            }
+        }
+        
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            loadLeaderboard('time');
+        });
+    </script>
 
 </body>
 

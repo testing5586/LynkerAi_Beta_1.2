@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
 <html lang="zh-CN">
 
 <head>
@@ -13,107 +12,155 @@
 </head>
 
 <body>
-    <div class="container">
-        <div class="form-card">
-            <h1 class="page-title">📅 出生时间填写</h1>
-            <p class="page-subtitle">命盘入口 · 八字 · 紫微 · 同频</p>
+    <!-- Logo -->
+    <a href="/landing.html" class="logo-link">
+        <div class="logo">
+            <span class="logo-icon">✦</span>
+            <span class="logo-text">灵客AI</span>
+        </div>
+    </a>
 
-            <form id="birthForm">
-                <!-- 基本信息 -->
-                <section class="form-section">
-                    <h2 class="section-title">基本信息</h2>
-
-                    <div class="form-group">
-                        <label>命主姓名 (可空)</label>
-                        <input type="text" id="name" name="name" placeholder="灵友" class="form-input">
-                    </div>
-
-                    <div class="form-group">
-                        <label>性别</label>
-                        <div class="radio-group">
-                            <label class="radio-label">
-                                <input type="radio" name="gender" value="男" checked>
-                                <span>男</span>
-                            </label>
-                            <label class="radio-label">
-                                <input type="radio" name="gender" value="女">
-                                <span>女</span>
-                            </label>
+    <div class="layout-container">
+        <!-- 左侧：标题和说明 -->
+        <div class="sidebar">
+            <div class="intro-card">
+                <h1 class="page-title">出生时间填写</h1>
+                <p class="page-subtitle">命盘入口 · 八字 · 紫微 · 同频</p>
+                
+                <div class="intro-content">
+                    <div class="intro-item">
+                        <span class="intro-icon">🎯</span>
+                        <div>
+                            <h3>精准排盘</h3>
+                            <p>支持真太阳时自动换算</p>
                         </div>
                     </div>
-
-                    <div class="form-group">
-                        <label>历法模式</label>
-                        <div class="tab-group">
-                            <button type="button" class="tab-btn active" data-mode="solar">公历</button>
-                            <button type="button" class="tab-btn" data-mode="lunar" disabled>农历</button>
-                            <button type="button" class="tab-btn" data-mode="sizhu" disabled>四柱直输</button>
+                    <div class="intro-item">
+                        <span class="intro-icon">🔮</span>
+                        <div>
+                            <h3>多种命理</h3>
+                            <p>八字、紫微斗数一站式分析</p>
                         </div>
                     </div>
-                </section>
-
-                <!-- 出生时间 -->
-                <section class="form-section">
-                    <h2 class="section-title">出生时间</h2>
-
-                    <div class="form-group">
-                        <label>出生日期 *</label>
-                        <input type="date" id="birthDate" name="birthDate" required class="form-input">
+                    <div class="intro-item">
+                        <span class="intro-icon">💫</span>
+                        <div>
+                            <h3>同频匹配</h3>
+                            <p>找到与你命格相合的灵友</p>
+                        </div>
                     </div>
+                </div>
+            </div>
 
-                    <div class="form-group">
-                        <label>出生时间 (HH:MM) *</label>
-                        <input type="time" id="birthTime" name="birthTime" required class="form-input">
-                    </div>
+            <!-- 自动计算显示 -->
+            <div class="auto-display-card">
+                <h2 class="section-title">自动计算</h2>
+                <div class="display-row">
+                    <span class="display-label">真太阳时:</span>
+                    <span class="display-value" id="trueSolarTimeDisplay">---</span>
+                </div>
+                <div class="display-row">
+                    <span class="display-label">地点经纬:</span>
+                    <span class="display-value" id="coordinatesDisplay">---</span>
+                </div>
+            </div>
+        </div>
 
-                    <div class="form-group">
-                        <label>出生地 (可空)</label>
-                        <input type="text" id="birthPlace" name="birthPlace" placeholder="北京市" class="form-input"
-                            list="city-list">
-                        <datalist id="city-list">
-                            <option value="北京市">北京市 (116.40°E, 39.90°N)</option>
-                            <option value="上海市">上海市 (121.47°E, 31.23°N)</option>
-                            <option value="广州市">广州市 (113.26°E, 23.13°N)</option>
-                            <option value="深圳市">深圳市 (114.06°E, 22.54°N)</option>
-                        </datalist>
-                    </div>
+        <!-- 右侧：表单 -->
+        <div class="main-content">
+            <div class="form-card">
+                <form id="birthForm">
+                    <!-- 基本信息 -->
+                    <section class="form-section">
+                        <h2 class="section-title">基本信息</h2>
 
-                    <div class="checkbox-group">
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="daylightSaving" name="daylightSaving">
-                            <span>夏令时</span>
-                        </label>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>命主姓名 (可空)</label>
+                                <input type="text" id="name" name="name" placeholder="灵友" class="form-input">
+                            </div>
 
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="trueSolarTime" name="trueSolarTime" checked>
-                            <span>真太阳时 (默认勾选)</span>
-                        </label>
+                            <div class="form-group">
+                                <label>性别</label>
+                                <div class="radio-group">
+                                    <label class="radio-label">
+                                        <input type="radio" name="gender" value="男" checked>
+                                        <span>男</span>
+                                    </label>
+                                    <label class="radio-label">
+                                        <input type="radio" name="gender" value="女">
+                                        <span>女</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
 
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="earlyLateZi" name="earlyLateZi">
-                            <span>早晚子时</span>
-                        </label>
-                    </div>
-                </section>
+                        <div class="form-group">
+                            <label>历法模式</label>
+                            <div class="tab-group">
+                                <button type="button" class="tab-btn active" data-mode="solar">公历</button>
+                                <button type="button" class="tab-btn" data-mode="lunar" disabled>农历</button>
+                                <button type="button" class="tab-btn" data-mode="sizhu" disabled>四柱直输</button>
+                            </div>
+                        </div>
+                    </section>
 
-                <!-- 自动显示块 -->
-                <section class="form-section auto-display">
-                    <h2 class="section-title">自动计算 (只读)</h2>
+                    <!-- 出生时间 -->
+                    <section class="form-section">
+                        <h2 class="section-title">出生时间</h2>
 
-                    <div class="display-row">
-                        <span class="display-label">真太阳时:</span>
-                        <span class="display-value" id="trueSolarTimeDisplay">---</span>
-                    </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>出生日期 *</label>
+                                <input type="date" id="birthDate" name="birthDate" required class="form-input">
+                            </div>
 
-                    <div class="display-row">
-                        <span class="display-label">地点经纬:</span>
-                        <span class="display-value" id="coordinatesDisplay">---</span>
-                    </div>
-                </section>
+                            <div class="form-group">
+                                <label>出生时间 (HH:MM) *</label>
+                                <input type="time" id="birthTime" name="birthTime" required class="form-input">
+                            </div>
+                        </div>
 
-                <!-- 提交按钮 -->
-                <button type="submit" class="submit-btn">开始排盘</button>
-            </form>
+                        <div class="form-group">
+                            <label>出生地 (可空)</label>
+                            <input type="text" id="birthPlace" name="birthPlace" placeholder="北京市" class="form-input"
+                                list="city-list">
+                            <datalist id="city-list">
+                                <option value="北京市">北京市 (116.40°E, 39.90°N)</option>
+                                <option value="上海市">上海市 (121.47°E, 31.23°N)</option>
+                                <option value="广州市">广州市 (113.26°E, 23.13°N)</option>
+                                <option value="深圳市">深圳市 (114.06°E, 22.54°N)</option>
+                                <option value="成都市">成都市 (104.07°E, 30.67°N)</option>
+                                <option value="杭州市">杭州市 (120.15°E, 30.29°N)</option>
+                                <option value="武汉市">武汉市 (114.31°E, 30.52°N)</option>
+                                <option value="西安市">西安市 (108.94°E, 34.34°N)</option>
+                                <option value="重庆市">重庆市 (106.55°E, 29.56°N)</option>
+                                <option value="南京市">南京市 (118.80°E, 32.06°N)</option>
+                            </datalist>
+                        </div>
+
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="daylightSaving" name="daylightSaving">
+                                <span>夏令时</span>
+                            </label>
+
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="trueSolarTime" name="trueSolarTime" checked>
+                                <span>真太阳时 (默认勾选)</span>
+                            </label>
+
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="earlyLateZi" name="earlyLateZi">
+                                <span>早晚子时</span>
+                            </label>
+                        </div>
+                    </section>
+
+                    <!-- 提交按钮 -->
+                    <button type="submit" class="submit-btn">开始排盘</button>
+                </form>
+            </div>
         </div>
     </div>
 

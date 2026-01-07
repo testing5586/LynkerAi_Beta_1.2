@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UXBot导航测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .test-link {
+            display: block;
+            padding: 15px;
+            margin: 10px 0;
+            background: #6366f1;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .test-link:hover {
+            background: #4f46e5;
+            transform: scale(1.05);
+        }
+        h1 {
+            color: #6366f1;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            background: #f0f0f0;
+            border-left: 4px solid #6366f1;
+        }
+    </style>
+</head>
+<body>
+    <h1>UXBot前端导航测试</h1>
+    <div class="status" id="status">准备测试...</div>
+    
+    <h2>测试链接（应该正常跳转）：</h2>
+    
+    <a href="/uxbot/registration-type-selection" class="test-link">
+        🔗 注册类型选择（使用连字符）
+    </a>
+    
+    <a href="/uxbot/registra-select" class="test-link">
+        🔗 注册类型选择（HTML文件名）
+    </a>
+    
+    <a href="/uxbot/user-dashb-main" class="test-link">
+        🔗 用户仪表板
+    </a>
+    
+    <a href="/uxbot/guru-search" class="test-link">
+        🔗 师父搜索
+    </a>
+    
+    <a href="/uxbot/samedestiny-matching" class="test-link">
+        🔗 同命匹配
+    </a>
+    
+    <a href="/uxbot/" class="test-link">
+        🏠 返回首页
+    </a>
+    
+    <script>
+        document.getElementById('status').innerHTML = '✅ 所有链接已就绪，点击测试导航功能';
+        
+        // 记录点击事件
+        document.querySelectorAll('.test-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                document.getElementById('status').innerHTML = `🚀 正在跳转到: ${this.href}`;
+            });
+        });
+    </script>
+
+<script>
+document.addEventListener("click", function (e) {
+  const link = e.target.closest("a");
+  if (!link) return;
+
+  let href = link.getAttribute("href");
+  if (!href) return;
+
+  // FIX: Redirect legacy knowledge base links to the new one
+  if (href.includes("knowledge-base-main.html") || href.endsWith("knowledge-base-main.html")) {
+      href = href.replace("knowledge-base-main.html", "guru-db-knowledge.html");
+  }
+  // Also redirect guru-knowledge-main.html if it appears
+  if (href.includes("guru-knowledge-main.html") || href.endsWith("guru-knowledge-main.html")) {
+      href = href.replace("guru-knowledge-main.html", "guru-db-knowledge.html");
+  }
+
+  // Check if it's a link to an HTML page
+  if (href.endsWith(".html") || href.includes(".html")) {
+    e.stopImmediatePropagation();
+    e.preventDefault();
+    window.location.href = href;
+  }
+}, true); // Capture phase
+</script>
+</body>
+</html>
