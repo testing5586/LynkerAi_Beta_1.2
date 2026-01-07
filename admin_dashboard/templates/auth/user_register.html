@@ -3,143 +3,389 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>创建用户档案 - LynkerAI</title>
+    <title>创建用户档案 - 灵客AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #a855f7;
+            --primary-dark: #9333ea;
+            --accent: #ec4899;
+            --bg-page: #0f0a1a;
+            --bg-card: #1e1a2e;
+            --card-border: #2d2640;
+            --text-main: #f1f5f9;
+            --text-sub: #94a3b8;
+            --input-bg: rgba(45, 38, 64, 0.5);
+            --input-border: #3d3650;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            font-family: system-ui, -apple-system, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg-page);
             min-height: 100vh;
             padding: 40px 20px;
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
         }
+
+        /* Logo */
+        .logo-link {
+            text-decoration: none;
+            position: fixed;
+            top: 20px;
+            left: 24px;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo-icon {
+            font-size: 24px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
         .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 16px;
+            max-width: 500px;
+            margin: 60px auto 0;
+            background: var(--bg-card);
+            border-radius: 20px;
             padding: 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            border: 1px solid var(--card-border);
         }
+
         .header {
             text-align: center;
             margin-bottom: 32px;
         }
+
         .header h1 {
             font-size: 28px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, var(--primary), var(--accent));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 8px;
         }
-        .header p { color: #666; font-size: 14px; }
+
+        .header p {
+            color: var(--text-sub);
+            font-size: 14px;
+        }
+
+        /* ========== Avatar Upload Section ========== */
+        .avatar-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .avatar-upload-wrapper {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .avatar-preview {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: white;
+            font-weight: 700;
+            border: 4px solid var(--card-border);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .avatar-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avatar-preview:hover {
+            border-color: var(--primary);
+            transform: scale(1.05);
+        }
+
+        .avatar-overlay {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .avatar-upload-wrapper:hover .avatar-overlay {
+            opacity: 1;
+        }
+
+        .avatar-overlay-icon {
+            font-size: 28px;
+            margin-bottom: 4px;
+        }
+
+        .avatar-overlay-text {
+            font-size: 12px;
+            color: white;
+            font-weight: 500;
+        }
+
+        .avatar-input {
+            display: none;
+        }
+
+        .avatar-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .avatar-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid var(--card-border);
+            background: var(--input-bg);
+            color: var(--text-main);
+        }
+
+        .avatar-btn:hover {
+            border-color: var(--primary);
+            background: rgba(168, 85, 247, 0.15);
+        }
+
+        .avatar-btn.primary {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border: none;
+            color: white;
+        }
+
+        .avatar-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(168, 85, 247, 0.4);
+        }
+
+        .user-info {
+            text-align: center;
+            margin-top: 16px;
+        }
+
+        .user-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .user-subtitle {
+            font-size: 13px;
+            color: var(--text-sub);
+            margin-top: 4px;
+        }
+
+        /* ========== Form Styles ========== */
         .form-group {
             margin-bottom: 24px;
         }
+
         label {
             display: block;
             font-weight: 600;
-            color: #333;
+            color: var(--text-main);
             margin-bottom: 8px;
             font-size: 14px;
         }
-        label .required { color: #f44336; }
-        input, select {
+
+        select {
             width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
+            padding: 14px 16px;
+            border: 2px solid var(--input-border);
+            border-radius: 10px;
             font-size: 15px;
             transition: all 0.3s;
+            background: var(--input-bg);
+            color: var(--text-main);
+            cursor: pointer;
         }
-        input:focus, select:focus {
+
+        select option {
+            background: var(--bg-card);
+            color: var(--text-main);
+        }
+
+        select:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.15);
         }
+
         .help-text {
             font-size: 12px;
-            color: #999;
-            margin-top: 4px;
+            color: var(--text-sub);
+            margin-top: 6px;
         }
+
         .btn {
             width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.2s;
             margin-top: 8px;
         }
-        .btn:hover { transform: translateY(-2px); }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(168, 85, 247, 0.4);
+        }
+
         .btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
             transform: none;
         }
+
         .error {
-            background: #fee;
+            background: rgba(244, 67, 54, 0.15);
             border-left: 4px solid #f44336;
-            padding: 12px;
-            border-radius: 4px;
+            padding: 12px 16px;
+            border-radius: 8px;
             margin-bottom: 16px;
-            color: #c62828;
+            color: #ff8a80;
             font-size: 14px;
         }
+
         .success {
-            background: #e8f5e9;
+            background: rgba(76, 175, 80, 0.15);
             border-left: 4px solid #4caf50;
-            padding: 12px;
-            border-radius: 4px;
+            padding: 12px 16px;
+            border-radius: 8px;
             margin-bottom: 16px;
-            color: #2e7d32;
+            color: #81c784;
             font-size: 14px;
+        }
+
+        /* Divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 24px 0;
+            color: var(--text-sub);
+            font-size: 13px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--card-border);
+        }
+
+        .divider span {
+            padding: 0 16px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 24px;
+                margin-top: 80px;
+            }
+            .avatar-preview {
+                width: 100px;
+                height: 100px;
+                font-size: 40px;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Logo -->
+    <a href="/landing.html" class="logo-link">
+        <div class="logo">
+            <span class="logo-icon">✦</span>
+            <span class="logo-text">灵客AI</span>
+        </div>
+    </a>
+
     <div class="container">
         <div class="header">
             <h1 data-i18n="userRegister.title">🌟 创建用户档案</h1>
             <p data-i18n="userRegister.subtitle">填写你的灵性信息，开始探索命运奥秘</p>
         </div>
 
-        <!-- User Profile Avatar -->
-        <div id="userProfileAvatar"></div>
+        <!-- Avatar Upload Section -->
+        <div class="avatar-section">
+            <div class="avatar-upload-wrapper" onclick="document.getElementById('avatarInput').click()">
+                <div class="avatar-preview" id="avatarPreview">
+                    {{ nickname[0] if nickname else 'u' }}
+                </div>
+                <div class="avatar-overlay">
+                    <span class="avatar-overlay-icon">📷</span>
+                    <span class="avatar-overlay-text">上传头像</span>
+                </div>
+                <input type="file" id="avatarInput" class="avatar-input" accept="image/*">
+            </div>
+            
+            <div class="avatar-actions">
+                <button type="button" class="avatar-btn primary" onclick="document.getElementById('avatarInput').click()">
+                    选择图片
+                </button>
+                <button type="button" class="avatar-btn" id="removeAvatarBtn" style="display: none;" onclick="removeAvatar()">
+                    移除
+                </button>
+            </div>
+
+            <div class="user-info">
+                <div class="user-name">{{ nickname if nickname else 'u_demo' }}</div>
+                <div class="user-subtitle">新用户</div>
+            </div>
+        </div>
 
         <div id="message"></div>
 
+        <div class="divider"><span>其他设置</span></div>
+
         <form id="profileForm">
-            <div class="form-group">
-                <label for="gender" data-i18n="userRegister.genderLabel">性别（可选）</label>
-                <select id="gender">
-                    <option value="" data-i18n="userRegister.genderPlaceholder">请选择</option>
-                    <option value="male" data-i18n="userRegister.genderMale">男</option>
-                    <option value="female" data-i18n="userRegister.genderFemale">女</option>
-                    <option value="other" data-i18n="userRegister.genderOther">其他</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="birthDate" data-i18n="userRegister.birthDateLabel">出生日期（可选）</label>
-                <input type="date" id="birthDate">
-                <div class="help-text" data-i18n="userRegister.birthDateHelp">用于八字分析</div>
-            </div>
-
-            <div class="form-group">
-                <label for="birthTime" data-i18n="userRegister.birthTimeLabel">出生时辰（可选）</label>
-                <input type="time" id="birthTime">
-                <div class="help-text" data-i18n="userRegister.birthTimeHelp">精确的时辰信息可提升分析准确度</div>
-            </div>
-
-            <div class="form-group">
-                <label for="birthLocation" data-i18n="userRegister.birthLocationLabel">出生地点（可选）</label>
-                <input type="text" id="birthLocation" data-i18n-placeholder="userRegister.birthLocationPlaceholder" placeholder="例：北京市">
-            </div>
-
             <div class="form-group">
                 <label for="preferredProvider" data-i18n="userRegister.aiProviderLabel">AI 服务提供商</label>
                 <select id="preferredProvider">
@@ -156,69 +402,83 @@
 
     <script src="/static/js/i18n.js"></script>
     <script src="/static/js/lang-switcher.js"></script>
-    <script src="/static/js/user-avatar.js"></script>
     <script>
-        // Initialize language switcher
-        document.addEventListener('DOMContentLoaded', () => {
-            injectLanguageSwitcherStyles();
-            // Add language switcher to the top of the page
-            const container = document.querySelector('.container');
-            const switcherDiv = document.createElement('div');
-            switcherDiv.style.cssText = 'position: absolute; top: 20px; right: 20px;';
-            switcherDiv.innerHTML = createLanguageSwitcher();
-            container.style.position = 'relative';
-            container.insertBefore(switcherDiv.firstElementChild, container.firstChild);
-            initLanguageSwitcher();
-            
-            // Initialize user avatar
-            const avatarContainer = document.getElementById('userProfileAvatar');
-            if (avatarContainer) {
-                const nickname = '{{ nickname }}';
-                const subtitle = i18n.t('userRegister.profileSubtitle');
-                avatarContainer.innerHTML = createUserAvatar(nickname, {
-                    size: 60,
-                    fontSize: 24,
-                    showName: true,
-                    subtitle: subtitle
-                });
+        // Avatar data
+        let avatarBase64 = null;
+
+        // Avatar preview handling
+        const avatarInput = document.getElementById('avatarInput');
+        const avatarPreview = document.getElementById('avatarPreview');
+        const removeAvatarBtn = document.getElementById('removeAvatarBtn');
+
+        avatarInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Validate file size (max 2MB)
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('图片大小不能超过 2MB');
+                    return;
+                }
+
+                // Validate file type
+                if (!file.type.startsWith('image/')) {
+                    alert('请选择图片文件');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    avatarBase64 = e.target.result;
+                    avatarPreview.innerHTML = `<img src="${avatarBase64}" alt="头像">`;
+                    removeAvatarBtn.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
             }
         });
-    </script>
-    <script>
+
+        function removeAvatar() {
+            avatarBase64 = null;
+            avatarPreview.innerHTML = '{{ nickname[0] if nickname else "u" }}';
+            removeAvatarBtn.style.display = 'none';
+            avatarInput.value = '';
+        }
+
+        // Initialize language switcher
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof injectLanguageSwitcherStyles === 'function') {
+                injectLanguageSwitcherStyles();
+            }
+            if (typeof initLanguageSwitcher === 'function') {
+                initLanguageSwitcher();
+            }
+        });
+
+        // Form submission
         const form = document.getElementById('profileForm');
         const messageDiv = document.getElementById('message');
         const submitBtn = document.getElementById('submitBtn');
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            const gender = document.getElementById('gender').value || null;
-            const birthDate = document.getElementById('birthDate').value || null;
-            const birthTime = document.getElementById('birthTime').value || null;
-            const birthLocation = document.getElementById('birthLocation').value.trim() || null;
+
             const preferredProvider = document.getElementById('preferredProvider').value;
-            
+
             messageDiv.innerHTML = '';
-            
             submitBtn.disabled = true;
-            submitBtn.setAttribute('data-i18n', 'userRegister.creating');
-            submitBtn.textContent = i18n.t('userRegister.creating');
-            
+            submitBtn.textContent = '创建中...';
+
             try {
                 const response = await fetch('/api/user/normal-profile', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        gender,
-                        birthDate,
-                        birthTime,
-                        birthLocation,
+                        avatar: avatarBase64,
                         preferredProvider
                     })
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (response.ok) {
                     messageDiv.innerHTML = `<div class="success">${data.message}</div>`;
                     setTimeout(() => {
@@ -227,15 +487,12 @@
                 } else {
                     messageDiv.innerHTML = `<div class="error">${data.error}</div>`;
                     submitBtn.disabled = false;
-                    submitBtn.setAttribute('data-i18n', 'userRegister.createBtn');
-                    submitBtn.textContent = i18n.t('userRegister.createBtn');
+                    submitBtn.textContent = '创建档案';
                 }
             } catch (error) {
-                messageDiv.innerHTML = `<div class="error" data-i18n="userRegister.networkError">网络错误，请稍后重试</div>`;
-                i18n.updatePageContent();
+                messageDiv.innerHTML = `<div class="error">网络错误，请稍后重试</div>`;
                 submitBtn.disabled = false;
-                submitBtn.setAttribute('data-i18n', 'userRegister.createBtn');
-                submitBtn.textContent = i18n.t('userRegister.createBtn');
+                submitBtn.textContent = '创建档案';
             }
         });
     </script>

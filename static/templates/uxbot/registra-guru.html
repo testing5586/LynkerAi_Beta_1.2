@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>命理师注册 - 灵客AI</title>
+    <style>
+        /* === Design System Tokens === */
+        :root {
+            --background: 240 10% 8%;
+            --foreground: 240 5% 96%;
+            --card: 240 8% 12%;
+            --card-foreground: 240 5% 96%;
+            --popover: 240 10% 10%;
+            --popover-foreground: 240 5% 96%;
+            --primary: 270 60% 55%;
+            --primary-foreground: 240 5% 98%;
+            --secondary: 240 50% 25%;
+            --secondary-foreground: 240 5% 96%;
+            --muted: 240 8% 18%;
+            --muted-foreground: 240 5% 65%;
+            --accent: 45 80% 60%;
+            --accent-foreground: 240 10% 10%;
+            --destructive: 0 65% 55%;
+            --destructive-foreground: 0 0% 98%;
+            --border: 240 8% 20%;
+            --input: 240 8% 18%;
+            --ring: 270 60% 55%;
+            --radius: 0.75rem;
+            
+            --shadow-soft: 0 2px 8px rgba(0, 0, 0, .3), 0 0 20px rgba(139, 92, 246, .1);
+            --shadow-card: 0 4px 16px rgba(0, 0, 0, .4), 0 0 40px rgba(139, 92, 246, .15);
+            --shadow-glow: 0 0 20px rgba(234, 179, 8, .3);
+        }
+
+        /* === Base Styles === */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: ui-sans-serif, system-ui, sans-serif;
+            background-color: hsl(var(--background));
+            color: hsl(var(--foreground));
+            background: linear-gradient(135deg, #121216, #1f1528);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* === Components === */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-card);
+            padding: 2rem;
+        }
+
+        .text-gradient-mystical {
+            background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: bold;
+        }
+
+        /* === Form Elements === */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: hsl(var(--foreground));
+        }
+
+        input, textarea, select {
+            width: 100%;
+            border-radius: calc(var(--radius) - 2px);
+            border: 1px solid hsl(var(--input));
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+            color: hsl(var(--foreground));
+            transition: all 0.15s ease;
+            font-family: inherit;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: hsl(var(--ring));
+            box-shadow: 0 0 0 1px hsl(var(--ring));
+        }
+
+        input::placeholder, textarea::placeholder {
+            color: hsl(var(--muted-foreground));
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: calc(var(--radius) - 2px);
+            font-size: 0.875rem;
+            font-weight: 600;
+            height: 2.5rem;
+            padding: 0 1.5rem;
+            background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
+            color: hsl(var(--primary-foreground));
+            border: none;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        /* === Layout === */
+        header {
+            height: 4rem;
+            border-bottom: 1px solid hsl(var(--border));
+            background: rgba(18, 18, 22, 0.8);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            padding: 0 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            text-decoration: none;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 1rem;
+        }
+
+        .register-container {
+            width: 100%;
+            max-width: 480px;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 1.875rem;
+            font-weight: bold;
+        }
+
+        footer {
+            border-top: 1px solid hsl(var(--border));
+            background: rgba(18, 18, 22, 0.5);
+            padding: 1.5rem 1rem;
+            text-align: center;
+            font-size: 0.875rem;
+            color: hsl(var(--muted-foreground));
+        }
+
+        /* === Checkbox Group === */
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .checkbox-label {
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+            font-weight: normal;
+            margin-bottom: 0;
+            background: rgba(255,255,255,0.05);
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .checkbox-label:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            width: auto;
+            margin-right: 0.5rem;
+            accent-color: hsl(var(--primary));
+        }
+        
+        .checkbox-label:has(input:checked) {
+            background: hsl(var(--primary) / 0.2);
+            border-color: hsl(var(--primary));
+            color: hsl(var(--primary-foreground));
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container header-content">
+            <a href="/uxbot/" class="logo text-gradient-mystical">灵客AI</a>
+        </div>
+    </header>
+
+    <main>
+        <div class="register-container">
+            <h1 class="page-title text-gradient-mystical">命理师入驻申请</h1>
+            
+            <div class="glass-card">
+                <form id="guruRegisterForm">
+                    <div class="form-group">
+                        <label for="realName">真实姓名</label>
+                        <input type="text" id="realName" name="realName" placeholder="请输入您的真实姓名" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="idNumber">身份证号</label>
+                        <input type="text" id="idNumber" name="idNumber" placeholder="请输入您的身份证号" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">手机号码</label>
+                        <input type="tel" id="phone" name="phone" placeholder="请输入您的手机号码" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">联系邮箱</label>
+                        <input type="email" id="email" name="email" placeholder="请输入您的邮箱地址">
+                    </div>
+
+                    <div class="form-group">
+                        <label>擅长领域 (多选)</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="categories" value="bazi"> 八字命理
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="categories" value="tarot"> 塔罗占卜
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="categories" value="xingpan"> 星盘分析
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="categories" value="naming"> 起名改名
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="categories" value="fengshui"> 风水堪舆
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="introduction">个人简介</label>
+                        <textarea id="introduction" name="introduction" placeholder="请简要介绍您的从业经验和擅长方向..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-primary">提交申请</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>© 2026 灵客AI. 同命相知。</p>
+        </div>
+    </footer>
+
+    <!-- OTP验证模态框 -->
+    <div id="otpModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 1000; align-items: center; justify-content: center;">
+        <div class="glass-card" style="max-width: 400px; width: 90%;">
+            <h3 style="margin-top: 0; color: hsl(var(--primary));">📱 验证手机号</h3>
+            <p style="color: hsl(var(--muted-foreground)); margin-bottom: 1.5rem;">
+                我们已向 <strong id="otpPhone"></strong> 发送验证码
+            </p>
+            
+            <div class="form-group">
+                <label for="otpCode">验证码</label>
+                <input type="text" id="otpCode" placeholder="请输入6位验证码" maxlength="6" style="font-size: 1.5rem; text-align: center; letter-spacing: 0.5rem;">
+            </div>
+
+            <div id="testOtpHint" style="display: none; padding: 0.75rem; background: rgba(45, 212, 191, 0.1); border: 1px solid rgba(45, 212, 191, 0.3); border-radius: 0.5rem; margin-bottom: 1rem;">
+                <p style="margin: 0; font-size: 0.875rem; color: #2dd4bf;">
+                    🧪 <strong>测试模式</strong><br>
+                    验证码：<span id="testOtpCode" style="font-size: 1.5rem; font-weight: bold; letter-spacing: 0.3rem;"></span>
+                </p>
+            </div>
+
+            <div style="display: flex; gap: 0.75rem;">
+                <button type="button" id="verifyOtpBtn" class="btn-primary" style="flex: 1;">验证</button>
+                <button type="button" id="resendOtpBtn" style="flex: 1; background: hsl(var(--secondary)); color: hsl(var(--secondary-foreground)); border: none; padding: 0.5rem 1rem; border-radius: calc(var(--radius) - 2px); cursor: pointer; font-weight: 500;">
+                    重新发送 <span id="resendCountdown"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let registrationData = null;
+        let resendTimer = null;
+        let resendSeconds = 0;
+
+        document.getElementById('guruRegisterForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = '提交中...';
+
+            // 收集表单数据
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries());
+            
+            // 处理多选框
+            const categories = formData.getAll('categories');
+            data.categories = categories;
+
+            // 保存数据供后续使用
+            registrationData = data;
+
+            try {
+                // 1. 保存注册信息到 guru_registrations
+                const response = await fetch('/uxbot/api/guru/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    // 2. 注册成功，发送OTP
+                    await sendOTP(data.phone);
+                } else {
+                    alert('提交失败: ' + (result.error || '未知错误'));
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalText;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('网络错误，请稍后重试');
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+        });
+
+        async function sendOTP(phone) {
+            try {
+                const response = await fetch('/uxbot/api/otp/send', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ phone: phone })
+                });
+
+                const result = await response.json();
+                console.log('OTP发送响应:', result); // 调试日志
+
+                if (response.ok) {
+                    // 显示OTP模态框
+                    document.getElementById('otpPhone').textContent = phone;
+                    document.getElementById('otpModal').style.display = 'flex';
+                    
+                    // 如果是测试模式，显示OTP码（强制显示用于调试）
+                    if (result.test_mode || result.otp_code) {
+                        console.log('测试模式 - OTP码:', result.otp_code); // 调试日志
+                        document.getElementById('testOtpHint').style.display = 'block';
+                        document.getElementById('testOtpCode').textContent = result.otp_code || '123456';
+                        
+                        // 额外提示
+                        alert(`🧪 测试模式\n\n验证码：${result.otp_code}\n\n(已自动填充在绿色提示框中)`);
+                    } else {
+                        console.log('生产模式 - 短信已发送'); // 调试日志
+                    }
+
+                    // 启动重发倒计时
+                    startResendCountdown();
+
+                    // 重置提交按钮
+                    const submitBtn = document.querySelector('button[type="submit"]');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '提交申请';
+                } else {
+                    throw new Error(result.error || '发送验证码失败');
+                }
+            } catch (error) {
+                console.error('Error sending OTP:', error);
+                alert('发送验证码失败: ' + error.message);
+            }
+        }
+
+        document.getElementById('verifyOtpBtn').addEventListener('click', async function() {
+            const otpCode = document.getElementById('otpCode').value.trim();
+            
+            if (!otpCode || otpCode.length !== 6) {
+                alert('请输入6位验证码');
+                return;
+            }
+
+            this.disabled = true;
+            this.textContent = '验证中...';
+
+            try {
+                const response = await fetch('/uxbot/api/otp/verify', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        phone: registrationData.phone,
+                        otp: otpCode,
+                        email: registrationData.email,
+                        display_name: registrationData.realName
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    alert(`✅ 验证成功！\n\n${result.message || '命理师账号已创建，等待审核通过后可发布工作室。'}\n\n即将跳转到命理师中心...`);
+                    
+                    // 关闭模态框
+                    document.getElementById('otpModal').style.display = 'none';
+                    
+                    // 清空表单
+                    document.getElementById('guruRegisterForm').reset();
+                    
+                    // 保存guru信息到localStorage
+                    localStorage.setItem('guru_account_id', result.guru_account_id);
+                    localStorage.setItem('guru_status', result.status);
+                    localStorage.setItem('guru_phone', registrationData.phone);
+                    
+                    // 跳转到Guru Dashboard Main（3秒后）
+                    setTimeout(() => {
+                        window.location.href = '/uxbot/guru-dashboard-main.html';
+                    }, 3000);
+                } else {
+                    alert('验证失败: ' + (result.error || '验证码错误'));
+                    this.disabled = false;
+                    this.textContent = '验证';
+                }
+            } catch (error) {
+                console.error('Error verifying OTP:', error);
+                alert('验证失败: ' + error.message);
+                this.disabled = false;
+                this.textContent = '验证';
+            }
+        });
+
+        document.getElementById('resendOtpBtn').addEventListener('click', async function() {
+            if (resendSeconds > 0) return;
+            
+            await sendOTP(registrationData.phone);
+        });
+
+        function startResendCountdown() {
+            resendSeconds = 60;
+            const resendBtn = document.getElementById('resendOtpBtn');
+            const countdownSpan = document.getElementById('resendCountdown');
+            
+            resendBtn.disabled = true;
+            
+            resendTimer = setInterval(() => {
+                resendSeconds--;
+                countdownSpan.textContent = `(${resendSeconds}s)`;
+                
+                if (resendSeconds <= 0) {
+                    clearInterval(resendTimer);
+                    resendBtn.disabled = false;
+                    countdownSpan.textContent = '';
+                }
+            }, 1000);
+        }
+
+        // 监听Enter键提交OTP
+        document.getElementById('otpCode').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('verifyOtpBtn').click();
+            }
+        });
+    </script>
+
+</body>
+</html>

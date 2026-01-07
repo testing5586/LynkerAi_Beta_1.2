@@ -17,6 +17,10 @@ app = Flask(__name__, instance_relative_config=True)
 app.config.from_mapping(
     STATIC_FOLDER=os.path.join(app.instance_path, '..', 'static')
 )
+
+# Dev-friendly: reload HTML templates when they change (does NOT enable the Flask reloader).
+app.config['TEMPLATES_AUTO_RELOAD'] = True
+app.jinja_env.auto_reload = True
 app.secret_key = os.getenv("MASTER_VAULT_KEY")
 if not app.secret_key:
     raise ValueError("MASTER_VAULT_KEY environment variable must be set for secure session management")
@@ -159,6 +163,37 @@ try:
 except Exception as e:
     print(f"[WARN] Lynker Bazi Engine 挂载失败: {e}")
 
+# 注册 ModernMatch Blueprint
+try:
+    from lynker_bazi_engine.routes.birth_input_routes_fixed import modernmatch_bp
+    app.register_blueprint(modernmatch_bp)
+    print("[OK] ModernMatch 已注册: /bazi/modernmatch")
+except Exception as e:
+    print(f"[WARN] ModernMatch 挂载失败: {e}")
+
+# 注册 UXBot 前端 Blueprint
+try:
+    from uxbot_frontend import init_uxbot_frontend
+    init_uxbot_frontend(app)
+    print("[OK] UXBot前端已注册: /uxbot")
+except Exception as e:
+    print(f"[WARN] UXBot前端挂载失败: {e}")
+
+# 添加静态资源路由来处理 /static/uxbot/ 路径
+from flask import send_from_directory as send_file
+
+@app.route('/static/uxbot/assets/optimized_images/<path:filename>')
+def serve_optimized_images(filename):
+    """Serve optimized images from static/uxbot/assets/optimized_images/"""
+    static_path = os.path.join(app.root_path, '..', 'static', 'uxbot', 'assets', 'optimized_images')
+    return send_file(static_path, filename, mimetype='image/png')
+
+@app.route('/static/uxbot/assets/<path:subpath>')
+def serve_uxbot_assets(subpath):
+    """Serve UXBot assets from static/uxbot/assets/"""
+    static_path = os.path.join(app.root_path, '..', 'static', 'uxbot', 'assets')
+    return send_file(static_path, subpath)
+
 @app.route("/")
 def index():
     """LynkerAI 欢迎页"""
@@ -205,4 +240,7 @@ def my_real_bazi():
     return render_template("agent/my_real_bazi.html")
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    import logging
+    logging.basicConfig(level=logging.DEBUG)
+    print("🚀 Starting Flask server on http://localhost:5000")
+    app.run(host="0.0.0.0", port=5000, debug=False, use_reloader=False)
