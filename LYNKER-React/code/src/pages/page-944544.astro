@@ -1,0 +1,19 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import CommonHeader from '@/components/common/CommonHeader.tsx'
+import Footer from '@/components/common/Footer.tsx'
+import AIAssistantFloat from '@/components/common/AIAssistantFloat.tsx'
+import GroupPageContent from '@/components/page-944544/GroupPageContent.tsx'
+---
+
+<BaseLayout title="灵客群组 - 灵客AI">
+  <CommonHeader client:load currentPath="/page-944544" />
+  
+  <main class="min-h-[calc(100vh-64px)] bg-background">
+    <GroupPageContent client:load />
+  </main>
+  
+  <AIAssistantFloat client:idle unreadCount={0} />
+  <Footer client:idle variant="simple" />
+</BaseLayout>

@@ -1,0 +1,15 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import CommonHeader from '@/components/common/CommonHeader.tsx';
+import Footer from '@/components/common/Footer.tsx';
+import KnowledgeLibraryMain from '@/components/page-1031922/KnowledgeLibraryMain.tsx';
+---
+
+<BaseLayout title="命理师知识库 - 灵客AI">
+  <CommonHeader client:load currentPath="/page-1031922" />
+  <main class="min-h-[calc(100vh-64px)] bg-background">
+    <KnowledgeLibraryMain client:load />
+  </main>
+  <Footer client:idle variant="simple" />
+</BaseLayout>

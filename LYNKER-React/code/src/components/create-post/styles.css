@@ -1,0 +1,161 @@
+
+/* Create Post Page Specific Styles */
+
+.create-post-container {
+  --header-height: 64px;
+}
+
+/* Rich text editor styling */
+.editor-toolbar {
+  @apply flex items-center gap-1 p-3 border-b border-primary/20 bg-background/50 rounded-t-lg;
+}
+
+.editor-toolbar button {
+  @apply p-2 rounded hover:bg-primary/20 transition-colors;
+}
+
+.editor-toolbar button:hover {
+  @apply bg-primary/20;
+}
+
+/* Markdown preview */
+.markdown-preview {
+  @apply prose prose-invert max-w-none;
+}
+
+.markdown-preview h1 {
+  @apply text-2xl font-bold mt-6 mb-3;
+}
+
+.markdown-preview h2 {
+  @apply text-xl font-bold mt-4 mb-2;
+}
+
+.markdown-preview h3 {
+  @apply text-lg font-semibold mt-3 mb-2;
+}
+
+.markdown-preview p {
+  @apply my-3 leading-relaxed;
+}
+
+.markdown-preview ul,
+.markdown-preview ol {
+  @apply my-3 ml-6;
+}
+
+.markdown-preview li {
+  @apply my-1;
+}
+
+.markdown-preview blockquote {
+  @apply border-l-4 border-primary/50 pl-4 py-2 my-3 text-muted-foreground italic;
+}
+
+.markdown-preview code {
+  @apply bg-background/50 px-1.5 py-0.5 rounded font-mono text-sm;
+}
+
+.markdown-preview pre {
+  @apply bg-background/50 p-4 rounded-lg overflow-x-auto my-3;
+}
+
+/* Tag input */
+.tag-input-container {
+  @apply flex flex-wrap gap-2 items-center;
+}
+
+.tag-badge {
+  @apply inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary/20 text-primary;
+}
+
+/* Image upload */
+.image-upload-area {
+  @apply border-2 border-dashed border-primary/30 rounded-lg p-8 text-center transition-colors;
+}
+
+.image-upload-area.dragging {
+  @apply border-primary bg-primary/10;
+}
+
+.image-preview-grid {
+  @apply grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3;
+}
+
+.image-preview-item {
+  @apply relative group;
+}
+
+.image-preview-item img {
+  @apply w-full h-24 object-cover rounded-lg border border-primary/20;
+}
+
+.image-preview-item:hover .remove-btn {
+  @apply opacity-100;
+}
+
+.remove-btn {
+  @apply absolute -top-2 -right-2 opacity-0 transition-opacity;
+}
+
+/* Category selector */
+.category-select {
+  @apply w-full bg-background/50 border border-primary/20 rounded-lg px-4 py-2;
+}
+
+/* Form sections */
+.form-section {
+  @apply space-y-4 pb-6 border-b border-primary/10 last:border-b-0;
+}
+
+.form-label {
+  @apply text-sm font-semibold text-foreground;
+}
+
+.form-description {
+  @apply text-xs text-muted-foreground mt-1;
+}
+
+/* Action buttons */
+.action-buttons {
+  @apply flex items-center justify-between gap-4 mt-8;
+}
+
+.action-buttons button {
+  @apply transition-all;
+}
+
+/* Tips card */
+.tips-card {
+  @apply bg-accent/5 border border-accent/20 rounded-lg p-4;
+}
+
+.tips-card h4 {
+  @apply font-semibold text-sm flex items-center gap-2 mb-3;
+}
+
+.tips-card ul {
+  @apply text-sm text-muted-foreground space-y-1 ml-6;
+}
+
+/* Loading state */
+.loading-spinner {
+  @apply animate-spin;
+}
+
+/* Success/Error messages */
+.message-box {
+  @apply p-4 rounded-lg border;
+}
+
+.message-box.success {
+  @apply bg-green-500/10 border-green-500/30 text-green-400;
+}
+
+.message-box.error {
+  @apply bg-red-500/10 border-red-500/30 text-red-400;
+}
+
+.message-box.info {
+  @apply bg-blue-500/10 border-blue-500/30 text-blue-400;
+}

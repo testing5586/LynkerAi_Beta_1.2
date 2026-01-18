@@ -1,0 +1,15 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import CommonHeader from '@/components/common/CommonHeader.tsx'
+import Footer from '@/components/common/Footer.tsx'
+import ModerationQueuePage from '@/components/post-moderation-queue/ModerationQueuePage.tsx'
+---
+
+<BaseLayout title="内容审核队列 - 灵客AI">
+  <CommonHeader client:load currentPath="/post-moderation-queue" />
+  <main class="min-h-[calc(100vh-128px)] bg-background">
+    <ModerationQueuePage client:load />
+  </main>
+  <Footer client:idle variant="simple" />
+</BaseLayout>

@@ -1,0 +1,37 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import Header from '@/components/common/Header'
+import Footer from '@/components/common/Footer'
+import ProfileSetupMasterForm from '@/components/profile-setup-master/ProfileSetupMasterForm'
+---
+
+<BaseLayout title="命理师资料设置 - 灵客AI">
+  <Header client:load variant="minimal" currentPath="/profile-setup-master" />
+  
+  <main class="min-h-[calc(100vh-128px)] bg-background">
+    <div class="container max-w-4xl mx-auto px-4 py-12">
+      {/* Page Header */}
+<div class="mb-12 text-center">
+         <h1 class="text-4xl font-bold text-gradient-mystical mb-4">
+           完善您的执业信息
+         </h1>
+         <p id="i51xm" class="text-lg text-muted-foreground max-w-2xl mx-auto">补充或修改您的专业信息，这将帮助用户更好地了解您的服务。<br>完成设置后，您可以进入工作室管理界面。
+         </p>
+       </div>
+
+      {/* Form Container */}
+      <div class="glass-card rounded-xl p-8 mb-12">
+        <ProfileSetupMasterForm client:load />
+      </div>
+    </div>
+  </main>
+
+  <Footer client:load variant="simple" />
+</BaseLayout>
+
+<style>
+  :global(body) {
+    background: linear-gradient(135deg, hsl(240 10% 8%) 0%, hsl(270 30% 12%) 100%);
+  }
+</style>

@@ -1,0 +1,15 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import CommonHeader from '@/components/common/CommonHeader.tsx'
+import Footer from '@/components/common/Footer.tsx'
+import FriendRequestPage from '@/components/page-1060063/FriendRequestPage.tsx'
+---
+
+<BaseLayout title="好友请求 - 灵客AI">
+  <CommonHeader client:load currentPath="/page-1060063" />
+  <main class="min-h-[calc(100vh-64px)] bg-background">
+    <FriendRequestPage client:load />
+  </main>
+  <Footer client:idle variant="simple" />
+</BaseLayout>

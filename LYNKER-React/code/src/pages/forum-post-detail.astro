@@ -1,0 +1,17 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import CommonHeader from '@/components/common/CommonHeader.tsx'
+import Footer from '@/components/common/Footer.tsx'
+import ForumPostDetailContent from '@/components/forum-post-detail/ForumPostDetailContent.tsx'
+
+const currentPath = '/forum-post-detail'
+---
+
+<BaseLayout title="帖子详情 - 灵客论坛">
+  <CommonHeader client:load currentPath={currentPath} />
+  <main class="min-h-[calc(100vh-128px)] bg-background">
+    <ForumPostDetailContent client:load />
+  </main>
+  <Footer client:idle variant="simple" />
+</BaseLayout>

@@ -1,0 +1,19 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import CommonHeader from '@/components/common/CommonHeader.tsx'
+import ConsultationRoomLayout from '@/components/consultation-room/ConsultationRoomLayout.tsx'
+import AIAssistantFloat from '@/components/common/AIAssistantFloat.tsx'
+---
+
+<BaseLayout title="在线咨询室 - 灵客AI">
+  <CommonHeader client:load variant="minimal" />
+  <ConsultationRoomLayout client:load />
+  <AIAssistantFloat client:idle unreadCount={0} />
+</BaseLayout>
+
+<style>
+  :global(body) {
+    overflow: hidden;
+  }
+</style>

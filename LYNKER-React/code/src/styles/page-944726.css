@@ -1,0 +1,69 @@
+
+/* Page-specific styles for batch record view */
+
+.batch-record-chart {
+  @apply w-full overflow-x-auto;
+}
+
+.batch-record-chart svg {
+  @apply mx-auto;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.batch-record-chart text {
+  @apply select-none;
+}
+
+.batch-record-list {
+  @apply space-y-4;
+}
+
+.batch-record-card {
+  @apply glass-card border-primary/20 hover:border-primary/40 transition-all cursor-pointer group;
+}
+
+.batch-record-card:hover {
+  @apply shadow-card;
+}
+
+/* Chart animation */
+@keyframes chart-line-draw {
+  from {
+    stroke-dashoffset: 1000;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.batch-record-chart path {
+  animation: chart-line-draw 1.5s ease-out forwards;
+}
+
+/* Status badge colors */
+.status-verified {
+  @apply bg-green-500/20 text-green-400 border-green-500/30;
+}
+
+.status-verifying {
+  @apply bg-yellow-500/20 text-yellow-400 border-yellow-500/30;
+}
+
+.status-pending {
+  @apply bg-blue-500/20 text-blue-400 border-blue-500/30;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .batch-record-chart {
+    @apply -mx-4 px-4;
+  }
+
+  .batch-record-card {
+    @apply flex-col;
+  }
+
+  .batch-record-card > div:first-child {
+    @apply flex-col;
+  }
+}

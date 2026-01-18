@@ -1,0 +1,14 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import CommonHeader from '@/components/common/CommonHeader.tsx'
+import AppSidebarLayout from '@/components/common/AppSidebarLayout.tsx'
+import AIAssistantSettingsPage from '@/components/page-979411/AIAssistantSettingsPage.tsx'
+---
+
+<BaseLayout title="AI设置 - 灵客AI">
+  <CommonHeader client:load currentPath="/page-979411" />
+  <AppSidebarLayout client:load headerHeight="64px">
+    <AIAssistantSettingsPage client:load />
+  </AppSidebarLayout>
+</BaseLayout>

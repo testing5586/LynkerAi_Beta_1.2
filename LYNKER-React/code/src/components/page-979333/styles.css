@@ -1,0 +1,54 @@
+
+/* Page-specific styles for page-979333 */
+
+.yearly-fortune-container {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 64px);
+  padding-left: 256px; /* Account for sidebar width */
+}
+
+.yearly-fortune-container.sidebar-collapsed {
+  padding-left: 80px;
+}
+
+/* Chart containers */
+.chart-container {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  border: 2px dashed;
+  position: relative;
+  overflow: hidden;
+}
+
+.chart-container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.1) 100%);
+  pointer-events: none;
+}
+
+/* Forecast cards animation */
+.forecast-card {
+  transition: all 0.3s ease;
+}
+
+.forecast-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(139, 92, 246, 0.15);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .yearly-fortune-container {
+    padding-left: 0;
+  }
+
+  .yearly-fortune-container.sidebar-collapsed {
+    padding-left: 0;
+  }
+}

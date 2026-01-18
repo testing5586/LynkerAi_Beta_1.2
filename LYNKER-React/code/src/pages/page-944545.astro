@@ -1,0 +1,13 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import CommonHeader from '@/components/common/CommonHeader.tsx'
+import Footer from '@/components/common/Footer.tsx'
+import ArenaPage from '@/components/page-944545/ArenaPage.tsx'
+---
+
+<BaseLayout title="炼丹房 - 灵客AI">
+  <CommonHeader client:load currentPath="/page-944545" />
+  <ArenaPage client:load />
+  <Footer client:load variant="simple" />
+</BaseLayout>

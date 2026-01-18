@@ -1,0 +1,15 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import CommonHeader from '@/components/common/CommonHeader.tsx'
+import AppSidebarLayout from '@/components/common/AppSidebarLayout.tsx'
+import AIAssistantFloat from '@/components/common/AIAssistantFloat.tsx'
+import KnowledgeBaseContainer from '@/components/knowledge-base-main/KnowledgeBaseContainer.tsx'
+---
+
+<BaseLayout title="知识库 - 灵客AI">
+  <CommonHeader client:load currentPath="/knowledge-base-main" />
+  <AppSidebarLayout client:load headerHeight="64px">
+    <KnowledgeBaseContainer client:load />
+    <AIAssistantFloat client:load />
+  </AppSidebarLayout>
+</BaseLayout>

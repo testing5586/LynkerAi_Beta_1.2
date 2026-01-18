@@ -1,0 +1,14 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import CommonHeader from '@/components/common/CommonHeader.tsx'
+import UserDashboardLayout from '@/components/page-979468/UserDashboardLayout.tsx'
+import BillingSettingsPanel from '@/components/page-979468/BillingSettingsPanel.tsx'
+---
+
+<BaseLayout title="付款设置 - 灵客AI">
+  <CommonHeader client:load currentPath="/page-979468" />
+  <UserDashboardLayout client:load currentPath="/page-979468">
+    <BillingSettingsPanel client:idle />
+  </UserDashboardLayout>
+</BaseLayout>

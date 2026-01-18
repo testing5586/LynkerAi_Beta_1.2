@@ -1,0 +1,17 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import Header from '@/components/common/Header'
+import Footer from '@/components/common/Footer.tsx'
+import AIAssistantFloatDemo from '@/components/ai-assistant-interaction-floating-window/AIAssistantFloatDemo.tsx'
+---
+
+<BaseLayout title="AI助手浮窗 - 灵客AI">
+  <Header client:load variant="minimal" currentPath="/ai-assistant-interaction-floating-window" />
+  
+  <main class="flex-1 min-h-[calc(100vh-128px)]">
+    <AIAssistantFloatDemo client:load />
+  </main>
+  
+  <Footer client:idle variant="simple" />
+</BaseLayout>

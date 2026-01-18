@@ -1,0 +1,61 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import CommonHeader from '@/components/common/CommonHeader.tsx'
+import Footer from '@/components/common/Footer.tsx'
+import AIAssistantFloat from '@/components/common/AIAssistantFloat.tsx'
+import ProfileDetailHeader from '@/components/profile-detail/ProfileDetailHeader.tsx'
+import PrognosisAnalysisSummary from '@/components/profile-detail/PrognosisAnalysisSummary.tsx'
+import RecentPostsList from '@/components/profile-detail/RecentPostsList.tsx'
+import ProfileActionButtons from '@/components/profile-detail/ProfileActionButtons.tsx'
+import { MOCK_USER_PROFILE_DETAIL } from '@/data/user'
+
+const pageTitle = `${MOCK_USER_PROFILE_DETAIL.alias} - 灵客AI`
+---
+
+<BaseLayout title={pageTitle}>
+  <CommonHeader client:load currentPath="/profile-detail" />
+  
+  <main class="flex-1 min-h-[calc(100vh-64px)] bg-background">
+    <div class="container max-w-4xl mx-auto px-4 py-8">
+      {/* User Header Section */}
+      <ProfileDetailHeader client:load user={MOCK_USER_PROFILE_DETAIL} />
+      
+      {/* Action Buttons */}
+      <ProfileActionButtons client:load userId={MOCK_USER_PROFILE_DETAIL.userId} alias={MOCK_USER_PROFILE_DETAIL.alias} />
+      
+      {/* Prognosis Analysis Summary */}
+      <PrognosisAnalysisSummary client:load summary={MOCK_USER_PROFILE_DETAIL.publicPrognosisSummary} />
+      
+      {/* Self Introduction */}
+      <section class="mt-8 p-6 rounded-lg bg-card border border-border">
+        <h2 class="text-lg font-semibold mb-4">个人介绍</h2>
+        <p class="text-foreground/80 leading-relaxed">
+          {MOCK_USER_PROFILE_DETAIL.selfIntroduction}
+        </p>
+      </section>
+      
+      {/* Resonance Tags */}
+      {MOCK_USER_PROFILE_DETAIL.resonanceTags && MOCK_USER_PROFILE_DETAIL.resonanceTags.length > 0 && (
+        <section class="mt-8 p-6 rounded-lg bg-card border border-border">
+          <h2 class="text-lg font-semibold mb-4">同行命格标签</h2>
+          <div class="flex flex-wrap gap-2">
+            {MOCK_USER_PROFILE_DETAIL.resonanceTags.map((tag) => (
+              <span key={tag} class="px-3 py-1 rounded-full bg-primary/20 text-primary text-sm font-medium">
+                {tag}
+              </span>
+            ))}
+          </div>
+        </section>
+      )}
+      
+      {/* Recent Posts */}
+      {MOCK_USER_PROFILE_DETAIL.recentPosts && MOCK_USER_PROFILE_DETAIL.recentPosts.length > 0 && (
+        <RecentPostsList client:load posts={MOCK_USER_PROFILE_DETAIL.recentPosts} />
+      )}
+    </div>
+  </main>
+  
+  <Footer client:load variant="simple" />
+  <AIAssistantFloat client:load />
+</BaseLayout>

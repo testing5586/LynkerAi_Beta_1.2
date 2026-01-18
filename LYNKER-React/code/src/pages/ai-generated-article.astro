@@ -1,0 +1,31 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import CommonHeader from '@/components/common/CommonHeader.tsx'
+import Footer from '@/components/common/Footer.tsx'
+import AIGeneratedArticleHero from '@/components/ai-generated-article/AIGeneratedArticleHero.tsx'
+import ArticleContent from '@/components/ai-generated-article/ArticleContent.tsx'
+import DiscussionSection from '@/components/ai-generated-article/DiscussionSection.tsx'
+import RelatedBlackbox from '@/components/ai-generated-article/RelatedBlackbox.tsx'
+import AIAssistantFloat from '@/components/common/AIAssistantFloat.tsx'
+---
+
+<BaseLayout title="AI生成话题文章 - 灵客AI">
+  <CommonHeader client:load currentPath="/ai-generated-article" />
+  
+  <main class="min-h-screen bg-background">
+    <AIGeneratedArticleHero client:idle />
+    
+    <div class="container mx-auto px-4 py-12 max-w-4xl">
+      <ArticleContent client:idle />
+      
+      <div class="mt-12 space-y-8">
+        <RelatedBlackbox client:idle />
+        <DiscussionSection client:idle />
+      </div>
+    </div>
+  </main>
+
+  <Footer variant="full" />
+  <AIAssistantFloat client:load unreadCount={0} />
+</BaseLayout>

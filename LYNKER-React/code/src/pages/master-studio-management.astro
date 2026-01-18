@@ -1,0 +1,18 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import CommonHeader from '@/components/common/Header'
+import AppSidebarLayout from '@/components/common/AppSidebarLayout.tsx'
+import StudioManagementContent from '@/components/master-studio-management/StudioManagementContent.tsx'
+import Footer from '@/components/common/Footer'
+---
+
+<BaseLayout title="工作室管理 - 灵客AI">
+<CommonHeader client:load variant="minimal" currentPath="/master-studio-management" />
+  <AppSidebarLayout client:load headerHeight="64px">
+<main id="i2948s" class="flex-1 overflow-auto">
+      <StudioManagementContent client:load />
+    </main>
+  </AppSidebarLayout>
+  <Footer client:load variant="simple" />
+</BaseLayout>

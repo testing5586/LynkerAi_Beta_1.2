@@ -1,0 +1,96 @@
+
+/* Page-specific styles for lynkermates (page_944865) */
+
+.lynkermates-container {
+  display: flex;
+  height: calc(100vh - 64px);
+  background: hsl(var(--background));
+}
+
+.lynkermates-left-sidebar {
+  width: 256px;
+  border-right: 1px solid hsl(var(--border));
+  background: hsl(var(--background) / 0.5);
+  overflow-y: auto;
+}
+
+.lynkermates-main-content {
+  flex: 1;
+  overflow-y: auto;
+  border-right: 1px solid hsl(var(--border));
+}
+
+.lynkermates-right-sidebar {
+  width: 320px;
+  border-left: 1px solid hsl(var(--border));
+  background: hsl(var(--background) / 0.5);
+  overflow-y: auto;
+}
+
+/* Feed item animations */
+.feed-item {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Online status indicator */
+.online-indicator {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid hsl(var(--background));
+}
+
+.online-indicator.online {
+  background-color: #22c55e;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
+}
+
+.online-indicator.away {
+  background-color: #eab308;
+}
+
+.online-indicator.offline {
+  background-color: #6b7280;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1280px) {
+  .lynkermates-right-sidebar {
+    display: none;
+  }
+}
+
+@media (max-width: 1024px) {
+  .lynkermates-left-sidebar {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .lynkermates-container {
+    flex-direction: column;
+  }
+
+  .lynkermates-left-sidebar,
+  .lynkermates-right-sidebar {
+    display: none;
+  }
+
+  .lynkermates-main-content {
+    border-right: none;
+  }
+}

@@ -1,0 +1,60 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import CommonHeader from '@/components/common/CommonHeader.tsx'
+import Footer from '@/components/common/Footer.tsx'
+import AIAssistantFloat from '@/components/common/AIAssistantFloat.tsx'
+import HomologyProfileHeader from '@/components/homology-match-profile-view/HomologyProfileHeader.tsx'
+import HomologyProfileBazi from '@/components/homology-match-profile-view/HomologyProfileBazi.tsx'
+import HomologyProfileZiwei from '@/components/homology-match-profile-view/HomologyProfileZiwei.tsx'
+import HomologyProfileInterests from '@/components/homology-match-profile-view/HomologyProfileInterests.tsx'
+import HomologyProfileActions from '@/components/homology-match-profile-view/HomologyProfileActions.tsx'
+import HomologyProfileSimilarities from '@/components/homology-match-profile-view/HomologyProfileSimilarities.tsx'
+import { MOCK_HOMOLOGY_PROFILE } from '@/data/homology_match'
+
+const profile = MOCK_HOMOLOGY_PROFILE
+---
+
+<BaseLayout title="同命人资料 - 灵客AI">
+  <CommonHeader client:load currentPath="/homology-match-profile-view" />
+  
+  <main class="min-h-[calc(100vh-64px)] bg-background">
+    <div class="container max-w-4xl mx-auto px-4 py-8">
+      {/* Back Button */}
+      <div class="mb-6">
+        <a 
+          href="./homology-match-discovery.html"
+          class="inline-flex items-center text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <span class="mr-2">←</span>
+          <span>返回同命发现</span>
+        </a>
+      </div>
+
+      {/* Main Content Grid */}
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left Column - Profile Info */}
+        <div class="lg:col-span-2 space-y-6">
+          <HomologyProfileHeader client:load profile={profile} />
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <HomologyProfileBazi client:load summary={profile.baziSummary} />
+            <HomologyProfileZiwei client:load summary={profile.ziweiSummary} />
+          </div>
+
+          <HomologyProfileInterests client:load tags={profile.interestTags} />
+          
+          <HomologyProfileSimilarities client:load matchPercentage={profile.matchPercentage} />
+        </div>
+
+        {/* Right Column - Actions */}
+        <div class="lg:col-span-1">
+          <HomologyProfileActions client:load profile={profile} />
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <Footer client:load variant="simple" />
+  <AIAssistantFloat client:load />
+</BaseLayout>

@@ -1,0 +1,18 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import CommonHeader from '@/components/common/Header'
+import AppSidebarLayout from '@/components/common/AppSidebarLayout.tsx'
+import MasterRecordDetailContent from '@/components/master-record-detail/MasterRecordDetailContent.tsx'
+import AIAssistantFloat from '@/components/common/AIAssistantFloat.tsx'
+---
+
+<BaseLayout title="批命详情 - 灵客AI">
+  <CommonHeader client:load variant="minimal" currentPath="/master-record-detail" />
+  <AppSidebarLayout client:load headerHeight="64px">
+    <main class="flex-1 overflow-auto">
+      <MasterRecordDetailContent client:load />
+    </main>
+  </AppSidebarLayout>
+  <AIAssistantFloat client:load unreadCount={0} />
+</BaseLayout>

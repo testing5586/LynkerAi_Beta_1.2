@@ -1,0 +1,22 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import Header from '@/components/common/Header'
+import Footer from '@/components/common/Footer'
+import AppSidebarLayout from '@/components/common/AppSidebarLayout.tsx'
+import MasterSidebar from '@/components/customer-prognosis-records-view/MasterSidebar.tsx'
+import CustomerRecordsContent from '@/components/customer-prognosis-records-view/CustomerRecordsContent.tsx'
+---
+
+<BaseLayout title="客户批命记录 - 灵客AI">
+  <Header client:load variant="minimal" currentPath="/customer-prognosis-records-view" />
+  
+  <AppSidebarLayout client:load headerHeight="64px">
+    <MasterSidebar client:load />
+    <main class="flex-1 overflow-auto">
+      <CustomerRecordsContent client:load />
+    </main>
+  </AppSidebarLayout>
+  
+  <Footer client:load variant="simple" />
+</BaseLayout>

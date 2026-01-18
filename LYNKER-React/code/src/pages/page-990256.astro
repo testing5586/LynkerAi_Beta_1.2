@@ -1,0 +1,18 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import CommonHeader from '@/components/common/CommonHeader.tsx'
+import AppSidebarLayout from '@/components/common/AppSidebarLayout.tsx'
+import MasterStudioSetup from '@/components/page-990256/MasterStudioSetup.tsx'
+import MasterSidebarNav from '@/components/page-990256/MasterSidebarNav.tsx'
+---
+
+<BaseLayout title="工作室设置 - 灵客AI">
+  <CommonHeader client:load currentPath="/page-990256" />
+  <AppSidebarLayout client:load headerHeight="64px">
+    <MasterSidebarNav client:load />
+    <main class="flex-1 overflow-auto">
+      <MasterStudioSetup client:load />
+    </main>
+  </AppSidebarLayout>
+</BaseLayout>

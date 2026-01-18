@@ -1,0 +1,25 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import CommonHeader from '@/components/common/CommonHeader.tsx'
+import AIAssistantFloat from '@/components/common/AIAssistantFloat.tsx'
+import Footer from '@/components/common/Footer.tsx'
+import MyTrueBirthdayChart from '@/components/page-962648/MyTrueBirthdayChart.tsx'
+---
+
+<BaseLayout title="我的真命盘 - 灵客AI">
+  <CommonHeader client:load currentPath="/page-962648" />
+  
+  <main class="flex-1 bg-background">
+    <MyTrueBirthdayChart client:load />
+  </main>
+
+  <Footer client:idle variant="simple" />
+  <AIAssistantFloat client:idle unreadCount={0} />
+</BaseLayout>
+
+<style>
+  main {
+    min-height: calc(100vh - 64px - 100px);
+  }
+</style>

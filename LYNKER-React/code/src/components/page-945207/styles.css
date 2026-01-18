@@ -1,0 +1,50 @@
+
+/* Homology Chat Page Specific Styles */
+
+.chat-message-bubble {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.chat-input-focus {
+  @apply ring-2 ring-primary/50;
+}
+
+.prognosis-card {
+  @apply rounded-lg bg-muted/30 border border-muted p-3 transition-all hover:border-primary/50;
+}
+
+.topic-button-active {
+  @apply bg-primary/10 border-primary;
+}
+
+.topic-button-inactive {
+  @apply bg-muted/30 border-muted hover:border-primary/50;
+}
+
+/* Scrollbar styling for chat area */
+.chat-scroll-area::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-scroll-area::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+.chat-scroll-area::-webkit-scrollbar-thumb {
+  @apply bg-muted rounded-full;
+}
+
+.chat-scroll-area::-webkit-scrollbar-thumb:hover {
+  @apply bg-muted-foreground/50;
+}

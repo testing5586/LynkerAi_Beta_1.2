@@ -1,0 +1,19 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import Header from '@/components/common/Header.tsx'
+import CreatePostForm from '@/components/page-944864/CreatePostForm.tsx'
+import Footer from '@/components/common/Footer.tsx'
+---
+
+<BaseLayout title="发布新动态 - 灵客AI">
+  <Header client:load variant="minimal" currentPath="/page-944864" />
+  
+<main class="min-h-[calc(100vh-128px)] bg-background">
+    <div id="i4ojj" class="container max-w-none mx-auto px-4 py-8 flex" style="width: 1500px; justify-content: center;">
+      <CreatePostForm client:load />
+    </div>
+  </main>
+
+  <Footer client:idle variant="simple" />
+</BaseLayout>

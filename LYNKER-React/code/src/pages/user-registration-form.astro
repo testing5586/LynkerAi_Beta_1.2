@@ -1,0 +1,28 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/common/Header';
+import Footer from '@/components/common/Footer';
+import UserRegistrationForm from '@/components/user-registration-form/UserRegistrationForm';
+---
+
+<BaseLayout title="普通用户注册 - 灵客AI">
+  <div class="min-h-screen flex flex-col bg-background">
+<Header client:load variant="minimal" currentPath="/user-registration-form" />
+    
+    <main class="flex-1 container px-4 py-12">
+      <div class="max-w-2xl mx-auto">
+         {/* Page Header */}
+         <div class="mb-8 text-center">
+           <h1 class="text-3xl font-bold mb-2 text-gradient-mystical">加入灵客AI</h1>
+           <p class="text-muted-foreground">创建您的账户，开启命理探索之旅</p>
+         </div>
+
+         {/* Registration Form */}
+         <UserRegistrationForm client:load />
+       </div>
+    </main>
+
+    <Footer client:load variant="simple" />
+  </div>
+</BaseLayout>

@@ -1,0 +1,15 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import CommonHeader from '@/components/common/CommonHeader.tsx'
+import AIGeneratedNoteView from '@/components/ai-generated-note-view/AIGeneratedNoteView.tsx'
+import Footer from '@/components/common/Footer.tsx'
+---
+
+<BaseLayout title="AI生成笔记 - 灵客AI">
+  <CommonHeader client:load currentPath="/ai-generated-note-view" />
+  <main class="min-h-[calc(100vh-128px)] bg-background">
+    <AIGeneratedNoteView client:load />
+  </main>
+  <Footer client:idle variant="simple" />
+</BaseLayout>

@@ -1,0 +1,19 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import CommonHeader from '@/components/common/CommonHeader.tsx'
+import Footer from '@/components/common/Footer.tsx'
+import AIAssistantFloat from '@/components/common/AIAssistantFloat.tsx'
+import MatchResultPage from '@/components/page-945206/MatchResultPage.tsx'
+---
+
+<BaseLayout title="同命匹配结果 - 灵客AI">
+  <CommonHeader client:load variant="minimal" currentPath="/page-945206" />
+  
+  <main class="min-h-[calc(100vh-128px)] bg-background">
+    <MatchResultPage client:load />
+  </main>
+
+  <Footer client:idle variant="simple" />
+  <AIAssistantFloat client:idle unreadCount={0} />
+</BaseLayout>

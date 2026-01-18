@@ -1,0 +1,17 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import CommonHeader from '@/components/common/CommonHeader.tsx'
+import Footer from '@/components/common/Footer.tsx'
+import ForumContent from '@/components/forum-homepage/ForumContent.tsx'
+---
+
+<BaseLayout title="灵客论坛 - 灵客AI">
+  <CommonHeader client:load currentPath="/forum-homepage" />
+  
+  <main class="min-h-[calc(100vh-64px)] bg-background">
+    <ForumContent client:load />
+  </main>
+  
+  <Footer client:idle variant="full" />
+</BaseLayout>

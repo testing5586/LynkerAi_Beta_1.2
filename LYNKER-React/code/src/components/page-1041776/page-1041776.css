@@ -1,0 +1,71 @@
+
+/* Memory Saved Page Styles */
+
+.memory-sidebar {
+  @apply w-64 border-r bg-card/50 backdrop-blur-sm flex flex-col;
+}
+
+.memory-sidebar-scroll {
+  @apply flex-1 overflow-y-auto;
+}
+
+.memory-card {
+  @apply glass-card hover:shadow-card transition-all duration-300;
+}
+
+.memory-card:hover {
+  @apply shadow-card;
+}
+
+.memory-content {
+  @apply text-sm leading-relaxed text-foreground/90 line-clamp-3;
+}
+
+.memory-tag {
+  @apply inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs bg-accent/10 text-accent border border-accent/30 hover:bg-accent/20 transition-colors;
+}
+
+.memory-pagination {
+  @apply flex items-center justify-between gap-2;
+}
+
+.memory-page-button {
+  @apply px-3 py-1 rounded-md text-sm font-medium transition-colors;
+}
+
+.memory-page-button.active {
+  @apply bg-mystical-gradient text-primary-foreground;
+}
+
+.memory-page-button:disabled {
+  @apply opacity-50 cursor-not-allowed;
+}
+
+/* Scrollbar styling for memory list */
+.memory-scroll-area::-webkit-scrollbar {
+  width: 8px;
+}
+
+.memory-scroll-area::-webkit-scrollbar-track {
+  @apply bg-background;
+}
+
+.memory-scroll-area::-webkit-scrollbar-thumb {
+  @apply bg-muted rounded-lg hover:bg-muted-foreground/50;
+}
+
+/* Animation for memory card entrance */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.memory-card {
+  animation: slideInUp 0.3s ease-out;
+}

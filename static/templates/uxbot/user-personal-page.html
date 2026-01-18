@@ -1,0 +1,408 @@
+
+                <!DOCTYPE html>
+                <html lang="zh">
+                <head>
+                  <meta charset="UTF-8">
+                  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                  <meta name="color-scheme" content="light">
+                  <meta name="supported-color-schemes" content="light">
+                  <title>user-personal-page</title>
+                  <style>
+                    *,
+                    *::before,
+                    *::after {
+                      box-sizing: border-box;
+                      margin: 0;
+                    }
+                    .iframe-outer {
+                      position: fixed;
+                      top: 0;
+                      left: 0;
+                      bottom: 0;
+                      right: 0;
+                      display: flex;
+                      justify-content: center;
+                      background-color: #E0E0E0;
+                    }
+                    .iframe-wrapper {
+                      width: 100%;
+                      height: 100%;
+                      margin: 0 auto;
+                      transform-origin: center top;
+                      flex-shrink: 0;
+                    }
+                    #dynamicIframe {
+                      border: none;
+                      width: 100%;
+                      height: 100%;
+                    }
+                  </style>
+                  <script>
+                const width = 1920
+                const height = 1080
+                const resolutionRatio = width && height ? width / height : 1
+                const pageNameMap = {
+                  'prognosis_service_entry': 'guru-search',
+    'master_list': 'guru-search-result',
+    'master_profile': 'guru-business-profile',
+    'booking_appointment': 'guru-appointment',
+    'consultation_room': 'guru-broadcast-studio',
+    'payment_gateway': 'guru-payment-gateway',
+    'knowledge_base': 'user-knowledge',
+    'homology_match_discovery': 'samedestiny',
+    'homology_match_profile_view': 'samedestiny-profile-summary',
+    'message_center': 'user-notify-chat',
+    'profile_detail': 'user-profile-details',
+    'knowledge_base_main': 'guru-db-knowledge',
+    'user_prognosis_record': 'user-db-predict-records',
+    'user_record_detail': 'user-db-predict-details',
+    'master_prognosis_record': 'guru-db-customer-record',
+    'master_record_detail': 'guru-db-consult-details',
+    'forum_homepage': 'lynkerforum',
+    'create_post': 'posting-edit',
+    'post_moderation_queue': 'backend-content-approval',
+    'forum_post_detail': 'lynkerforum-article-comment',
+    'user_profile_forum_view': 'lynkerforum-user-votes',
+    'blackbox_page': 'backend-blackbox-auth',
+    'ai_generated_article': 'backend-AI-auto-article',
+    'registration_type_selection': 'registra-select',
+    'user_registration_form': 'registra-user',
+    'master_registration_form': 'registra-guru',
+    'profile_setup_user': 'user-profile-setup',
+    'profile_setup_master': 'registra-guru-business',
+    'page_706040': 'user-dashboard',
+    'ai_assistant_interaction_floating_window': 'user-aichatbox-setup',
+    'ai_chat_interface': 'user-aichat-room',
+    'ai_generated_note_view': 'user-db-ai-markdown',
+    'prophecy_verification_record': 'user-db-predictions',
+    'ai_assistant_settings': 'user-ai-setup',
+    'master_backend_overview': 'guru-dashboard',
+    'master_studio_management': 'guru-studio',
+    'appointment_link_creation': 'guru-appointment',
+    'customer_prognosis_records_view': 'guru-prediction-records',
+    'page_944544': 'lynkergroup',
+    'page_944545': 'arena',
+    'page_944686': 'user-db-main',
+    'page_944726': 'user-db-predict-chart',
+    'page_944740': 'guru-db-cust-analysis',
+    'page_944864': '发布新动态',
+    'page_944865': 'lynkermates',
+    'page_945207': 'samedestiny-chatroom',
+    'page_946152': 'posting-edit-send',
+    'page_961642': 'user-dashboard-main',
+    'page_962648': '我的真命盘',
+    'page_962649': 'user-db-payment',
+    'page_962650': 'user-db-aisetting',
+    'page_962651': 'user-db-booking',
+    'page_962652': 'user-db-knowledge',
+    'page_962653': 'user-db-info',
+    'page_962654': 'user-db-prediction',
+    'page_969102': 'index',
+    'page_971160': 'user-db-prediction',
+    'page_979145': 'user-dashb-truechart',
+    'page_979336': 'user-dashb-prediction',
+    'page_979337': 'user-dashb-main',
+    'page_979400': 'user-dashb-booking',
+    'page_979401': 'user-dashb-knowledge',
+    'page_979411': 'user-dashb-aisetting',
+    'page_979468': 'user-dashb-billing',
+    'page_1053873': 'user-personal-page'
+                }
+                const allPageIds = ["prognosis_service_entry","master_list","master_profile","booking_appointment","consultation_room","payment_gateway","knowledge_base","homology_match_discovery","homology_match_profile_view","message_center","profile_detail","knowledge_base_main","user_prognosis_record","user_record_detail","master_prognosis_record","master_record_detail","forum_homepage","create_post","post_moderation_queue","forum_post_detail","user_profile_forum_view","blackbox_page","ai_generated_article","registration_type_selection","user_registration_form","master_registration_form","profile_setup_user","profile_setup_master","page_706040","ai_assistant_interaction_floating_window","ai_chat_interface","ai_generated_note_view","prophecy_verification_record","ai_assistant_settings","master_backend_overview","master_studio_management","appointment_link_creation","customer_prognosis_records_view","page_944544","page_944545","page_944686","page_944726","page_944740","page_944864","page_944865","page_945207","page_946152","page_961642","page_962648","page_962649","page_962650","page_962651","page_962652","page_962653","page_962654","page_969102","page_971160","page_979145","page_979336","page_979337","page_979400","page_979401","page_979411","page_979468","page_1053873"]
+                const allFormatPageIdsMap = {"prognosis_service_entry":"prognosis-service-entry","master_list":"master-list","master_profile":"master-profile","booking_appointment":"booking-appointment","consultation_room":"consultation-room","payment_gateway":"payment-gateway","knowledge_base":"knowledge-base","homology_match_discovery":"homology-match-discovery","homology_match_profile_view":"homology-match-profile-view","message_center":"message-center","profile_detail":"profile-detail","knowledge_base_main":"knowledge-base-main","user_prognosis_record":"user-prognosis-record","user_record_detail":"user-record-detail","master_prognosis_record":"master-prognosis-record","master_record_detail":"master-record-detail","forum_homepage":"forum-homepage","create_post":"create-post","post_moderation_queue":"post-moderation-queue","forum_post_detail":"forum-post-detail","user_profile_forum_view":"user-profile-forum-view","blackbox_page":"blackbox-page","ai_generated_article":"ai-generated-article","registration_type_selection":"registration-type-selection","user_registration_form":"user-registration-form","master_registration_form":"master-registration-form","profile_setup_user":"profile-setup-user","profile_setup_master":"profile-setup-master","page_706040":"page-706040","ai_assistant_interaction_floating_window":"ai-assistant-interaction-floating-window","ai_chat_interface":"ai-chat-interface","ai_generated_note_view":"ai-generated-note-view","prophecy_verification_record":"prophecy-verification-record","ai_assistant_settings":"ai-assistant-settings","master_backend_overview":"master-backend-overview","master_studio_management":"master-studio-management","appointment_link_creation":"appointment-link-creation","customer_prognosis_records_view":"customer-prognosis-records-view","page_944544":"page-944544","page_944545":"page-944545","page_944686":"page-944686","page_944726":"page-944726","page_944740":"page-944740","page_944864":"page-944864","page_944865":"page-944865","page_945207":"page-945207","page_946152":"page-946152","page_961642":"page-961642","page_962648":"page-962648","page_962649":"page-962649","page_962650":"page-962650","page_962651":"page-962651","page_962652":"page-962652","page_962653":"page-962653","page_962654":"page-962654","page_969102":"page-969102","page_971160":"page-971160","page_979145":"page-979145","page_979336":"page-979336","page_979337":"page-979337","page_979400":"page-979400","page_979401":"page-979401","page_979411":"page-979411","page_979468":"page-979468","page_1053873":"page-1053873"}
+                const IFRAME_MESSAGE_TYPE = {
+                  iframeNavigation: 'iframeNavigation',
+                }
+                const safeAddEventListener = function Tc(e,t,r,n=!1){e.removeEventListener(t,r,n),e.addEventListener(t,r,n)}
+                const processOnclick = (e,t,r)=>{if(r){const n=Pw(t);if(n.methodName&&Lp(n.methodName,r))return;e.preventDefault(),e.stopPropagation();const s=n.args||[],i=(s==null?void 0:s.find(u=>u))||"";i&&Mp(i)}}
+                const checkIframeMethod = (e,t)=>{try{return typeof t[e]=="function"||typeof t[e]=="function"}catch(r){return!1}}
+                const postIframeMessage = (targetPageId) => {
+                  window.parent.postMessage({
+                    type: IFRAME_MESSAGE_TYPE.iframeNavigation,
+                    targetPageId,
+                  })
+                }
+                const handleIframeLinkClick = (event) => {
+                  const dynamicIframe = document.querySelector('#dynamicIframe')
+                  if (!dynamicIframe?.contentWindow) {
+                    return
+                  }
+                  const link = event.target.closest('a')
+                  const target = event.target
+                  if (link) {
+                    const href = link.getAttribute('href')
+                    const onclick = link.getAttribute('onclick')
+                    if (href && href !== '#' && !href.startsWith('javascript:')) {
+                      event.preventDefault()
+                      event.stopPropagation()
+                      const targetPageId = getKeyByValueObj(allFormatPageIdsMap, href)
+                      if (targetPageId) {
+                        postIframeMessage(targetPageId)
+                      }
+                      return
+                    }
+                    if (onclick) {
+                      processOnclick(event, onclick, iframe.contentWindow, allFormatPageIdsMap)
+                    } else {
+                      event.preventDefault()
+                      event.stopPropagation() 
+                    }
+                    return
+                  }
+                  const onclick = target.getAttribute('onclick')
+                  if (onclick) {
+                    processOnclick(event, onclick, iframe.contentWindow, allFormatPageIdsMap)
+                  }
+                }
+                function stringExt(link) {
+                  let s = String(link || '')
+                  s = (s.split('#')[0] || '')
+                  s = (s.split('?')[0] || '')
+                  s = s.trim()
+                  s = s.split('/').filter(Boolean).pop() || ''
+                  const lower = s.toLowerCase()
+                  if (lower.endsWith('.html') || lower.endsWith('.php') || lower.endsWith('.aspx')) {
+                    s = s.slice(0, s.lastIndexOf('.'))
+                  }
+                  return s
+                }
+                function formatHref(href) {
+                  if (!href) {
+                    return ''
+                  }
+                  try {
+                    const url = new URL(href, window.location.href)
+                    const pathname = url.pathname || ''
+                    return stringExt(pathname)
+                  } catch {
+                    return stringExt(href)
+                  }
+                }
+                function getKeyByValueObj(obj, value) {
+                  const newValue = formatHref(value)
+                  const keyFind = Object.keys(obj).find(k => k === newValue)
+                  if (keyFind) {
+                    return keyFind
+                  }
+                  return Object.keys(obj).find(k => obj[k] === newValue)
+                }
+                function setIframeSize(w, h) {
+                  const currentContainerRadio = w / h
+                  let widthValue = w
+                  let heightValue = h
+                  let zoom = 1
+                  if (currentContainerRadio > resolutionRatio) {
+                    widthValue = h * resolutionRatio
+                    heightValue = h
+                  } else {
+                    widthValue = w
+                    heightValue = w / resolutionRatio
+                  }
+                  zoom = width ? widthValue / width : 1
+                  return {
+                    width: widthValue / zoom + 'px',
+                    height: heightValue / zoom + 'px',
+                    zoom,
+                  }
+                }
+                function adjustIframeSize() {
+                  const iframeWrapper = document.querySelector(".iframe-wrapper")
+                  const { width, height, zoom } = setIframeSize(window.innerWidth, window.innerHeight)
+                  iframeWrapper.style.height = height
+                  iframeWrapper.style.width = width
+                  iframeWrapper.style.transform = 'scale(' + zoom + ')'
+                }
+                function sanitizeFilename(name) {
+                  return name.replace(/[\/:*?"<>|]/g, '_')
+                }
+                function handlePostMessage(event) {
+                  if (!event.data) {
+                    return
+                  }
+                  const { type, targetPageId } = event.data
+                  const targetPageName = pageNameMap[targetPageId]
+                  if (type === "iframeNavigation" && targetPageId && targetPageName) {
+                    window.location.href = targetPageName + '.html'
+                  }
+                }
+                function setupIframeEvents() {
+                  const iframe = document.getElementById('dynamicIframe')
+                  if (iframe && iframe.contentWindow && iframe.contentWindow.document) {
+                    safeAddEventListener(iframe.contentWindow.document, 'click', handleIframeLinkClick, true)
+                  } else {
+                    setTimeout(setupIframeEvents, 100)
+                  }
+                }
+                window.addEventListener('message', handlePostMessage)
+                window.onload = function() {
+                  adjustIframeSize()
+                  setupIframeEvents()
+                }
+                window.onresize = adjustIframeSize
+                window.onunload = () => {
+                  window.removeEventListener('message', handlePostMessage)
+                }
+              </script>
+                </head>
+                <body>
+                  <div class="iframe-outer">
+                    <div class="iframe-wrapper">
+                      <iframe id="dynamicIframe" srcdoc='<html data-source-file="src/layouts/BaseLayout.astro" data-source-line-start="11" data-source-line-end="21" lang="en"><head data-source-file="src/layouts/BaseLayout.astro" data-source-line-start="12" data-source-line-end="17"><script>(function(){
+      function stringExt(link) {
+        let s = String(link || &#39;&#39;)
+        s = (s.split(&#39;#&#39;)[0] || &#39;&#39;)
+        s = (s.split(&#39;?&#39;)[0] || &#39;&#39;)
+        s = s.trim()
+        s = s.split(&#39;/&#39;).filter(Boolean).pop() || &#39;&#39;
+        const lower = s.toLowerCase()
+        if (lower.endsWith(&#39;.html&#39;) || lower.endsWith(&#39;.php&#39;) || lower.endsWith(&#39;.aspx&#39;)) {
+          s = s.slice(0, s.lastIndexOf(&#39;.&#39;))
+        }
+        return s
+      }
+      function formatHref(href) {
+        if (!href) {
+          return &#39;&#39;
+        }
+        try {
+          const url = new URL(href, window.location.href)
+          const pathname = url.pathname || &#39;&#39;
+          return stringExt(pathname)
+        } catch {
+          return stringExt(href)
+        }
+      }
+      function getKeyByValueObj(obj, value) {
+        const newValue = formatHref(value)
+        const keyFind = Object.keys(obj).find(k => k === newValue)
+        if (keyFind) {
+          return keyFind
+        }
+        return Object.keys(obj).find(k => obj[k] === newValue)
+      }
+      function emit(to, source){
+        try {
+          if (window.parent) {
+            const allFormatPageIdsMap = {"prognosis_service_entry":"prognosis-service-entry","master_list":"master-list","master_profile":"master-profile","booking_appointment":"booking-appointment","consultation_room":"consultation-room","payment_gateway":"payment-gateway","knowledge_base":"knowledge-base","homology_match_discovery":"homology-match-discovery","homology_match_profile_view":"homology-match-profile-view","message_center":"message-center","profile_detail":"profile-detail","knowledge_base_main":"knowledge-base-main","user_prognosis_record":"user-prognosis-record","user_record_detail":"user-record-detail","master_prognosis_record":"master-prognosis-record","master_record_detail":"master-record-detail","forum_homepage":"forum-homepage","create_post":"create-post","post_moderation_queue":"post-moderation-queue","forum_post_detail":"forum-post-detail","user_profile_forum_view":"user-profile-forum-view","blackbox_page":"blackbox-page","ai_generated_article":"ai-generated-article","registration_type_selection":"registration-type-selection","user_registration_form":"user-registration-form","master_registration_form":"master-registration-form","profile_setup_user":"profile-setup-user","profile_setup_master":"profile-setup-master","page_706040":"page-706040","ai_assistant_interaction_floating_window":"ai-assistant-interaction-floating-window","ai_chat_interface":"ai-chat-interface","ai_generated_note_view":"ai-generated-note-view","prophecy_verification_record":"prophecy-verification-record","ai_assistant_settings":"ai-assistant-settings","master_backend_overview":"master-backend-overview","master_studio_management":"master-studio-management","appointment_link_creation":"appointment-link-creation","customer_prognosis_records_view":"customer-prognosis-records-view","page_944544":"page-944544","page_944545":"page-944545","page_944686":"page-944686","page_944726":"page-944726","page_944740":"page-944740","page_944864":"page-944864","page_944865":"page-944865","page_945207":"page-945207","page_946152":"page-946152","page_961642":"page-961642","page_962648":"page-962648","page_962649":"page-962649","page_962650":"page-962650","page_962651":"page-962651","page_962652":"page-962652","page_962653":"page-962653","page_962654":"page-962654","page_969102":"page-969102","page_971160":"page-971160","page_979145":"page-979145","page_979336":"page-979336","page_979337":"page-979337","page_979400":"page-979400","page_979401":"page-979401","page_979411":"page-979411","page_979468":"page-979468","page_1053873":"page-1053873"}
+            const IFRAME_MESSAGE_TYPE = {
+              iframeNavigation: &#39;iframeNavigation&#39;,
+            }
+            const targetPageId = getKeyByValueObj(allFormatPageIdsMap, String(to || &#39;&#39;))
+            if (targetPageId) {
+              window.parent.postMessage({
+                type: IFRAME_MESSAGE_TYPE.iframeNavigation,
+                targetPageId,
+              }, &#39;*&#39;)
+            }
+          }
+        } catch(e) {}
+      }
+      try{
+        if (&#39;navigation&#39; in window &amp;&amp; window.navigation &amp;&amp; typeof window.navigation.addEventListener===&#39;function&#39;){
+          window.navigation.addEventListener(&#39;navigate&#39;, function(e){
+            try{
+              var url = (e.destination &amp;&amp; e.destination.url) || &#39;&#39;;
+              if (e.canIntercept &amp;&amp; typeof e.intercept===&#39;function&#39;){ e.intercept({ handler:function(){} }) }
+              else if (e.preventDefault){ e.preventDefault() }
+              emit(url)
+            }catch(_){}
+          })
+        }
+      }catch(_){}
+    })();</script><meta name="supported-color-schemes" content="light"><meta name="color-scheme" content="light"><style>
+      :root, html, body { color-scheme: light; }
+      html { forced-color-adjust: none; }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Built with Astro">
+    <title data-source-file="src/layouts/BaseLayout.astro" data-source-line-start="16" data-source-line-end="16">用户社交主页 - 灵客AI</title>
+  <link rel="stylesheet" href="./assets/html/53885/ai-assistant-interaction-floating-window.-jRRysx0.css"><script src="./assets/static/uxbot/25_6/holder.js"></script><style>
+#ipzk {
+  font-size: 30px;
+}
+
+#ibj2jr {
+  background-image: linear-gradient(rgb(12, 12, 12) 0%, rgb(12, 12, 12) 100%);
+}
+
+#ievik,
+#i0pok,
+#i628k {
+  flex-flow: row;
+}
+
+#iqhy5 {
+  flex-flow: wrap;
+}
+
+</style></head>
+  <body data-source-file="src/layouts/BaseLayout.astro" data-source-line-start="18" data-source-line-end="20">
+    
+  <style>astro-island,astro-slot,astro-static-slot{display:contents}</style><script>(()=>{var e=async t=>{await(await t())()};(self.Astro||(self.Astro={})).load=e;window.dispatchEvent(new Event("astro:load"));})();</script><script>(()=>{var A=Object.defineProperty;var g=(i,o,a)=>o in i?A(i,o,{enumerable:!0,configurable:!0,writable:!0,value:a}):i[o]=a;var d=(i,o,a)=>g(i,typeof o!="symbol"?o+"":o,a);{let i={0:t=>m(t),1:t=>a(t),2:t=>new RegExp(t),3:t=>new Date(t),4:t=>new Map(a(t)),5:t=>new Set(a(t)),6:t=>BigInt(t),7:t=>new URL(t),8:t=>new Uint8Array(t),9:t=>new Uint16Array(t),10:t=>new Uint32Array(t),11:t=>1/0*t},o=t=>{let[l,e]=t;return l in i?i[l](e):void 0},a=t=>t.map(o),m=t=>typeof t!="object"||t===null?t:Object.fromEntries(Object.entries(t).map(([l,e])=>[l,o(e)]));class y extends HTMLElement{constructor(){super(...arguments);d(this,"Component");d(this,"hydrator");d(this,"hydrate",async()=>{var b;if(!this.hydrator||!this.isConnected)return;let e=(b=this.parentElement)==null?void 0:b.closest("astro-island[ssr]");if(e){e.addEventListener("astro:hydrate",this.hydrate,{once:!0});return}let c=this.querySelectorAll("astro-slot"),n={},h=this.querySelectorAll("template[data-astro-template]");for(let r of h){let s=r.closest(this.tagName);s!=null&amp;&amp;s.isSameNode(this)&amp;&amp;(n[r.getAttribute("data-astro-template")||"default"]=r.innerHTML,r.remove())}for(let r of c){let s=r.closest(this.tagName);s!=null&amp;&amp;s.isSameNode(this)&amp;&amp;(n[r.getAttribute("name")||"default"]=r.innerHTML)}let p;try{p=this.hasAttribute("props")?m(JSON.parse(this.getAttribute("props"))):{}}catch(r){let s=this.getAttribute("component-url")||"<unknown>",v=this.getAttribute("component-export");throw v&amp;&amp;(s+=` (export ${v})`),console.error(`[hydrate] Error parsing props for component ${s}`,this.getAttribute("props"),r),r}let u;await this.hydrator(this)(this.Component,p,n,{client:this.getAttribute("client")}),this.removeAttribute("ssr"),this.dispatchEvent(new CustomEvent("astro:hydrate"))});d(this,"unmount",()=>{this.isConnected||this.dispatchEvent(new CustomEvent("astro:unmount"))})}disconnectedCallback(){document.removeEventListener("astro:after-swap",this.unmount),document.addEventListener("astro:after-swap",this.unmount,{once:!0})}connectedCallback(){if(!this.hasAttribute("await-children")||document.readyState==="interactive"||document.readyState==="complete")this.childrenConnectedCallback();else{let e=()=>{document.removeEventListener("DOMContentLoaded",e),c.disconnect(),this.childrenConnectedCallback()},c=new MutationObserver(()=>{var n;((n=this.lastChild)==null?void 0:n.nodeType)===Node.COMMENT_NODE&amp;&amp;this.lastChild.nodeValue==="astro:end"&amp;&amp;(this.lastChild.remove(),e())});c.observe(this,{childList:!0}),document.addEventListener("DOMContentLoaded",e)}}async childrenConnectedCallback(){let e=this.getAttribute("before-hydration-url");e&amp;&amp;await import(e),this.start()}async start(){let e=JSON.parse(this.getAttribute("opts")),c=this.getAttribute("client");if(Astro[c]===void 0){window.addEventListener(`astro:${c}`,()=>this.start(),{once:!0});return}try{await Astro[c](async()=>{let n=this.getAttribute("renderer-url"),[h,{default:p}]=await Promise.all([import(this.getAttribute("component-url")),n?import(n):()=>()=>{}]),u=this.getAttribute("component-export")||"default";if(!u.includes("."))this.Component=h[u];else{this.Component=h;for(let f of u.split("."))this.Component=this.Component[f]}return this.hydrator=p,this.hydrate},e,this)}catch(n){console.error(`[astro-island] Error hydrating ${this.getAttribute("component-url")}`,n)}}attributeChangedCallback(){this.hydrate()}}d(y,"observedAttributes",["props"]),customElements.get("astro-island")||customElements.define("astro-island",y)}})();</script><astro-island uid="Z1osP97" prefix="r0" component-url="https://sketchflow-public.s3.us-east-1.amazonaws.com/html/53885/CommonHeader.Bde2FOMn.js" component-export="default" renderer-url="https://sketchflow-public.s3.us-east-1.amazonaws.com/html/53885/client.DCqT-qd1.js" props="{&amp;quot;currentPath&amp;quot;:[0,&amp;quot;/page-1053873&amp;quot;]}" ssr="" client="load" opts="{&amp;quot;name&amp;quot;:&amp;quot;CommonHeader&amp;quot;,&amp;quot;value&amp;quot;:true}" await-children=""><header id="iojh" class="sticky top-0 z-50 w-full border-b transition-all bg-background/80 backdrop-blur-sm" data-source-file="src/components/common/Header.tsx" data-source-line-start="122" data-source-line-end="203"><div class="container flex h-16 items-center justify-between px-4" data-source-file="src/components/common/Header.tsx" data-source-line-start="123" data-source-line-end="202"><a href="./969102.html" class="flex items-center space-x-2" title="index" data-source-file="src/components/common/Header.tsx" data-source-line-start="125" data-source-line-end="127"><span id="ipzk" style="font-size:30px" class="font-bold text-gradient-mystical hidden sm:inline" data-source-file="src/components/common/Header.tsx" data-source-line-start="126" data-source-line-end="126">灵客AI</span></a><nav class="hidden md:flex items-center space-x-1" data-source-file="src/components/common/Header.tsx" data-source-line-start="130" data-source-line-end="172"><a href="page-969102.html" class="px-4 py-2 rounded-md text-sm font-medium transition-colors text-foreground/80 hover:bg-accent hover:text-accent-foreground" id="" data-source-file="src/components/common/Header.tsx" data-source-line-start="152" data-source-line-end="169">首页</a><a href="./prognosis-service-entry.html" class="px-4 py-2 rounded-md text-sm font-medium transition-colors text-foreground/80 hover:bg-accent hover:text-accent-foreground" id="" data-source-file="src/components/common/Header.tsx" data-source-line-start="152" data-source-line-end="169">命理服务</a><a href="./homology-match-discovery.html" class="px-4 py-2 rounded-md text-sm font-medium transition-colors text-foreground/80 hover:bg-accent hover:text-accent-foreground" id="" data-source-file="src/components/common/Header.tsx" data-source-line-start="152" data-source-line-end="169">同命匹配</a><a href="./knowledge-base-main.html" class="px-4 py-2 rounded-md text-sm font-medium transition-colors text-foreground/80 hover:bg-accent hover:text-accent-foreground" id="" data-source-file="src/components/common/Header.tsx" data-source-line-start="152" data-source-line-end="169">知识库</a><a href="./forum-homepage.html" class="px-4 py-2 rounded-md text-sm font-medium transition-colors text-foreground/80 hover:bg-accent hover:text-accent-foreground" id="" data-source-file="src/components/common/Header.tsx" data-source-line-start="152" data-source-line-end="169">论坛</a></nav><div class="flex items-center space-x-4" data-source-file="src/components/common/Header.tsx" data-source-line-start="175" data-source-line-end="201"><button class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;amp;_svg]:pointer-events-none [&amp;amp;_svg]:size-4 [&amp;amp;_svg]:shrink-0 hover:bg-accent hover:text-accent-foreground relative h-10 w-10 rounded-full p-0" data-source-file="src/components/ui/button.tsx" data-source-line-start="47" data-source-line-end="51" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="radix-:r0R7:" data-state="closed"><span class="relative flex shrink-0 overflow-hidden rounded-full h-10 w-10" data-source-file="src/components/common/Header.tsx" data-source-line-start="225" data-source-line-end="230"><span class="flex h-full w-full items-center justify-center rounded-full bg-primary text-primary-foreground" data-source-file="src/components/common/Header.tsx" data-source-line-start="227" data-source-line-end="229">灵客</span></span></button><button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;amp;_svg]:pointer-events-none [&amp;amp;_svg]:size-4 [&amp;amp;_svg]:shrink-0 hover:bg-accent hover:text-accent-foreground h-9 w-9 md:hidden" data-source-file="src/components/ui/button.tsx" data-source-line-start="47" data-source-line-end="51" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="radix-:r0Rb:" data-state="closed"><!--$--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu h-5 w-5" aria-hidden="true" data-source-file="src/components/common/Header.tsx" data-source-line-start="182" data-source-line-end="182"><path d="M4 5h16"></path><path d="M4 12h16"></path><path d="M4 19h16"></path></svg><!--/$--></button></div></div></header><!--astro:end--></astro-island>
+  
+  <main data-source-file="src/pages/page-1053873.astro" data-source-line-start="16" data-source-line-end="36" class="min-h-[calc(100vh-128px)] bg-background">
+    <div data-source-file="src/pages/page-1053873.astro" data-source-line-start="17" data-source-line-end="35" class="container max-w-4xl mx-auto px-4 py-8">
+      
+      <astro-island uid="Z1iu4Oz" prefix="r1" component-url="https://sketchflow-public.s3.us-east-1.amazonaws.com/html/53885/UserProfileHeader.CM5LXwm0.js" component-export="default" renderer-url="https://sketchflow-public.s3.us-east-1.amazonaws.com/html/53885/client.DCqT-qd1.js" props="{}" ssr="" client="load" opts="{&amp;quot;name&amp;quot;:&amp;quot;UserProfileHeader&amp;quot;,&amp;quot;value&amp;quot;:true}" await-children=""><div class="rounded-xl border bg-card text-card-foreground shadow glass-card border-primary/20 overflow-hidden" data-source-file="src/components/ui/card.tsx" data-source-line-start="9" data-source-line-end="16"><div class="p-0" data-source-file="src/components/ui/card.tsx" data-source-line-start="60" data-source-line-end="60"><div class="relative h-32 overflow-hidden group" style="background-image:url(https://spark-builder.s3.us-east-1.amazonaws.com/image/2025/12/23/8cd0eba4-aa05-4aba-bd95-04250928e196.png);background-size:cover;background-position:center" data-source-file="src/components/page-1053873/UserProfileHeader.tsx" data-source-line-start="90" data-source-line-end="108"><div class="absolute inset-0 bg-black/30" data-source-file="src/components/page-1053873/UserProfileHeader.tsx" data-source-line-start="98" data-source-line-end="98"></div></div><div class="px-6 pb-6" data-source-file="src/components/page-1053873/UserProfileHeader.tsx" data-source-line-start="168" data-source-line-end="236"><div class="flex flex-col sm:flex-row items-start sm:items-end gap-4 -mt-16 mb-6 relative z-10" data-source-file="src/components/page-1053873/UserProfileHeader.tsx" data-source-line-start="170" data-source-line-end="207"><span class="relative flex shrink-0 overflow-hidden rounded-full h-32 w-32 border-4 border-background ring-2 ring-primary/50" data-source-file="src/components/page-1053873/UserProfileHeader.tsx" data-source-line-start="171" data-source-line-end="176"><span class="flex h-full w-full items-center justify-center rounded-full bg-primary text-primary-foreground text-2xl" data-source-file="src/components/page-1053873/UserProfileHeader.tsx" data-source-line-start="173" data-source-line-end="175">灵客</span></span><div class="flex-1 pt-4" data-source-file="src/components/page-1053873/UserProfileHeader.tsx" data-source-line-start="178" data-source-line-end="206"><div class="flex items-center gap-3 mb-2 flex-wrap" data-source-file="src/components/page-1053873/UserProfileHeader.tsx" data-source-line-start="179" data-source-line-end="193"><h1 class="text-3xl font-bold" data-source-file="src/components/page-1053873/UserProfileHeader.tsx" data-source-line-start="180" data-source-line-end="180">灵客用户</h1><div class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 shadow hover:bg-primary/80 bg-green-500/20 text-green-400 border-green-500/30" data-source-file="src/components/ui/badge.tsx" data-source-line-start="32" data-source-line-end="32"><!--$--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-check-big w-3 h-3 mr-1" aria-hidden="true" data-source-file="src/components/page-1053873/UserProfileHeader.tsx" data-source-line-start="189" data-source-line-end="189"><path d="M21.801 10A10 10 0 1 1 17 3.335"></path><path d="m9 11 3 3L22 4"></path></svg><!--/$-->真命盘已认证</div></div><div class="flex flex-wrap items-center gap-3 mb-3" data-source-file="src/components/page-1053873/UserProfileHeader.tsx" data-source-line-start="196" data-source-line-end="202"><div class="flex flex-wrap items-center gap-1.5" data-source-file="src/components/common/RegionBadge.tsx" data-source-line-start="23" data-source-line-end="48"><div class="inline-flex items-center rounded-md border font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 text-foreground text-sm px-2.5 py-1" data-source-file="src/components/ui/badge.tsx" data-source-line-start="32" data-source-line-end="32"><!--$--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin w-3 h-3 mr-1" aria-hidden="true" data-source-file="src/components/common/RegionBadge.tsx" data-source-line-start="26" data-source-line-end="26"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle></svg><!--/$-->中国</div><div class="inline-flex items-center rounded-md border font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 text-foreground text-sm px-2.5 py-1" data-source-file="src/components/ui/badge.tsx" data-source-line-start="32" data-source-line-end="32"><!--$--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map w-3 h-3 mr-1" aria-hidden="true" data-source-file="src/components/common/RegionBadge.tsx" data-source-line-start="32" data-source-line-end="32"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"></path><path d="M15 5.764v15"></path><path d="M9 3.236v15"></path></svg><!--/$-->北京</div></div><div class="inline-flex items-center rounded-md border px-2.5 py-0.5 font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 text-foreground text-xs" data-source-file="src/components/ui/badge.tsx" data-source-line-start="32" data-source-line-end="32"><!--$--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar w-3 h-3 mr-1" aria-hidden="true" data-source-file="src/components/page-1053873/UserProfileHeader.tsx" data-source-line-start="199" data-source-line-end="199"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect width="18" height="18" x="3" y="4" rx="2"></rect><path d="M3 10h18"></path></svg><!--/$-->加入于 <!-- -->2024年3月</div></div><p class="text-muted-foreground text-sm max-w-md" data-source-file="src/components/page-1053873/UserProfileHeader.tsx" data-source-line-start="205" data-source-line-end="205">热爱命理研究，相信同命相知。在这里寻找灵魂共鸣的朋友。</p></div></div><div class="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-4 border-t border-border/50" data-source-file="src/components/page-1053873/UserProfileHeader.tsx" data-source-line-start="210" data-source-line-end="235"><div class="text-center" data-source-file="src/components/page-1053873/UserProfileHeader.tsx" data-source-line-start="211" data-source-line-end="214"><p id="ievik" class="text-xs text-muted-foreground mb-1" data-source-file="src/components/page-1053873/UserProfileHeader.tsx" data-source-line-start="212" data-source-line-end="212">出生日期</p><p class="font-semibold" data-source-file="src/components/page-1053873/UserProfileHeader.tsx" data-source-line-start="213" data-source-line-end="213">20**-03-21，****</p></div><div class="text-center" data-source-file="src/components/page-1053873/UserProfileHeader.tsx" data-source-line-start="215" data-source-line-end="218"><p class="text-xs text-muted-foreground mb-1" data-source-file="src/components/page-1053873/UserProfileHeader.tsx" data-source-line-start="216" data-source-line-end="216">性别</p><p class="font-semibold" data-source-file="src/components/page-1053873/UserProfileHeader.tsx" data-source-line-start="217" data-source-line-end="217">女</p></div><div class="text-center" data-source-file="src/components/page-1053873/UserProfileHeader.tsx" data-source-line-start="219" data-source-line-end="222"><p class="text-xs text-muted-foreground mb-1" data-source-file="src/components/page-1053873/UserProfileHeader.tsx" data-source-line-start="220" data-source-line-end="220">MBTI</p><p class="font-semibold" data-source-file="src/components/page-1053873/UserProfileHeader.tsx" data-source-line-start="221" data-source-line-end="221">INFP</p></div><div class="text-center" data-source-file="src/components/page-1053873/UserProfileHeader.tsx" data-source-line-start="223" data-source-line-end="226"><p class="text-xs text-muted-foreground mb-1" data-source-file="src/components/page-1053873/UserProfileHeader.tsx" data-source-line-start="224" data-source-line-end="224">常驻地</p><p class="font-semibold" data-source-file="src/components/page-1053873/UserProfileHeader.tsx" data-source-line-start="225" data-source-line-end="225">北京</p></div><div class="text-center" data-source-file="src/components/page-1053873/UserProfileHeader.tsx" data-source-line-start="227" data-source-line-end="230"><p class="text-xs text-muted-foreground mb-1" data-source-file="src/components/page-1053873/UserProfileHeader.tsx" data-source-line-start="228" data-source-line-end="228">血型</p><p class="font-semibold" data-source-file="src/components/page-1053873/UserProfileHeader.tsx" data-source-line-start="229" data-source-line-end="229">O型</p></div><div class="text-center" data-source-file="src/components/page-1053873/UserProfileHeader.tsx" data-source-line-start="231" data-source-line-end="234"><p class="text-xs text-muted-foreground mb-1" data-source-file="src/components/page-1053873/UserProfileHeader.tsx" data-source-line-start="232" data-source-line-end="232">星座</p><p class="font-semibold" data-source-file="src/components/page-1053873/UserProfileHeader.tsx" data-source-line-start="233" data-source-line-end="233">白羊座</p></div></div></div></div></div><!--astro:end--></astro-island>
+      
+      
+      <astro-island uid="Z13uB5p" prefix="r2" component-url="https://sketchflow-public.s3.us-east-1.amazonaws.com/html/53885/ActionButtons.hitI4QVw.js" component-export="default" renderer-url="https://sketchflow-public.s3.us-east-1.amazonaws.com/html/53885/client.DCqT-qd1.js" props="{}" ssr="" client="load" opts="{&amp;quot;name&amp;quot;:&amp;quot;ActionButtons&amp;quot;,&amp;quot;value&amp;quot;:true}" await-children=""><div class="flex flex-wrap gap-3 my-6 justify-center sm:justify-start" data-source-file="src/components/page-1053873/ActionButtons.tsx" data-source-line-start="36" data-source-line-end="49"><button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;amp;_svg]:pointer-events-none [&amp;amp;_svg]:size-4 [&amp;amp;_svg]:shrink-0 text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2 bg-mystical-gradient hover:opacity-90" disabled="" data-source-file="src/components/ui/button.tsx" data-source-line-start="47" data-source-line-end="51"><!--$--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-plus w-4 h-4 mr-2" aria-hidden="true" data-source-file="src/components/page-1053873/ActionButtons.tsx" data-source-line-start="38" data-source-line-end="38"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="19" x2="19" y1="8" y2="14"></line><line x1="22" x2="16" y1="11" y2="11"></line></svg><!--/$-->加为好友</button><button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;amp;_svg]:pointer-events-none [&amp;amp;_svg]:size-4 [&amp;amp;_svg]:shrink-0 border border-input bg-transparent shadow-sm hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2" disabled="" data-source-file="src/components/ui/button.tsx" data-source-line-start="47" data-source-line-end="51"><!--$--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart w-4 h-4 mr-2" aria-hidden="true" data-source-file="src/components/page-1053873/ActionButtons.tsx" data-source-line-start="42" data-source-line-end="42"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"></path></svg><!--/$-->关注</button><button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;amp;_svg]:pointer-events-none [&amp;amp;_svg]:size-4 [&amp;amp;_svg]:shrink-0 border border-input bg-transparent shadow-sm hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2" disabled="" data-source-file="src/components/ui/button.tsx" data-source-line-start="47" data-source-line-end="51"><!--$--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mail w-4 h-4 mr-2" aria-hidden="true" data-source-file="src/components/page-1053873/ActionButtons.tsx" data-source-line-start="46" data-source-line-end="46"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"></path><rect x="2" y="4" width="20" height="16" rx="2"></rect></svg><!--/$-->发送消息</button></div><!--astro:end--></astro-island>
+      
+      
+      <div data-source-file="src/pages/page-1053873.astro" data-source-line-start="25" data-source-line-end="28" class="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
+        <astro-island uid="XgMQt" prefix="r3" component-url="https://sketchflow-public.s3.us-east-1.amazonaws.com/html/53885/ChartInfoCard.VZFb48q7.js" component-export="default" renderer-url="https://sketchflow-public.s3.us-east-1.amazonaws.com/html/53885/client.DCqT-qd1.js" props="{&amp;quot;type&amp;quot;:[0,&amp;quot;bazi&amp;quot;]}" ssr="" client="load" opts="{&amp;quot;name&amp;quot;:&amp;quot;ChartInfoCard&amp;quot;,&amp;quot;value&amp;quot;:true}" await-children=""><div class="rounded-xl border bg-card text-card-foreground shadow glass-card border-primary/20 hover:border-primary/40 transition-colors" data-source-file="src/components/ui/card.tsx" data-source-line-start="9" data-source-line-end="16"><div class="flex flex-col space-y-1.5 p-6" data-source-file="src/components/ui/card.tsx" data-source-line-start="24" data-source-line-end="28"><div class="flex items-center gap-2" data-source-file="src/components/page-1053873/ChartInfoCard.tsx" data-source-line-start="47" data-source-line-end="53"><!--$--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-hexagon w-5 h-5 text-accent" aria-hidden="true" data-source-file="src/components/page-1053873/ChartInfoCard.tsx" data-source-line-start="48" data-source-line-end="48"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg><!--/$--><div data-source-file="src/components/page-1053873/ChartInfoCard.tsx" data-source-line-start="49" data-source-line-end="52"><div class="font-semibold tracking-tight text-lg" data-source-file="src/components/ui/card.tsx" data-source-line-start="36" data-source-line-end="40">八字命盘</div><div class="text-sm text-muted-foreground" data-source-file="src/components/ui/card.tsx" data-source-line-start="48" data-source-line-end="52">月日柱信息</div></div></div></div><div class="p-6 pt-0 space-y-4" data-source-file="src/components/ui/card.tsx" data-source-line-start="60" data-source-line-end="60"><div class="grid grid-cols-4 gap-2" data-source-file="src/components/page-1053873/ChartInfoCard.tsx" data-source-line-start="60" data-source-line-end="74"><div class="p-3 rounded-lg text-center border bg-muted/30 border-muted/50 text-muted-foreground" data-source-file="src/components/page-1053873/ChartInfoCard.tsx" data-source-line-start="62" data-source-line-end="72"><p class="text-xs text-muted-foreground mb-1" data-source-file="src/components/page-1053873/ChartInfoCard.tsx" data-source-line-start="70" data-source-line-end="70">年柱</p><p class="font-semibold text-sm" data-source-file="src/components/page-1053873/ChartInfoCard.tsx" data-source-line-start="71" data-source-line-end="71">隐藏</p></div><div class="p-3 rounded-lg text-center border bg-primary/10 border-primary/30 text-foreground" data-source-file="src/components/page-1053873/ChartInfoCard.tsx" data-source-line-start="62" data-source-line-end="72"><p class="text-xs text-muted-foreground mb-1" data-source-file="src/components/page-1053873/ChartInfoCard.tsx" data-source-line-start="70" data-source-line-end="70">月柱</p><p class="font-semibold text-sm" data-source-file="src/components/page-1053873/ChartInfoCard.tsx" data-source-line-start="71" data-source-line-end="71">甲寅</p></div><div class="p-3 rounded-lg text-center border bg-primary/10 border-primary/30 text-foreground" data-source-file="src/components/page-1053873/ChartInfoCard.tsx" data-source-line-start="62" data-source-line-end="72"><p class="text-xs text-muted-foreground mb-1" data-source-file="src/components/page-1053873/ChartInfoCard.tsx" data-source-line-start="70" data-source-line-end="70">日柱</p><p class="font-semibold text-sm" data-source-file="src/components/page-1053873/ChartInfoCard.tsx" data-source-line-start="71" data-source-line-end="71">丙午</p></div><div class="p-3 rounded-lg text-center border bg-muted/30 border-muted/50 text-muted-foreground" data-source-file="src/components/page-1053873/ChartInfoCard.tsx" data-source-line-start="62" data-source-line-end="72"><p class="text-xs text-muted-foreground mb-1" data-source-file="src/components/page-1053873/ChartInfoCard.tsx" data-source-line-start="70" data-source-line-end="70">时柱</p><p class="font-semibold text-sm" data-source-file="src/components/page-1053873/ChartInfoCard.tsx" data-source-line-start="71" data-source-line-end="71">隐藏</p></div></div><div class="space-y-2" data-source-file="src/components/page-1053873/ChartInfoCard.tsx" data-source-line-start="77" data-source-line-end="86"><p class="text-xs text-muted-foreground" data-source-file="src/components/page-1053873/ChartInfoCard.tsx" data-source-line-start="78" data-source-line-end="78">五行</p><div class="flex flex-wrap gap-2" data-source-file="src/components/page-1053873/ChartInfoCard.tsx" data-source-line-start="79" data-source-line-end="85"><div class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent hover:bg-secondary/80 bg-accent/20 text-accent" data-source-file="src/components/ui/badge.tsx" data-source-line-start="32" data-source-line-end="32">木</div><div class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent hover:bg-secondary/80 bg-accent/20 text-accent" data-source-file="src/components/ui/badge.tsx" data-source-line-start="32" data-source-line-end="32">火</div></div></div><div class="p-3 rounded-lg bg-secondary/20 border border-secondary/30" data-source-file="src/components/page-1053873/ChartInfoCard.tsx" data-source-line-start="89" data-source-line-end="92"><p class="text-xs text-muted-foreground mb-1" data-source-file="src/components/page-1053873/ChartInfoCard.tsx" data-source-line-start="90" data-source-line-end="90">格局</p><p class="text-sm font-semibold" data-source-file="src/components/page-1053873/ChartInfoCard.tsx" data-source-line-start="91" data-source-line-end="91">日主丙火，月令寅木</p></div></div></div><!--astro:end--></astro-island>
+        <astro-island uid="1IIrUN" prefix="r4" component-url="https://sketchflow-public.s3.us-east-1.amazonaws.com/html/53885/ChartInfoCard.VZFb48q7.js" component-export="default" renderer-url="https://sketchflow-public.s3.us-east-1.amazonaws.com/html/53885/client.DCqT-qd1.js" props="{&amp;quot;type&amp;quot;:[0,&amp;quot;ziwei&amp;quot;]}" ssr="" client="load" opts="{&amp;quot;name&amp;quot;:&amp;quot;ChartInfoCard&amp;quot;,&amp;quot;value&amp;quot;:true}" await-children=""><div class="rounded-xl border bg-card text-card-foreground shadow glass-card border-primary/20 hover:border-primary/40 transition-colors" data-source-file="src/components/ui/card.tsx" data-source-line-start="9" data-source-line-end="16"><div class="flex flex-col space-y-1.5 p-6" data-source-file="src/components/ui/card.tsx" data-source-line-start="24" data-source-line-end="28"><div class="flex items-center gap-2" data-source-file="src/components/page-1053873/ChartInfoCard.tsx" data-source-line-start="47" data-source-line-end="53"><!--$--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star w-5 h-5 text-accent" aria-hidden="true" data-source-file="src/components/page-1053873/ChartInfoCard.tsx" data-source-line-start="48" data-source-line-end="48"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path></svg><!--/$--><div data-source-file="src/components/page-1053873/ChartInfoCard.tsx" data-source-line-start="49" data-source-line-end="52"><div class="font-semibold tracking-tight text-lg" data-source-file="src/components/ui/card.tsx" data-source-line-start="36" data-source-line-end="40">紫薇命盘</div><div class="text-sm text-muted-foreground" data-source-file="src/components/ui/card.tsx" data-source-line-start="48" data-source-line-end="52">格局与主星信息</div></div></div></div><div class="p-6 pt-0 space-y-4" data-source-file="src/components/ui/card.tsx" data-source-line-start="60" data-source-line-end="60"><div class="space-y-3" data-source-file="src/components/page-1053873/ChartInfoCard.tsx" data-source-line-start="97" data-source-line-end="112"><div data-source-file="src/components/page-1053873/ChartInfoCard.tsx" data-source-line-start="98" data-source-line-end="100"><div class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent shadow hover:bg-primary/80 bg-primary text-primary-foreground" data-source-file="src/components/ui/badge.tsx" data-source-line-start="32" data-source-line-end="32">命宫</div></div><div data-source-file="src/components/page-1053873/ChartInfoCard.tsx" data-source-line-start="102" data-source-line-end="111"><p class="text-xs text-muted-foreground mb-2" data-source-file="src/components/page-1053873/ChartInfoCard.tsx" data-source-line-start="103" data-source-line-end="103">主星</p><div class="flex flex-wrap gap-2" data-source-file="src/components/page-1053873/ChartInfoCard.tsx" data-source-line-start="104" data-source-line-end="110"><div class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-accent/50 text-accent" data-source-file="src/components/ui/badge.tsx" data-source-line-start="32" data-source-line-end="32">紫微星</div><div class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-accent/50 text-accent" data-source-file="src/components/ui/badge.tsx" data-source-line-start="32" data-source-line-end="32">天府星</div></div></div></div><div class="p-3 rounded-lg bg-secondary/20 border border-secondary/30" data-source-file="src/components/page-1053873/ChartInfoCard.tsx" data-source-line-start="115" data-source-line-end="118"><p class="text-xs text-muted-foreground mb-1" data-source-file="src/components/page-1053873/ChartInfoCard.tsx" data-source-line-start="116" data-source-line-end="116">格局</p><p class="text-sm font-semibold" data-source-file="src/components/page-1053873/ChartInfoCard.tsx" data-source-line-start="117" data-source-line-end="117">紫府朝垣格</p></div><div data-source-file="src/components/page-1053873/ChartInfoCard.tsx" data-source-line-start="121" data-source-line-end="130"><p class="text-xs text-muted-foreground mb-2" data-source-file="src/components/page-1053873/ChartInfoCard.tsx" data-source-line-start="122" data-source-line-end="122">三方四正</p><div class="flex flex-wrap gap-2" data-source-file="src/components/page-1053873/ChartInfoCard.tsx" data-source-line-start="123" data-source-line-end="129"><div class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent hover:bg-secondary/80 bg-accent/20 text-accent" data-source-file="src/components/ui/badge.tsx" data-source-line-start="32" data-source-line-end="32">天梁</div><div class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent hover:bg-secondary/80 bg-accent/20 text-accent" data-source-file="src/components/ui/badge.tsx" data-source-line-start="32" data-source-line-end="32">武曲</div><div class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent hover:bg-secondary/80 bg-accent/20 text-accent" data-source-file="src/components/ui/badge.tsx" data-source-line-start="32" data-source-line-end="32">廉贞</div></div></div></div></div><!--astro:end--></astro-island>
+      </div>
+      
+      
+      <astro-island uid="Z2cPA83" prefix="r5" component-url="https://sketchflow-public.s3.us-east-1.amazonaws.com/html/53885/BioSection.B1zhsXYx.js" component-export="default" renderer-url="https://sketchflow-public.s3.us-east-1.amazonaws.com/html/53885/client.DCqT-qd1.js" props="{}" ssr="" client="load" opts="{&amp;quot;name&amp;quot;:&amp;quot;BioSection&amp;quot;,&amp;quot;value&amp;quot;:true}" await-children=""><div class="rounded-xl border bg-card text-card-foreground shadow glass-card border-primary/20" data-source-file="src/components/ui/card.tsx" data-source-line-start="9" data-source-line-end="16"><div class="space-y-1.5 p-6 flex flex-row items-center justify-between" data-source-file="src/components/ui/card.tsx" data-source-line-start="24" data-source-line-end="28"><div data-source-file="src/components/page-1053873/BioSection.tsx" data-source-line-start="29" data-source-line-end="35"><div class="font-semibold leading-none tracking-tight flex items-center gap-2" data-source-file="src/components/ui/card.tsx" data-source-line-start="36" data-source-line-end="40"><!--$--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-open w-5 h-5 text-accent" aria-hidden="true" data-source-file="src/components/page-1053873/BioSection.tsx" data-source-line-start="31" data-source-line-end="31"><path d="M12 7v14"></path><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"></path></svg><!--/$-->关于我</div><div class="text-sm text-muted-foreground" data-source-file="src/components/ui/card.tsx" data-source-line-start="48" data-source-line-end="52">个人介绍与兴趣描述</div></div></div><div class="p-6 pt-0" data-source-file="src/components/ui/card.tsx" data-source-line-start="60" data-source-line-end="60"><div class="prose prose-invert max-w-none" data-source-file="src/components/page-1053873/BioSection.tsx" data-source-line-start="57" data-source-line-end="61"><p class="text-foreground/90 whitespace-pre-wrap leading-relaxed" data-source-file="src/components/page-1053873/BioSection.tsx" data-source-line-start="58" data-source-line-end="60">热爱命理研究，相信同命相知。在这里寻找灵魂共鸣的朋友。
+
+我对八字和紫薇斗数特别感兴趣，经常研究命理与现实生活的映照关系。希望通过灵客AI平台，能够找到志同道合的朋友，一起探讨命理的奥秘。
+
+如果你也对命理感兴趣，欢迎加我为好友，让我们一起在同命的旅途中相知相伴。</p></div></div></div><!--astro:end--></astro-island>
+      
+      
+      <astro-island uid="aSqNc" prefix="r6" component-url="https://sketchflow-public.s3.us-east-1.amazonaws.com/html/53885/InterestsSection.BP5Y9Sjd.js" component-export="default" renderer-url="https://sketchflow-public.s3.us-east-1.amazonaws.com/html/53885/client.DCqT-qd1.js" props="{}" ssr="" client="load" opts="{&amp;quot;name&amp;quot;:&amp;quot;InterestsSection&amp;quot;,&amp;quot;value&amp;quot;:true}" await-children=""><div class="rounded-xl border bg-card text-card-foreground shadow glass-card border-primary/20" data-source-file="src/components/ui/card.tsx" data-source-line-start="9" data-source-line-end="16"><div class="space-y-1.5 p-6 flex flex-row items-center justify-between" data-source-file="src/components/ui/card.tsx" data-source-line-start="24" data-source-line-end="28"><div data-source-file="src/components/page-1053873/InterestsSection.tsx" data-source-line-start="32" data-source-line-end="38"><div class="font-semibold leading-none tracking-tight flex items-center gap-2" data-source-file="src/components/ui/card.tsx" data-source-line-start="36" data-source-line-end="40"><!--$--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles w-5 h-5 text-accent" aria-hidden="true" data-source-file="src/components/page-1053873/InterestsSection.tsx" data-source-line-start="34" data-source-line-end="34"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path><path d="M20 2v4"></path><path d="M22 4h-4"></path><circle cx="4" cy="20" r="2"></circle></svg><!--/$-->兴趣爱好</div><div class="text-sm text-muted-foreground" data-source-file="src/components/ui/card.tsx" data-source-line-start="48" data-source-line-end="52">我感兴趣的话题和领域</div></div></div><div class="p-6 pt-0" data-source-file="src/components/ui/card.tsx" data-source-line-start="60" data-source-line-end="60"><div class="flex flex-wrap gap-3" data-source-file="src/components/page-1053873/InterestsSection.tsx" data-source-line-start="53" data-source-line-end="64"><div class="inline-flex items-center rounded-md border text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 px-3 py-2 cursor-pointer hover:scale-105 transition-transform bg-primary/20 text-primary border-current/30" data-source-file="src/components/ui/badge.tsx" data-source-line-start="32" data-source-line-end="32"><!--$--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-hexagon w-4 h-4 mr-2" aria-hidden="true" data-source-file="src/components/page-1053873/InterestsSection.tsx" data-source-line-start="60" data-source-line-end="60"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg><!--/$-->八字命理</div><div class="inline-flex items-center rounded-md border text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 px-3 py-2 cursor-pointer hover:scale-105 transition-transform bg-accent/20 text-accent border-current/30" data-source-file="src/components/ui/badge.tsx" data-source-line-start="32" data-source-line-end="32"><!--$--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star w-4 h-4 mr-2" aria-hidden="true" data-source-file="src/components/page-1053873/InterestsSection.tsx" data-source-line-start="60" data-source-line-end="60"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path></svg><!--/$-->紫薇斗数</div><div class="inline-flex items-center rounded-md border text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 px-3 py-2 cursor-pointer hover:scale-105 transition-transform bg-secondary/20 text-secondary border-current/30" data-source-file="src/components/ui/badge.tsx" data-source-line-start="32" data-source-line-end="32"><!--$--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-moon w-4 h-4 mr-2" aria-hidden="true" data-source-file="src/components/page-1053873/InterestsSection.tsx" data-source-line-start="60" data-source-line-end="60"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"></path></svg><!--/$-->占星学</div><div class="inline-flex items-center rounded-md border text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 px-3 py-2 cursor-pointer hover:scale-105 transition-transform bg-purple-500/20 text-purple-400 border-current/30" data-source-file="src/components/ui/badge.tsx" data-source-line-start="32" data-source-line-end="32"><!--$--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-wand-sparkles w-4 h-4 mr-2" aria-hidden="true" data-source-file="src/components/page-1053873/InterestsSection.tsx" data-source-line-start="60" data-source-line-end="60"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72"></path><path d="m14 7 3 3"></path><path d="M5 6v4"></path><path d="M19 14v4"></path><path d="M10 2v2"></path><path d="M7 8H3"></path><path d="M21 16h-4"></path><path d="M11 3H9"></path></svg><!--/$-->塔罗牌</div><div class="inline-flex items-center rounded-md border text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 px-3 py-2 cursor-pointer hover:scale-105 transition-transform bg-blue-500/20 text-blue-400 border-current/30" data-source-file="src/components/ui/badge.tsx" data-source-line-start="32" data-source-line-end="32"><!--$--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-compass w-4 h-4 mr-2" aria-hidden="true" data-source-file="src/components/page-1053873/InterestsSection.tsx" data-source-line-start="60" data-source-line-end="60"><path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"></path><circle cx="12" cy="12" r="10"></circle></svg><!--/$-->风水堪舆</div><div class="inline-flex items-center rounded-md border text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 px-3 py-2 cursor-pointer hover:scale-105 transition-transform bg-pink-500/20 text-pink-400 border-current/30" data-source-file="src/components/ui/badge.tsx" data-source-line-start="32" data-source-line-end="32"><!--$--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-brain w-4 h-4 mr-2" aria-hidden="true" data-source-file="src/components/page-1053873/InterestsSection.tsx" data-source-line-start="60" data-source-line-end="60"><path d="M12 18V5"></path><path d="M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4"></path><path d="M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5"></path><path d="M17.997 5.125a4 4 0 0 1 2.526 5.77"></path><path d="M18 18a4 4 0 0 0 2-7.464"></path><path d="M19.967 17.483A4 4 0 1 1 12 18a4 4 0 1 1-7.967-.517"></path><path d="M6 18a4 4 0 0 1-2-7.464"></path><path d="M6.003 5.125a4 4 0 0 0-2.526 5.77"></path></svg><!--/$-->心理学</div><div class="inline-flex items-center rounded-md border text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 px-3 py-2 cursor-pointer hover:scale-105 transition-transform bg-green-500/20 text-green-400 border-current/30" data-source-file="src/components/ui/badge.tsx" data-source-line-start="32" data-source-line-end="32"><!--$--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-marked w-4 h-4 mr-2" aria-hidden="true" data-source-file="src/components/page-1053873/InterestsSection.tsx" data-source-line-start="60" data-source-line-end="60"><path d="M10 2v8l3-3 3 3V2"></path><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"></path></svg><!--/$-->哲学思辨</div><div class="inline-flex items-center rounded-md border text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 px-3 py-2 cursor-pointer hover:scale-105 transition-transform bg-orange-500/20 text-orange-400 border-current/30" data-source-file="src/components/ui/badge.tsx" data-source-line-start="32" data-source-line-end="32"><!--$--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin w-4 h-4 mr-2" aria-hidden="true" data-source-file="src/components/page-1053873/InterestsSection.tsx" data-source-line-start="60" data-source-line-end="60"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle></svg><!--/$-->旅游探险</div></div></div></div><!--astro:end--></astro-island>
+    </div>
+  </main>
+  
+  <script>(()=>{var l=(n,t)=>{let i=async()=>{await(await n())()},e=typeof t.value=="object"?t.value:void 0,s={timeout:e==null?void 0:e.timeout};"requestIdleCallback"in window?window.requestIdleCallback(i,s):setTimeout(i,s.timeout||200)};(self.Astro||(self.Astro={})).idle=l;window.dispatchEvent(new Event("astro:idle"));})();</script><astro-island uid="Z1TANfG" prefix="r7" component-url="https://sketchflow-public.s3.us-east-1.amazonaws.com/html/53885/Footer.BUGNF6eX.js" component-export="default" renderer-url="https://sketchflow-public.s3.us-east-1.amazonaws.com/html/53885/client.DCqT-qd1.js" props="{&amp;quot;variant&amp;quot;:[0,&amp;quot;simple&amp;quot;]}" ssr="" client="idle" opts="{&amp;quot;name&amp;quot;:&amp;quot;Footer&amp;quot;,&amp;quot;value&amp;quot;:true}" await-children=""><footer id="ibj2jr" class="border-t bg-background/50 backdrop-blur-sm mt-auto" style="background-image:linear-gradient(#0c0c0c 0%, #0c0c0c 100%)" data-source-file="src/components/common/Footer.tsx" data-source-line-start="14" data-source-line-end="28"><div class="container px-4 py-6" data-source-file="src/components/common/Footer.tsx" data-source-line-start="15" data-source-line-end="27"><div class="flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-muted-foreground" data-source-file="src/components/common/Footer.tsx" data-source-line-start="16" data-source-line-end="26"><p data-source-file="src/components/common/Footer.tsx" data-source-line-start="17" data-source-line-end="17">© <!-- -->2026<!-- --> 灵客AI. 同命相知。</p><div class="flex items-center gap-4" data-source-file="src/components/common/Footer.tsx" data-source-line-start="18" data-source-line-end="25"><a href="./placeholder.html" class="hover:text-foreground transition-colors" data-source-file="src/components/common/Footer.tsx" data-source-line-start="19" data-source-line-end="21">隐私政策</a><a href="./placeholder.html" class="hover:text-foreground transition-colors" data-source-file="src/components/common/Footer.tsx" data-source-line-start="22" data-source-line-end="24">服务条款</a></div></div></div></footer><!--astro:end--></astro-island>
+
+  <script>
+    const originalBack = window.history.back
+    const originalForward = window.history.forward
+    const originalGo = window.history.go
+    function isValidNavigation(){
+      if(!window.parent.history.state.back || !window.parent.history.state.back.startsWith(&#39;/designPage&#39;)){
+        return false
+      }
+      return true
+    }
+    window.history.back = function(...args) {
+      if(!isValidNavigation()){
+        return
+      }
+      return originalBack.apply(this, args);
+    };
+
+    window.history.forward = function(...args) {
+      if(!isValidNavigation()){
+        return
+      }
+      return originalForward.apply(this, args);
+    };
+
+    window.history.go = function(...args) {
+      if(!isValidNavigation()){
+        return
+      }
+      return originalGo.apply(this, args);
+    };
+  </script></body></html>'></iframe>
+                    </div>
+                  </div>
+
+                </body>
+                </html>
+            

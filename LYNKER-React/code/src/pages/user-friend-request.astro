@@ -1,0 +1,10 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import CommonHeader from '@/components/common/CommonHeader.tsx'
+import UserFriendRequestPage from '@/components/user-friend-request/UserFriendRequestPage.tsx'
+---
+
+<BaseLayout title="好友请求 - 灵客AI">
+  <CommonHeader client:load currentPath="/user-friend-request" />
+  <UserFriendRequestPage client:load />
+</BaseLayout>

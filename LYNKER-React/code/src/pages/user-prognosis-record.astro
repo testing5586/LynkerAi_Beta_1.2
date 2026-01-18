@@ -1,0 +1,19 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import CommonHeader from '@/components/common/CommonHeader.tsx'
+import Footer from '@/components/common/Footer.tsx'
+import AIAssistantFloat from '@/components/common/AIAssistantFloat.tsx'
+import UserPrognosisRecordList from '@/components/user-prognosis-record/UserPrognosisRecordList.tsx'
+---
+
+<BaseLayout title="我的预测记录 - 灵客AI">
+  <CommonHeader client:load variant="default" currentPath="/user-prognosis-record" />
+  
+  <main class="min-h-[calc(100vh-128px)] bg-background">
+    <UserPrognosisRecordList client:idle />
+  </main>
+  
+  <Footer client:load variant="full" />
+  <AIAssistantFloat client:load unreadCount={0} />
+</BaseLayout>

@@ -1,0 +1,42 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/common/Header';
+import Footer from '@/components/common/Footer';
+import UserProfileHeader from '@/components/page-708704/UserProfileHeader';
+import UserStatsCard from '@/components/page-708704/UserStatsCard';
+import UserBioSection from '@/components/page-708704/UserBioSection';
+import UserActivityFeed from '@/components/page-708704/UserActivityFeed';
+import UserActionButtons from '@/components/page-708704/UserActionButtons';
+import AIAssistantFloat from '@/components/common/AIAssistantFloat';
+---
+
+<BaseLayout title="个人主页 - 灵客AI">
+  <Header client:load variant="default" currentPath="/page-708704" />
+  
+  <main class="min-h-screen bg-background">
+    <div class="container max-w-4xl mx-auto px-4 py-8">
+      {/* User Profile Header */}
+      <UserProfileHeader client:idle />
+      
+      {/* User Stats */}
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <UserStatsCard client:idle />
+      </div>
+      
+      {/* User Bio and Info */}
+      <UserBioSection client:idle />
+      
+      {/* Quick Actions */}
+      <UserActionButtons client:idle />
+      
+      {/* Activity Feed */}
+      <UserActivityFeed client:idle />
+    </div>
+  </main>
+  
+  <Footer client:load variant="full" />
+  
+  {/* AI Assistant Float */}
+  <AIAssistantFloat client:load unreadCount={2} />
+</BaseLayout>

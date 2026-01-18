@@ -1,0 +1,16 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import CommonHeader from '@/components/common/CommonHeader.tsx'
+import AppSidebarLayout from '@/components/common/AppSidebarLayout.tsx'
+import AIAssistantFloat from '@/components/common/AIAssistantFloat.tsx'
+import HomologyChat from '@/components/page-945207/HomologyChat.tsx'
+---
+
+<BaseLayout title="同命聊天室 - 灵客AI">
+  <CommonHeader client:load currentPath="/page-945207" />
+  <AppSidebarLayout client:load headerHeight="64px">
+    <HomologyChat client:load />
+    <AIAssistantFloat client:idle />
+  </AppSidebarLayout>
+</BaseLayout>

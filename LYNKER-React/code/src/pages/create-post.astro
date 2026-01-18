@@ -1,0 +1,15 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import CommonHeader from '@/components/common/CommonHeader.tsx'
+import Footer from '@/components/common/Footer.tsx'
+import CreatePostContent from '@/components/create-post/CreatePostContent.tsx'
+---
+
+<BaseLayout title="发布新帖 - 灵客论坛">
+  <CommonHeader client:load currentPath="/create-post" />
+  <main class="min-h-[calc(100vh-128px)] bg-background">
+    <CreatePostContent client:load />
+  </main>
+  <Footer client:idle variant="simple" />
+</BaseLayout>

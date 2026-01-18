@@ -1,0 +1,23 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import Header from '@/components/common/Header'
+import Footer from '@/components/common/Footer'
+import MasterProfileContent from '@/components/master-profile/MasterProfileContent'
+---
+
+<BaseLayout title="命理师个人档案 - 灵客AI">
+<Header client:load variant="default" currentPath="/master-profile" />
+  
+  <main class="flex-1 bg-background">
+    <MasterProfileContent client:load />
+  </main>
+  
+  <Footer client:load variant="full" />
+</BaseLayout>
+
+<style>
+  main {
+    min-height: calc(100vh - 64px - 200px);
+  }
+</style>

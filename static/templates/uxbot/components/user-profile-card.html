@@ -1,0 +1,249 @@
+<!-- 
+  ===================================================
+  用户 Profile Card 组件 - 普通用户档案卡片
+  ===================================================
+  用途: 在灵友圈页面展示真实用户档案
+  参考: guru-search-result.html 的 guru 卡片设计
+  数据来源: /api/users/profiles
+  ===================================================
+-->
+
+<template id="user-profile-card-template">
+  <div class="user-profile-card rounded-lg border border-border bg-card p-6 hover:shadow-lg transition-all cursor-pointer">
+    <div class="flex items-start gap-4">
+      <!-- 头像 -->
+      <div class="flex-shrink-0">
+        <div class="relative">
+          <img 
+            class="user-avatar h-16 w-16 rounded-full object-cover ring-2 ring-primary/30" 
+            src="/static/uxbot/assets/optimized_images/default-avatar.png" 
+            alt="用户头像"
+          />
+        </div>
+      </div>
+      
+      <!-- 用户信息 -->
+      <div class="flex-1 min-w-0">
+        <!-- 昵称和性别 -->
+        <div class="flex items-center gap-2 mb-2">
+          <h3 class="user-pseudonym text-lg font-semibold text-foreground truncate">
+            灵客用户
+          </h3>
+          <span class="user-gender text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+            <!-- 性别标签 -->
+          </span>
+        </div>
+        
+        <!-- 个性签名 -->
+        <p class="user-bio text-sm text-muted-foreground mb-3 line-clamp-2">
+          探索命理，发现自我
+        </p>
+        
+        <!-- 标签组 -->
+        <div class="flex flex-wrap gap-2">
+          <!-- 血型标签 -->
+          <span class="user-tag-blood text-xs px-2 py-1 rounded-md bg-red-500/10 text-red-400 border border-red-500/20">
+            <svg class="inline-block w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+            </svg>
+            <span class="blood-type-text">O型</span>
+          </span>
+          
+          <!-- 职业标签 -->
+          <span class="user-tag-occupation text-xs px-2 py-1 rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20">
+            <svg class="inline-block w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+            </svg>
+            <span class="occupation-text">学生</span>
+          </span>
+          
+          <!-- 国籍标签 -->
+          <span class="user-tag-nationality text-xs px-2 py-1 rounded-md bg-purple-500/10 text-purple-400 border border-purple-500/20">
+            <svg class="inline-block w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span class="nationality-text">中国</span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+/**
+ * 创建用户 Profile Card
+ * @param {Object} profile - 用户档案数据
+ * @param {string} profile.id - 用户ID
+ * @param {string} profile.pseudonym - 昵称
+ * @param {string} profile.avatar_url - 头像URL
+ * @param {string} profile.gender - 性别
+ * @param {string} profile.blood_type - 血型
+ * @param {string} profile.occupation - 职业
+ * @param {string} profile.bio - 个性签名
+ * @param {string} profile.nationality - 国籍
+ * @returns {HTMLElement} 卡片DOM元素
+ */
+function createUserProfileCard(profile) {
+  // 克隆模板
+  var template = document.getElementById('user-profile-card-template');
+  if (!template) {
+    console.error('[UserProfileCard] Template not found');
+    return null;
+  }
+  
+  var clone = template.content.cloneNode(true);
+  var card = clone.querySelector('.user-profile-card');
+  
+  // 设置头像
+  var avatar = card.querySelector('.user-avatar');
+  if (profile.avatar_url) {
+    avatar.src = profile.avatar_url;
+  }
+  avatar.alt = (profile.pseudonym || '灵客用户') + '的头像';
+  
+  // 设置昵称
+  var pseudonym = card.querySelector('.user-pseudonym');
+  pseudonym.textContent = profile.pseudonym || '灵客用户';
+  
+  // 设置性别标签
+  var genderTag = card.querySelector('.user-gender');
+  if (profile.gender) {
+    var genderMap = {
+      'male': '♂ 男',
+      'female': '♀ 女',
+      'other': '其他'
+    };
+    genderTag.textContent = genderMap[profile.gender] || profile.gender;
+  } else {
+    genderTag.style.display = 'none';
+  }
+  
+  // 设置个性签名
+  var bio = card.querySelector('.user-bio');
+  bio.textContent = profile.bio || '这个人很神秘，什么都没留下';
+  
+  // 设置血型标签
+  var bloodTag = card.querySelector('.user-tag-blood');
+  if (profile.blood_type && profile.blood_type !== 'unknown') {
+    var bloodText = card.querySelector('.blood-type-text');
+    bloodText.textContent = profile.blood_type + '型';
+  } else {
+    bloodTag.style.display = 'none';
+  }
+  
+  // 设置职业标签
+  var occupationTag = card.querySelector('.user-tag-occupation');
+  if (profile.occupation) {
+    var occupationText = card.querySelector('.occupation-text');
+    occupationText.textContent = profile.occupation;
+  } else {
+    occupationTag.style.display = 'none';
+  }
+  
+  // 设置国籍标签
+  var nationalityTag = card.querySelector('.user-tag-nationality');
+  if (profile.nationality) {
+    var nationalityText = card.querySelector('.nationality-text');
+    nationalityText.textContent = profile.nationality;
+  } else {
+    nationalityTag.style.display = 'none';
+  }
+  
+  // 添加点击事件 - 跳转到用户详情页面
+  card.addEventListener('click', function() {
+    // TODO: 实现用户详情页面导航
+    console.log('[UserProfileCard] Clicked user:', profile.pseudonym, profile.id);
+    // window.location.href = '/uxbot/user-detail.html?id=' + profile.id;
+  });
+  
+  return card;
+}
+
+/**
+ * 批量渲染用户卡片到容器
+ * @param {Array} profiles - 用户档案数组
+ * @param {HTMLElement} container - 容器DOM元素
+ */
+function renderUserProfileCards(profiles, container) {
+  if (!container) {
+    console.error('[UserProfileCard] Container not found');
+    return;
+  }
+  
+  // 清空容器
+  container.innerHTML = '';
+  
+  // 如果没有数据，显示空状态
+  if (!profiles || profiles.length === 0) {
+    var emptyState = document.createElement('div');
+    emptyState.className = 'text-center py-12 text-muted-foreground';
+    emptyState.innerHTML = `
+      <svg class="mx-auto h-12 w-12 mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+      </svg>
+      <p class="text-lg font-medium mb-2">暂无用户档案</p>
+      <p class="text-sm">成为第一个完善档案的灵客吧！</p>
+    `;
+    container.appendChild(emptyState);
+    return;
+  }
+  
+  // 渲染每个用户卡片
+  profiles.forEach(function(profile) {
+    var card = createUserProfileCard(profile);
+    if (card) {
+      container.appendChild(card);
+    }
+  });
+}
+
+// 导出函数供外部使用
+if (typeof window !== 'undefined') {
+  window.UserProfileCard = {
+    create: createUserProfileCard,
+    render: renderUserProfileCards
+  };
+}
+</script>
+
+<style>
+/* 用户 Profile Card 样式 */
+.user-profile-card {
+  transition: all 0.3s ease;
+}
+
+.user-profile-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.user-avatar {
+  transition: transform 0.3s ease;
+}
+
+.user-profile-card:hover .user-avatar {
+  transform: scale(1.05);
+}
+
+/* 文本截断 */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* 标签动画 */
+.user-tag-blood,
+.user-tag-occupation,
+.user-tag-nationality {
+  transition: all 0.2s ease;
+}
+
+.user-profile-card:hover .user-tag-blood,
+.user-profile-card:hover .user-tag-occupation,
+.user-profile-card:hover .user-tag-nationality {
+  transform: translateX(2px);
+}
+</style>

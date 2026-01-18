@@ -1,0 +1,21 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import Header from '@/components/common/Header'
+import Footer from '@/components/common/Footer'
+import MasterBackendOverview from '@/components/master-backend-overview/MasterBackendOverview'
+import AppSidebarLayout from '@/components/common/AppSidebarLayout'
+import MasterSidebar from '@/components/master-backend-overview/MasterSidebar'
+---
+
+<BaseLayout title="命理师后台概览 - 灵客AI">
+  <Header client:load variant="default" currentPath="/master-backend-overview" />
+  
+  <AppSidebarLayout client:load headerHeight="64px">
+    <MasterSidebar client:load />
+    <main class="flex-1 flex flex-col">
+      <MasterBackendOverview client:load />
+      <Footer client:load variant="simple" />
+    </main>
+  </AppSidebarLayout>
+</BaseLayout>

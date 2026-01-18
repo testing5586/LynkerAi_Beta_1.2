@@ -1,0 +1,38 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import CommonHeader from '@/components/common/CommonHeader.tsx'
+import Footer from '@/components/common/Footer.tsx'
+import BlackboxContent from '@/components/blackbox-page/BlackboxContent.tsx'
+---
+
+<BaseLayout title="核心AI隐秘分析 - 灵客AI">
+  <CommonHeader client:load variant="minimal" />
+  
+  <main class="min-h-[calc(100vh-128px)] bg-background">
+    <BlackboxContent client:load />
+  </main>
+  
+  <Footer client:idle variant="simple" />
+</BaseLayout>
+
+<style>
+  /* Blackbox page specific security styles */
+  :global(body) {
+    /* Prevent screenshot on some browsers */
+    -webkit-app-region: no-drag;
+  }
+  
+  /* Disable text selection globally on this page */
+  :global(.blackbox-container) {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+  }
+  
+  /* Prevent copy */
+  :global(.blackbox-content) {
+    -webkit-touch-callout: none;
+  }
+</style>

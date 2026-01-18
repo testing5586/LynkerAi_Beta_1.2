@@ -1,0 +1,66 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import CommonHeader from '@/components/common/CommonHeader.tsx'
+import Footer from '@/components/common/Footer.tsx'
+import HeroSection from '@/components/page-969102/HeroSection.tsx'
+import FeatureCards from '@/components/page-969102/FeatureCards.tsx'
+import MatchingSearch from '@/components/page-969102/MatchingSearch.tsx'
+import RecommendedContent from '@/components/page-969102/RecommendedContent.tsx'
+import CTASection from '@/components/page-969102/CTASection.tsx'
+import AIAssistantFloat from '@/components/common/AIAssistantFloat.tsx'
+---
+
+<BaseLayout title="灵客AI - 同命相知 | 命理+AI+社交平台">
+  <CommonHeader client:load />
+  
+  <main class="min-h-screen bg-background">
+    {/* Hero Section */}
+    <HeroSection client:load />
+    
+    {/* Feature Cards */}
+    <FeatureCards client:load />
+    
+    {/* Matching Search Section */}
+    <MatchingSearch client:load />
+    
+    {/* Recommended Content */}
+    <RecommendedContent client:load />
+    
+    {/* CTA Section */}
+    <CTASection client:load />
+  </main>
+  
+  <Footer client:idle />
+  
+  {/* AI Assistant Float */}
+  <AIAssistantFloat client:load />
+  
+  <style>
+    /* Page-specific mystical background effects */
+    main {
+      position: relative;
+      overflow-x: hidden;
+    }
+    
+    /* Animated background elements */
+    main::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(234, 179, 8, 0.05) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    
+    main > * {
+      position: relative;
+      z-index: 1;
+    }
+  </style>
+</BaseLayout>

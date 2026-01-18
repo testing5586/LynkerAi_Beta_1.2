@@ -1,0 +1,11 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import CommonHeader from '@/components/common/CommonHeader.tsx'
+import LynkermatesPage from '@/components/page-944865/LynkermatesPage.tsx'
+---
+
+<BaseLayout title="灵友圈 - 灵客AI">
+  <CommonHeader client:load currentPath="/page-944865" />
+  <LynkermatesPage client:load />
+</BaseLayout>

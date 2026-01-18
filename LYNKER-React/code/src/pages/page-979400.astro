@@ -1,0 +1,30 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import CommonHeader from '@/components/common/CommonHeader.tsx'
+import Footer from '@/components/common/Footer.tsx'
+import UserDashboardSidebar from '@/components/page-979400/UserDashboardSidebar.tsx'
+import AppointmentContent from '@/components/page-979400/AppointmentContent.tsx'
+---
+
+<BaseLayout title="我的预约 - 灵客AI">
+  <CommonHeader client:load currentPath="/page-979400" />
+  
+  <div class="flex flex-1 min-h-[calc(100vh-64px)]">
+    {/* Sidebar */}
+    <UserDashboardSidebar client:load currentPage="appointments" />
+    
+    {/* Main Content */}
+    <main class="flex-1 overflow-auto">
+      <AppointmentContent client:idle />
+      <Footer variant="simple" />
+    </main>
+  </div>
+</BaseLayout>
+
+<style>
+  :global(body) {
+    margin: 0;
+    padding: 0;
+  }
+</style>

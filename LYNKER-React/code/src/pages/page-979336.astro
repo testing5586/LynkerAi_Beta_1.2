@@ -1,0 +1,16 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import CommonHeader from '@/components/common/CommonHeader.tsx'
+import UserDashboardLayout from '@/components/page-979336/UserDashboardLayout.tsx'
+import YearlyFortuneContent from '@/components/page-979336/YearlyFortuneContent.tsx'
+import AIAssistantFloat from '@/components/common/AIAssistantFloat.tsx'
+---
+
+<BaseLayout title="流年运势 - 灵客AI">
+  <CommonHeader client:load currentPath="/page-979336" />
+  <UserDashboardLayout client:load>
+    <YearlyFortuneContent client:idle />
+  </UserDashboardLayout>
+  <AIAssistantFloat client:idle />
+</BaseLayout>

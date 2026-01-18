@@ -1,0 +1,15 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import CommonHeader from '@/components/common/CommonHeader.tsx'
+import Footer from '@/components/common/Footer.tsx'
+import MemorySavedPage from '@/components/page-1041776/MemorySavedPage.tsx'
+---
+
+<BaseLayout title="记忆库 - 灵客AI">
+  <CommonHeader client:load currentPath="/page-1041776" />
+  <main class="min-h-[calc(100vh-128px)] bg-background">
+    <MemorySavedPage client:load />
+  </main>
+  <Footer client:idle variant="simple" />
+</BaseLayout>

@@ -1,0 +1,19 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/common/Header';
+import Footer from '@/components/common/Footer';
+import RegistrationTypeSelector from '@/components/registration-type-selection/RegistrationTypeSelector';
+---
+
+<BaseLayout title="注册类型选择 - 灵客AI">
+  <div class="min-h-screen flex flex-col bg-background">
+<Header client:load variant="minimal" />
+    
+    <main class="flex-1 flex items-center justify-center py-12 px-4">
+      <RegistrationTypeSelector client:load />
+    </main>
+    
+    <Footer client:load variant="simple" />
+  </div>
+</BaseLayout>

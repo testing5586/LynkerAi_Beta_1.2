@@ -1,0 +1,61 @@
+
+/* Page-specific styles for Master Studio Management */
+
+.studio-form-section {
+  @apply space-y-6;
+}
+
+.studio-form-card {
+  @apply glass-card border-0;
+}
+
+.studio-input {
+  @apply bg-muted/50 border-muted focus:border-primary transition-colors;
+}
+
+.studio-textarea {
+  @apply bg-muted/50 border-muted focus:border-primary transition-colors resize-none;
+}
+
+.service-item-card {
+  @apply glass-card hover:shadow-card transition-all duration-200;
+}
+
+.service-item-card:hover {
+  @apply border-primary/30;
+}
+
+.schedule-item {
+  @apply p-4 bg-muted/30 rounded-lg border border-muted transition-colors;
+}
+
+.schedule-item.active {
+  @apply border-primary/50 bg-primary/5;
+}
+
+.time-input {
+  @apply bg-background/50 border-muted focus:border-primary transition-colors;
+}
+
+.specialty-badge {
+  @apply cursor-pointer transition-all duration-200;
+}
+
+.specialty-badge:hover {
+  @apply scale-105;
+}
+
+.specialty-badge.active {
+  @apply bg-mystical-gradient text-white;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .studio-form-section {
+    @apply space-y-4;
+  }
+
+  .schedule-item {
+    @apply p-3;
+  }
+}

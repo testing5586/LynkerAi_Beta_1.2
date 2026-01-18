@@ -1,0 +1,22 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import CommonHeader from '@/components/common/CommonHeader.tsx'
+import Footer from '@/components/common/Footer.tsx'
+import UserDashboardLayout from '@/components/page-979337/UserDashboardLayout.tsx'
+import UserProfileSection from '@/components/page-979337/UserProfileSection.tsx'
+import AIAssistantFloat from '@/components/common/AIAssistantFloat.tsx'
+---
+
+<BaseLayout title="个人资料 - 灵客AI用户后台">
+  <CommonHeader client:load currentPath="/page-979337" />
+  
+  <main class="flex-1">
+    <UserDashboardLayout client:load activeTab="profile">
+      <UserProfileSection client:idle />
+    </UserDashboardLayout>
+  </main>
+
+  <AIAssistantFloat client:idle />
+  <Footer variant="simple" />
+</BaseLayout>

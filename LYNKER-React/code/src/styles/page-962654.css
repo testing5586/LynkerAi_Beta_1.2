@@ -1,0 +1,85 @@
+
+/* Page-specific styles for 流年运势 (page_962654) */
+
+.yearly-fortune-container {
+  background: linear-gradient(135deg, rgba(20, 20, 30, 0.5) 0%, rgba(30, 20, 40, 0.5) 100%);
+}
+
+/* Chart container styling */
+.chart-container {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid rgba(139, 92, 246, 0.1);
+}
+
+/* Warning card animations */
+.warning-card {
+  transition: all 0.3s ease;
+}
+
+.warning-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.15);
+}
+
+/* Video record list styling */
+.video-record-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.video-record-item {
+  transition: all 0.2s ease;
+}
+
+.video-record-item:hover {
+  background: rgba(139, 92, 246, 0.05);
+}
+
+/* Year selector button group */
+.year-selector-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.year-selector-button {
+  transition: all 0.2s ease;
+}
+
+.year-selector-button.active {
+  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+}
+
+/* Tabs styling */
+.tabs-container {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
+  padding: 4px;
+  border: 1px solid rgba(139, 92, 246, 0.1);
+}
+
+/* Summary cards grid */
+.summary-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .summary-cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .year-selector-group {
+    justify-content: center;
+  }
+
+  .chart-container {
+    padding: 12px;
+  }
+}

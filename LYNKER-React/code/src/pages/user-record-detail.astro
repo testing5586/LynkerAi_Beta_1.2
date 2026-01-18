@@ -1,0 +1,29 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/common/Header';
+import Footer from '@/components/common/Footer';
+import AIAssistantFloat from '@/components/common/AIAssistantFloat';
+import UserRecordDetailContent from '@/components/user-record-detail/UserRecordDetailContent';
+
+// Mock data - in real app, would come from query params or API
+const recordId = 'ur001';
+---
+
+<BaseLayout title="用户记录详情 - 灵客AI">
+  <Header client:load variant="default" currentPath="/user-record-detail" />
+  
+  <main class="flex-1">
+    <UserRecordDetailContent client:load recordId={recordId} />
+  </main>
+
+  <Footer client:load variant="simple" />
+  
+  <AIAssistantFloat client:load unreadCount={0} />
+</BaseLayout>
+
+<style>
+  main {
+    min-height: calc(100vh - 64px - 120px);
+  }
+</style>

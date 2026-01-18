@@ -1,0 +1,16 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import Header from '@/components/common/Header'
+import AppSidebarLayout from '@/components/common/AppSidebarLayout.tsx'
+import AppointmentLinkCreation from '@/components/appointment-link-creation/AppointmentLinkCreation.tsx'
+---
+
+<BaseLayout title="创建预约链接 - 灵客AI">
+  <Header client:load variant="minimal" currentPath="/appointment-link-creation" />
+  <AppSidebarLayout client:load headerHeight="64px">
+    <main class="flex-1 overflow-auto">
+      <AppointmentLinkCreation client:idle />
+    </main>
+  </AppSidebarLayout>
+</BaseLayout>

@@ -1,0 +1,15 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import Header from '@/components/common/Header.tsx'
+import Footer from '@/components/common/Footer.tsx'
+import MasterListPage from '@/components/master-list/MasterListPage.tsx'
+---
+
+<BaseLayout title="命理师列表 - 灵客AI">
+  <Header client:load currentPath="/master-list" />
+  <main class="min-h-[calc(100vh-128px)] bg-background">
+    <MasterListPage client:load />
+  </main>
+  <Footer client:load variant="full" />
+</BaseLayout>

@@ -1,0 +1,13 @@
+
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import CommonHeader from '@/components/common/CommonHeader.tsx'
+import VerifyTrueChartPage from '@/components/page-979338/VerifyTrueChartPage.tsx'
+import Footer from '@/components/common/Footer.tsx'
+---
+
+<BaseLayout title="验证真命盘 - 灵客AI">
+  <CommonHeader client:load currentPath="/page-979338" />
+  <VerifyTrueChartPage client:load />
+  <Footer variant="simple" />
+</BaseLayout>
